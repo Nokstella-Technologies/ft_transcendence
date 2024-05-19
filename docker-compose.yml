@@ -25,10 +25,13 @@ services:
 
   react:
     container_name: react
-    build:
-      context: ./frontend
-    volumes:
-      - ./frontend:/usr/src/app
+    image: node:alpine
+    working_dir: /srv/app
+    entrypoint: yarn dev
+    volumes: 
+     - type: bind
+       source: ./frontend
+       target: /srv/app
     ports:
       - 3000:3000
     env_file:
@@ -36,6 +39,7 @@ services:
     depends_on:
       - django
       - postgres
+    tty: true
 
   postgres:
     image: postgres:16.3-alpine
