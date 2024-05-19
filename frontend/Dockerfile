@@ -1,14 +1,9 @@
-FROM node:20.10-alpine
+FROM node:alpine
 
 WORKDIR /usr/src/app
 
-COPY package.json /usr/src/app/package.json
-COPY package-lock.json /usr/src/app/package-lock.json
-
-RUN npm ci
-
-COPY . /usr/src/app/
+COPY package.json .
 
 EXPOSE 3000
 
-ENTRYPOINT [ "npm", "start"]
+ENTRYPOINT [ "/bin/sh", "entry.sh" ]
