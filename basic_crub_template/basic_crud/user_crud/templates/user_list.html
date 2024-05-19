@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>User List</title>
+  </head>
+  <body>
+    <form action="{% url 'user_create' %}">
+      <button>Create User</button>
+    </form>
+    <h1>User List</h1>
+    {% for user in users %}
+    <ul>
+        <li>{{ user.username }}</li>
+        <li>{{ user.email }}</li>
+        <li>{{ user.password_hash }}</li>
+        <li>{{ user.created_at }}</li>
+        <li>{{ user.updated_at }}</li>
+        <li>{{ user.is_auth }}</li>
+        <li>{{ user.profile_picture }}</li>
+        <form action="{% url 'user_update' user.id %}">
+          <button>Update User</button>
+        </form>
+        <form action="{% url 'user_delete' user.id %}">
+          <button>Delete User</button>
+        </form>
+    </ul>
+    {% endfor %}
+  </body>
+</html>

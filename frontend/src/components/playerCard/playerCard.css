@@ -1,0 +1,51 @@
+CSS .place {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	width: 150px;
+	padding: 10px;
+	border: 2px solid #00ffea;
+	background: #111;
+	box-shadow: 0 0 10px #00ffea;
+	text-align: center;
+	position: relative;
+}
+
+.place img {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	border: 3px solid #00ffea;
+	margin-bottom: 10px;
+}
+
+.first {
+	height: 200px;
+	margin: 0 20px;
+	animation: winner-animation 2s infinite;
+}
+
+.second {
+	height: 150px;
+	margin: 0 20px;
+}
+
+.third {
+	height: 100px;
+	margin: 0 20px;
+}
+
+@keyframes winner-animation {
+	0% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(-10px);
+	}
+
+	100% {
+		transform: translateY(0);
+	}
+}
