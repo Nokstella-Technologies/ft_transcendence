@@ -4,11 +4,13 @@ WORKDIR /usr/src/app
 
 COPY package.json /usr/src/app/package.json
 
-RUN yarn
+COPY yarn.lock /usr/src/app/yarn.lock
 
 RUN yarn install
 
 COPY . /usr/src/app/
+
+RUN yarn build
 
 EXPOSE 3000
 
