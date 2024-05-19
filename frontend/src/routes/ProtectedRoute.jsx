@@ -1,23 +1,14 @@
-// ProtectedRoute.js
 import React, { useContext } from 'react';
-import { Route, Redirect } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-
-const ProtectedRoute = ({ component: Component, ...rest }) => {
+import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContex';
+const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useContext(AuthContext);
 
-  return (
-    <Route
-      {...rest}
-      render={(props) =>
-        isAuthenticated ? (
-          <Component key={props.location.key} {...props} />
-        ) : (
-          <Redirect to="/login" />
-        )
-      }
-    />
-  );
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;
