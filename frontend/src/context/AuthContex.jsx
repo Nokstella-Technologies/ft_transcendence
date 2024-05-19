@@ -12,19 +12,24 @@ export const AuthProvider = ({ children }) => {
     // Simule uma chamada de autenticação (ex. uma chamada a uma API)
     const authenticateUser = async () => {
       try {
-        // Aqui você pode fazer a chamada a uma API para verificar a autenticação
-        // Exemplo:
-        // const response = await fetch('/api/auth/check');
-        // const result = await response.json();
-        // setIsAuthenticated(result.isAuthenticated);
+        const response = await fetch('https://api.seusite.com/auth/status', {
+          method: 'GET',
+          credentials: 'include', // Inclua cookies na requisição se necessário
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-        // Simulando uma chamada de autenticação com um timeout
-        setTimeout(() => {
-          setIsAuthenticated(false); // Defina isso com base na lógica real de autenticação
-          setLoading(false);
-        }, 1000);
+        if (response.ok) {
+          const result = await response.json();
+          setIsAuthenticated(result.isAuthenticated); // Supondo que a resposta tenha um campo isAuthenticated
+        } else {
+          setIsAuthenticated(false);
+        }
       } catch (error) {
         console.error('Failed to authenticate:', error);
+        setIsAuthenticated(false);
+      } finally {
         setLoading(false);
       }
     };
