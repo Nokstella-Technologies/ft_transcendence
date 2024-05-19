@@ -3,11 +3,12 @@ FROM node:20.10-alpine
 WORKDIR /usr/src/app
 
 COPY package.json /usr/src/app/package.json
+COPY package-lock.json /usr/src/app/package-lock.json
 
-RUN yarn install
+RUN npm ci
 
-COPY . .
+COPY . /usr/src/app/
 
 EXPOSE 3000
 
-ENTRYPOINT [ "yarn", "start" ]
+ENTRYPOINT [ "npm", "start"]
