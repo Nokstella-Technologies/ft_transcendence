@@ -1,4 +1,3 @@
-REACT=frontend/node_modules/
 
 all: 
 	docker-compose up -d --build
@@ -6,7 +5,6 @@ all:
 
 clean:
 	docker-compose down --rmi all
-	rm -rf $(REACT) 
 
 re: clean all
 
