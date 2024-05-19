@@ -9,7 +9,7 @@
 		@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap');
 
 		body {
-			background: #0e0e0e;
+			background: #000;
 			color: #00ffea;
 			font-family: 'Press Start 2P', cursive;
 			display: flex;
@@ -21,8 +21,8 @@
 			position: relative;
 		}
 
-		.register-container {
-			background: rgba(14, 14, 14, 0.9);
+		.login-container {
+			background: rgba(0, 0, 0, 0.9);
 			padding: 30px;
 			border: 3px solid #00ffea;
 			box-shadow: 0 0 20px #00ffea;
@@ -30,6 +30,8 @@
 			position: relative;
 			z-index: 1;
 			border-radius: 10px;
+			width: 100%;
+			max-width: 500px;
 		}
 
 		h1 {
@@ -39,38 +41,53 @@
 			text-shadow: 0 0 10px #00e5ff;
 		}
 
-		input[type="text"],
-		input[type="email"],
-		input[type="password"] {
-			display: block;
+		form {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.input-container {
+			position: relative;
 			width: 100%;
-			padding: 15px;
-			margin-bottom: 15px;
+			margin-bottom: 20px;
+		}
+
+		.input-container input {
+			width: calc(100% - 40px);
+			padding: 20px;
+			margin: 0 auto;
 			border: 2px solid #00ffea;
 			background: #111;
 			color: #00ffea;
-			font-size: 18px;
+			font-size: 20px;
 			border-radius: 5px;
 			transition: all 0.3s ease;
 		}
 
-		input[type="text"]:focus,
-		input[type="email"]:focus,
-		input[type="password"]:focus {
+		.input-container input:focus {
 			box-shadow: 0 0 10px #00ffea;
 		}
 
+		.input-container .toggle-password {
+			position: absolute;
+			right: 15px;
+			top: 50%;
+			transform: translateY(-50%);
+			cursor: pointer;
+		}
+
 		button {
-			width: 100%;
+			width: calc(100% - 40px);
 			padding: 15px;
+			margin: 0 auto;
 			border: 2px solid #00ffea;
-			background: linear-gradient(90deg, #00ffea, #0066ff);
+			background: linear-gradient(45deg, #00e5ff, #00ffea);
 			color: #000;
 			font-size: 18px;
 			cursor: pointer;
 			margin-bottom: 15px;
-			font-family: 'Roboto', sans-serif;
-			font-weight: 700;
+			font-family: 'Press Start 2P', cursive;
 			transition: all 0.3s ease;
 			border-radius: 5px;
 		}
@@ -88,10 +105,15 @@
 		.login-link a {
 			color: #00ffea;
 			text-decoration: none;
+			font-size: 18px;
+			border-bottom: 2px solid #00ffea;
+			transition: all 0.3s ease;
 		}
 
 		.login-link a:hover {
 			text-decoration: underline;
+			color: #00e5ff;
+			border-bottom: 2px solid #00e5ff;
 		}
 
 		/* Animação do Pong */
@@ -103,16 +125,6 @@
 			height: 100%;
 			overflow: hidden;
 			z-index: 0;
-		}
-
-		.pong-ball {
-			width: 20px;
-			height: 20px;
-			background: #00ffea;
-			position: absolute;
-			border-radius: 50%;
-			box-shadow: 0 0 10px #00ffea;
-			animation: pong-ball-move 2s infinite linear;
 		}
 
 		.pong-paddle {
@@ -133,35 +145,6 @@
 		.pong-paddle-right {
 			right: 30px;
 			top: calc(50% - 50px);
-		}
-
-		@keyframes pong-ball-move {
-			0% {
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-			}
-
-			25% {
-				top: 20%;
-				left: 80%;
-			}
-
-			50% {
-				top: 80%;
-				left: 80%;
-			}
-
-			75% {
-				top: 50%;
-				left: 20%;
-			}
-
-			100% {
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-			}
 		}
 
 		@keyframes pong-paddle-move {
@@ -191,16 +174,30 @@
 
 <body>
 	<div class="pong-animation">
-		<div class="pong-ball"></div>
 		<div class="pong-paddle pong-paddle-left"></div>
 		<div class="pong-paddle pong-paddle-right"></div>
 	</div>
-	<div class="register-container">
+	<div class="login-container">
 		<h1>Pong Cadastro</h1>
 		<form>
-			<input type="text" placeholder="Nome" required>
-			<input type="email" placeholder="Email" required>
-			<input type="password" placeholder="Senha" required>
+			<div class="input-container">
+				<input type="text" placeholder="Nome" required>
+			</div>
+			<div class="input-container">
+				<input type="email" placeholder="Email" required>
+			</div>
+			<div class="input-container">
+				<input type="password" placeholder="Senha" id="password" required>
+				<span class="toggle-password" onclick="togglePassword('password')">
+					<img src="https://img.icons8.com/ios-glyphs/30/00ffea/visible.png" alt="Ver Senha">
+				</span>
+			</div>
+			<div class="input-container">
+				<input type="password" placeholder="Confirme a Senha" id="confirm-password" required>
+				<span class="toggle-password" onclick="togglePassword('confirm-password')">
+					<img src="https://img.icons8.com/ios-glyphs/30/00ffea/visible.png" alt="Ver Senha">
+				</span>
+			</div>
 			<button type="submit">Cadastrar</button>
 			<p class="login-link">Já tem uma conta? <a href="#">Login</a></p>
 		</form>
@@ -209,10 +206,20 @@
 		<img src="https://img.icons8.com/ios-glyphs/30/00ffea/musical-notes.png" alt="Sound Icon">
 	</div>
 	<audio id="background-music" loop>
-		<source src="caminho/para/sua/musica.mp3" type="audio/mpeg">
+		<source src="music.m4a" type="audio/mpeg">
 		Seu navegador não suporta o elemento de áudio.
 	</audio>
 	<script>
+		document.querySelector('.google-login').addEventListener('click', function () {
+			// Lógica para login com Google
+			alert('Login com Google ainda não implementado.');
+		});
+
+		document.querySelector('.a42-login').addEventListener('click', function () {
+			// Lógica para login com 42
+			alert('Login com 42 ainda não implementado.');
+		});
+
 		const soundIcon = document.getElementById('sound-icon');
 		const backgroundMusic = document.getElementById('background-music');
 
@@ -225,6 +232,18 @@
 				soundIcon.querySelector('img').src = "https://img.icons8.com/ios-glyphs/30/00ffea/musical-notes.png";
 			}
 		});
+
+		function togglePassword(id) {
+			const passwordInput = document.getElementById(id);
+			const passwordIcon = passwordInput.nextElementSibling.querySelector('img');
+			if (passwordInput.type === "password") {
+				passwordInput.type = "text";
+				passwordIcon.src = "https://img.icons8.com/ios-glyphs/30/00ffea/invisible.png";
+			} else {
+				passwordInput.type = "password";
+				passwordIcon.src = "https://img.icons8.com/ios-glyphs/30/00ffea/visible.png";
+			}
+		}
 	</script>
 </body>
 

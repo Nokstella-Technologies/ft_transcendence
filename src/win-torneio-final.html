@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Vitória Final - Torneio Pong</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+		body {
+			background: #0e0e0e;
+			color: #00ffea;
+			font-family: 'Press Start 2P', cursive;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			height: 100vh;
+			margin: 0;
+			overflow: hidden;
+			position: relative;
+		}
+
+		.top-bar {
+			position: absolute;
+			top: 0;
+			width: 100%;
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			padding: 10px 20px;
+			background: none;
+			z-index: 10;
+		}
+
+		.top-bar .hamburger-menu {
+			cursor: pointer;
+		}
+
+		.top-bar .hamburger-menu img {
+			width: 30px;
+			height: 30px;
+		}
+
+		.hamburger-content {
+			display: none;
+			position: absolute;
+			top: 50px;
+			right: 20px;
+			background: #111;
+			border: 2px solid #00ffea;
+			padding: 10px;
+			border-radius: 5px;
+			box-shadow: 0 0 10px #00ffea;
+			z-index: 1000;
+		}
+
+		.hamburger-content .friend {
+			display: block;
+			margin-bottom: 10px;
+		}
+
+		.hamburger-content::before {
+			content: "Amigos";
+			display: block;
+			font-size: 18px;
+			color: #00e5ff;
+			margin-bottom: 10px;
+			text-shadow: 0 0 10px #00e5ff;
+		}
+
+		.congrats {
+			font-size: 24px;
+			color: #00e5ff;
+			text-shadow: 0 0 10px #00e5ff;
+			margin-bottom: 20px;
+		}
+
+		.podium {
+			display: flex;
+			align-items: flex-end;
+			justify-content: center;
+			position: relative;
+			width: 80%;
+			max-width: 800px;
+			height: 300px;
+			margin-bottom: 20px;
+		}
+
+		.podium .place {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: flex-end;
+			width: 150px;
+			padding: 10px;
+			border: 2px solid #00ffea;
+			background: #111;
+			box-shadow: 0 0 10px #00ffea;
+			text-align: center;
+			position: relative;
+		}
+
+		.podium .place img {
+			width: 80px;
+			height: 80px;
+			border-radius: 50%;
+			border: 3px solid #00ffea;
+			margin-bottom: 10px;
+		}
+
+		.podium .first {
+			height: 200px;
+			margin: 0 20px;
+			animation: winner-animation 2s infinite;
+		}
+
+		.podium .second {
+			height: 150px;
+			margin: 0 20px;
+		}
+
+		.podium .third {
+			height: 100px;
+			margin: 0 20px;
+		}
+
+		@keyframes winner-animation {
+			0% {
+				transform: translateY(0);
+			}
+
+			50% {
+				transform: translateY(-10px);
+			}
+
+			100% {
+				transform: translateY(0);
+			}
+		}
+
+		.buttons {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+			width: 100%;
+		}
+
+		.buttons button {
+			width: 200px;
+			padding: 15px;
+			border: 2px solid #00ffea;
+			background: linear-gradient(45deg, #00e5ff, #00ffea);
+			color: #000;
+			font-size: 18px;
+			cursor: pointer;
+			font-family: 'Press Start 2P', cursive;
+			transition: all 0.3s ease;
+			border-radius: 5px;
+			margin: 0 10px;
+		}
+
+		.buttons button:hover {
+			background: #00e5ff;
+			color: #000;
+			transform: scale(1.05);
+		}
+
+		.buttons button:active {
+			transform: scale(0.98);
+		}
+
+		.confetti {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
+		}
+
+		.confetti-piece {
+			position: absolute;
+			width: 10px;
+			height: 20px;
+			background: linear-gradient(45deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+			animation: confetti-fall 5s infinite;
+		}
+
+		@keyframes confetti-fall {
+			0% {
+				transform: translateY(0) rotate(0);
+				opacity: 1;
+			}
+
+			100% {
+				transform: translateY(100vh) rotate(360deg);
+				opacity: 0;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="top-bar">
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<img src="https://img.icons8.com/ios-glyphs/30/00ffea/user-group-man-man.png" alt="Amigos">
+		</div>
+	</div>
+
+	<div class="hamburger-content" id="hamburger-content">
+		<div class="friend online">Amigo 1</div>
+		<div class="friend">Amigo 2</div>
+		<div class="friend online">Amigo 3</div>
+		<div class="friend">Amigo 4</div>
+	</div>
+
+	<div class="congrats">Parabéns aos Vencedores!</div>
+
+	<div class="podium">
+		<div class="place second">
+			<img src="https://via.placeholder.com/80" alt="Segundo Lugar">
+			<p>Player 02</p>
+		</div>
+		<div class="place first">
+			<img src="https://via.placeholder.com/80" alt="Primeiro Lugar">
+			<p>Player 01</p>
+		</div>
+		<div class="place third">
+			<img src="https://via.placeholder.com/80" alt="Terceiro Lugar">
+			<p>Player 03</p>
+		</div>
+	</div>
+
+	<div class="buttons">
+		<button onclick="newTournament()">Novo Torneio</button>
+		<button onclick="location.href='home.html'">Home</button>
+	</div>
+
+	<div class="confetti" id="confetti"></div>
+
+	<script>
+		function toggleHamburgerMenu() {
+			const content = document.getElementById('hamburger-content');
+			content.style.display = content.style.display === 'block' ? 'none' : 'block';
+		}
+
+		function newTournament() {
+			// Lógica para iniciar um novo torneio
+			alert('Iniciando um novo torneio...');
+		}
+
+		function createConfettiPiece() {
+			const confetti = document.getElementById('confetti');
+			const piece = document.createElement('div');
+			piece.classList.add('confetti-piece');
+			piece.style.left = Math.random() * 100 + 'vw';
+			piece.style.animationDuration = (Math.random() * 3 + 2) + 's';
+			confetti.appendChild(piece);
+		}
+
+		for (let i = 0; i < 100; i++) {
+			createConfettiPiece();
+		}
+	</script>
+</body>
+
+</html>

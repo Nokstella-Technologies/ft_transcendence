@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Modo Solo - Pong</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+		body {
+			background: #0e0e0e;
+			color: #00ffea;
+			font-family: 'Press Start 2P', cursive;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+			overflow: hidden;
+			position: relative;
+		}
+
+		.top-bar {
+			position: absolute;
+			top: 0;
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 10px 20px;
+			background: none;
+			z-index: 10;
+		}
+
+		.top-bar .back-button,
+		.top-bar .hamburger-menu {
+			cursor: pointer;
+		}
+
+		.top-bar .back-button {
+			font-size: 18px;
+			color: #00ffea;
+			text-shadow: 0 0 10px #00e5ff;
+		}
+
+		.top-bar .hamburger-menu img {
+			width: 30px;
+			height: 30px;
+		}
+
+		.hamburger-content {
+			display: none;
+			position: absolute;
+			top: 50px;
+			right: 20px;
+			background: #111;
+			border: 2px solid #00ffea;
+			padding: 10px;
+			border-radius: 5px;
+			box-shadow: 0 0 10px #00ffea;
+			z-index: 1000;
+		}
+
+		.hamburger-content .friend {
+			display: block;
+			margin-bottom: 10px;
+		}
+
+		.hamburger-content::before {
+			content: "Amigos";
+			display: block;
+			font-size: 18px;
+			color: #00e5ff;
+			margin-bottom: 10px;
+			text-shadow: 0 0 10px #00e5ff;
+		}
+
+		.container {
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
+			width: 100%;
+			max-width: 800px;
+			margin-top: 80px;
+			padding: 20px;
+			border: 3px solid #00ffea;
+			box-shadow: 0 0 20px #00ffea;
+			border-radius: 10px;
+			background: rgba(14, 14, 14, 0.9);
+			position: relative;
+		}
+
+		.player,
+		.ia {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			border: 2px solid #00ffea;
+			border-radius: 10px;
+			padding: 20px;
+			background: #111;
+			width: 200px;
+			height: 300px;
+			position: relative;
+		}
+
+		.player img,
+		.ia img {
+			width: 80px;
+			height: 80px;
+			border-radius: 50%;
+			border: 3px solid #00ffea;
+			margin-bottom: 10px;
+		}
+
+		.player p,
+		.ia p {
+			font-size: 14px;
+			text-align: center;
+		}
+
+		.difficulty-selection {
+			margin-top: 20px;
+		}
+
+		.difficulty-selection label {
+			display: block;
+			font-size: 14px;
+			margin-bottom: 5px;
+			text-shadow: 0 0 10px #00e5ff;
+		}
+
+		.difficulty-selection select {
+			padding: 10px;
+			border: 2px solid #00ffea;
+			background: #111;
+			color: #00ffea;
+			font-size: 14px;
+			font-family: 'Press Start 2P', cursive;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.buttons {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+			width: 100%;
+		}
+
+		.buttons button {
+			width: 200px;
+			padding: 15px;
+			border: 2px solid #00ffea;
+			background: linear-gradient(45deg, #00e5ff, #00ffea);
+			color: #000;
+			font-size: 18px;
+			cursor: pointer;
+			font-family: 'Press Start 2P', cursive;
+			transition: all 0.3s ease;
+			border-radius: 5px;
+			margin: 0 10px;
+		}
+
+		.buttons button:hover {
+			background: #00e5ff;
+			color: #000;
+			transform: scale(1.05);
+		}
+
+		.buttons button:active {
+			transform: scale(0.98);
+		}
+
+		.toggle-button {
+			margin-top: 10px;
+			padding: 10px;
+			border: 2px solid #00ffea;
+			background: linear-gradient(45deg, #00e5ff, #00ffea);
+			color: #000;
+			font-size: 14px;
+			cursor: pointer;
+			font-family: 'Press Start 2P', cursive;
+			transition: all 0.3s ease;
+			border-radius: 5px;
+			width: 120px;
+			text-align: center;
+		}
+
+		.toggle-button:hover {
+			background: #00e5ff;
+			color: #000;
+			transform: scale(1.05);
+		}
+
+		.toggle-button:active {
+			transform: scale(0.98);
+		}
+
+		.info-icon {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			cursor: pointer;
+		}
+
+		.info-icon img {
+			width: 30px;
+			height: 30px;
+		}
+
+		.instruction-popup {
+			display: none;
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: rgba(0, 0, 0, 0.9);
+			padding: 30px;
+			border: 3px solid #00ffea;
+			box-shadow: 0 0 20px #00ffea;
+			border-radius: 10px;
+			z-index: 1000;
+			text-align: center;
+		}
+
+		.instruction-popup h2 {
+			font-size: 24px;
+			margin-bottom: 20px;
+		}
+
+		.instruction-popup p {
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
+
+		.instruction-popup img {
+			width: 50px;
+			height: 50px;
+			margin: 10px;
+		}
+
+		.instruction-popup .close-button {
+			background: none;
+			border: none;
+			color: #00ffea;
+			font-size: 18px;
+			cursor: pointer;
+			font-family: 'Press Start 2P', cursive;
+			text-shadow: 0 0 10px #00e5ff;
+			transition: all 0.3s ease;
+			margin-top: 20px;
+		}
+
+		.instruction-popup .close-button:hover {
+			color: #00e5ff;
+		}
+
+		.instruction-popup .close-icon {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			cursor: pointer;
+		}
+
+		.instruction-popup .close-icon img {
+			width: 20px;
+			height: 20px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="top-bar">
+		<div class="back-button" onclick="location.href='home.html'">← Home</div>
+		<div class="hamburger-menu" onclick="toggleHamburgerMenu()">
+			<img src="https://img.icons8.com/ios-glyphs/30/00ffea/user-group-man-man.png" alt="Amigos">
+		</div>
+	</div>
+
+	<div class="hamburger-content" id="hamburger-content">
+		<div class="friend online">Amigo 1</div>
+		<div class="friend">Amigo 2</div>
+		<div class="friend online">Amigo 3</div>
+		<div class="friend">Amigo 4</div>
+	</div>
+
+	<div class="container">
+		<div class="player" id="player1">
+			<img src="https://via.placeholder.com/80" alt="Player 1">
+			<p>Player 01 (Você)</p>
+			<button class="toggle-button" onclick="togglePlayerSide()">Trocar Lado</button>
+			<div class="info-icon" onclick="openInstructionPopup('player')">
+				<img src="https://img.icons8.com/ios-glyphs/30/00ffea/info.png" alt="Info">
+			</div>
+		</div>
+		<div class="ia">
+			<img src="https://img.icons8.com/ios-glyphs/80/00ffea/artificial-intelligence.png" alt="IA">
+			<p>IA</p>
+			<div class="difficulty-selection">
+				<label for="difficulty">Dificuldade:</label>
+				<select id="difficulty">
+					<option value="easy">Fácil</option>
+					<option value="medium">Médio</option>
+					<option value="hard">Difícil</option>
+				</select>
+			</div>
+			<div class="info-icon" onclick="openInstructionPopup('ia')">
+				<img src="https://img.icons8.com/ios-glyphs/30/00ffea/info.png" alt="Info">
+			</div>
+		</div>
+	</div>
+
+	<div class="buttons">
+		<button onclick="startGame()">Start Game</button>
+	</div>
+
+	<div class="instruction-popup" id="instructionPopupPlayer">
+		<div class="close-icon" onclick="closeInstructionPopup('player')">
+			<img src="https://img.icons8.com/ios-filled/50/00ffea/close-window.png" alt="Fechar">
+		</div>
+		<h2>Instruções</h2>
+		<p>Para jogar, use as teclas:</p>
+		<img src="https://img.icons8.com/ios-filled/50/00ffea/w-key.png" alt="Tecla W">
+		<img src="https://img.icons8.com/ios-filled/50/00ffea/s-key.png" alt="Tecla S">
+	</div>
+
+	<div class="instruction-popup" id="instructionPopupIA">
+		<div class="close-icon" onclick="closeInstructionPopup('ia')">
+			<img src="https://img.icons8.com/ios-filled/50/00ffea/close-window.png" alt="Fechar">
+		</div>
+		<h2>Instruções</h2>
+		<p>Para jogar, use as teclas:</p>
+		<img src="https://img.icons8.com/ios-filled/50/00ffea/up-arrow.png" alt="Seta para Cima">
+		<img src="https://img.icons8.com/ios-filled/50/00ffea/down-arrow.png" alt="Seta para Baixo">
+	</div>
+
+	<script>
+		function toggleHamburgerMenu() {
+			const content = document.getElementById('hamburger-content');
+			content.style.display = content.style.display === 'block' ? 'none' : 'block';
+		}
+
+		function togglePlayerSide() {
+			const player = document.getElementById('player1');
+			const ia = document.querySelector('.ia');
+			const container = document.querySelector('.container');
+
+			if (player.style.order === '1') {
+				player.style.order = '2';
+				ia.style.order = '1';
+			} else {
+				player.style.order = '1';
+				ia.style.order = '2';
+			}
+
+			container.style.flexDirection = container.style.flexDirection === 'row-reverse' ? 'row' : 'row-reverse';
+		}
+
+		function startGame() {
+			const difficulty = document.getElementById('difficulty').value;
+			alert('Iniciando jogo no nível ' + difficulty);
+			// Lógica para iniciar o jogo
+		}
+
+		function openInstructionPopup(type) {
+			if (type === 'player') {
+				document.getElementById('instructionPopupPlayer').style.display = 'block';
+			} else if (type === 'ia') {
+				document.getElementById('instructionPopupIA').style.display = 'block';
+			}
+		}
+
+		function closeInstructionPopup(type) {
+			if (type === 'player') {
+				document.getElementById('instructionPopupPlayer').style.display = 'none';
+			} else if (type === 'ia') {
+				document.getElementById('instructionPopupIA').style.display = 'none';
+			}
+		}
+	</script>
+</body>
+
+</html>
