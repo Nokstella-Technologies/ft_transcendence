@@ -1,0 +1,11 @@
+CSS .top-bar {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	padding: 10px 20px;
+	background: none;
+	z-index: 10;
+}
