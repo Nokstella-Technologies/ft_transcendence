@@ -1,13 +1,13 @@
 REACT=frontend/node_modules/
 
-all: $(REACT)
+all: 
 	docker-compose up -d --build
 
 
-$(REACT):
-	cd frontend && yarn install
-
 clean:
-	docker-compose down --rmi 
+	docker-compose down --rmi all
+	rm -rf $(REACT) 
+
+re: clean all
 
 .PHONY: all clean
