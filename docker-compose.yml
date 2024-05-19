@@ -27,7 +27,7 @@ services:
     container_name: react
     build:
       context: ./frontend
-    # command: yarn start
+    # command: yarn run start
     volumes:
       - ./frontend:/usr/src/app
     ports:

@@ -4,14 +4,14 @@ WORKDIR /usr/src/app
 
 COPY package.json /usr/src/app/package.json
 
-COPY yarn.lock /usr/src/app/yarn.lock
-
-RUN yarn install
-
 COPY . /usr/src/app/
 
-RUN yarn build
+RUN yarn
+
+# RUN yarn build
+# RUN yarn start
+# RUN yarn global add react-scripts
 
 EXPOSE 3000
 
-ENTRYPOINT [ "yarn", "run", "start" ]
+ENTRYPOINT [ "yarn", "run", "start"]
