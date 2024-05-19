@@ -1,4 +1,4 @@
-FROM node:20.10-alpine
+FROM node:lts-alpine
 
 WORKDIR /usr/src/app
 
@@ -11,4 +11,4 @@ COPY . /usr/src/app/
 
 EXPOSE 3000
 
-ENTRYPOINT [ "npm", "start"]
+ENTRYPOINT [ "npm", "run", "dev"]
