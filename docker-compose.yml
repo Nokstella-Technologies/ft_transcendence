@@ -14,10 +14,10 @@ services:
       - DEBUG=1
       - SECRET_KEY=fsadfaskldfjm;alsdkjf
       - ALLOWED_HOSTS=localhost,127.0.0.1
-      # - POSTGRES_NAME=postgres
-      # - POSTGRES_DB=postgres
-      # - POSTGRES_USER=root
-      # - POSTGRES_PASSWORD=root
+      - POSTGRES_NAME=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
     env_file:
       - ./.env
     depends_on:
