@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
 import Cookies from "js-cookie";
-import { GoogleLogin } from '@react-oauth/google';
 // Crie o contexto de autenticação
 export const AuthContext = createContext();
 
@@ -8,12 +7,17 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState("");
 
-  const getGoogleAuth = async (accessToken) => {
+
+  const validateToken42 = async (token) => {
     try {
-      const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${accessToken}`);
-      const data = await response.json();
-      if (data.aud === import.meta.env.VITE_REACT_APP_GOOGLE_CLIENT_ID) {
+      const response = await fetch(`https://api.intra.42.fr/v2/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
         setIsAuthenticated(true);
       } else {
         Cookies.remove('access_token');
@@ -25,14 +29,51 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
+  }
+
+  const getGoogleAuth = async (accessToken) => {
+    try {
+      console.log("googlAuth", accessToken)
+      const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${accessToken}`);
+      const data = await response.json();
+      if (data.aud === import.meta.env.VITE_REACT_APP_GOOGLE_CLIENT_ID) {
+        setIsAuthenticated(true);
+      } else {
+        Cookies.remove('auth_token');
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      validateToken42(accessToken);
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const validateLogin  = async (code) => {
+      getGoogleAuth(code);
+  }
+
+
   useEffect(() => {
-    const token = Cookies.get('authToken');
-    if (token) {
-      getGoogleAuth(token);
+    const token = Cookies.get('auth_token');
+    console.log("use effect context:" ,token)
+    if (token !== undefined) {
+      validateLogin(token);
     } else {
       setLoading(false);
+    }
+
+    const queryParams = new URLSearchParams(location.search);
+    const code = queryParams.get('code');
+    const state = queryParams.get('state');
+
+    if (code && state) {
+      window.opener.postMessage({ code }, window.location.origin);
+      window.close();
+    } else {
+      setError('Invalid login attempt');
     }
     // Simule uma chamada de autenticação (ex. uma chamada a uma API)
     // const authenticateUser = async () => {
@@ -60,7 +101,7 @@ export const AuthProvider = ({ children }) => {
     // };
 
 
-  }, []);
+  }, [location, setLoading, setIsAuthenticated, setError]);
 
   return (
     <AuthContext.Provider value={{ loading, isAuthenticated }}>
