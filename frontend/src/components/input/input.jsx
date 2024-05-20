@@ -14,7 +14,7 @@ const Input = ({ type, placeholder }) => {
       <input type={inputType} placeholder={placeholder} required />
       {type === 'password' && (
         <div className="toggle-visibility" onClick={togglePasswordVisibility}>
-          {inputType === 'password' ? <FaEye /> : <FaEyeSlash />}
+          {inputType === 'password' ? <FaEye size={25} color='rgba(0,255,234, 0.8)' /> : <FaEyeSlash size={25}  color='rgba(0,255,234, 0.8)'/>}
         </div>
       )}
     </div>

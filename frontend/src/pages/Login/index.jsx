@@ -1,33 +1,31 @@
 import { useState } from 'react'
-import reactLogo from '../../assets/react.svg'
-import viteLogo from '/vite.svg'
+import BackgroundAnimation from '../../components/backgroundAnimation/backgroundAnimation'
+import Container from '../../components/containers'
+import Music from "../../assets/sounds/music.m4a"
+import Button from '../../components/button'
+import { Link } from 'react-router-dom'
+import Input from '../../components/input/input'
 import './index.css'
+import SoundControl from '../../components/soundControl/'
+import GoogleLoginButton from '../../components/googleButton'
 function Login() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <div className="login">
+        <BackgroundAnimation/>
+        <SoundControl audioSrc={Music}/>
+        <Container className="login-container"  title="Login">
+          <form className='form-login'>
+            <Input type="email" placeholder="Email"/>
+            <Input type="password" placeholder="Senha"/>
+            <Button>Login</Button>
+            <GoogleLoginButton/>
+            <Button  className="a42-login">Login com 42</Button>
+          </form>
+          <p className="register-link" >Não tem uma conta? <Link to="/register">Cadastre-se</Link></p>
+        </Container>
+     </div>
   )
 }
 
