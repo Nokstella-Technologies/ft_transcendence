@@ -11,6 +11,9 @@ clean:
 	docker-compose down --rmi all
 
 # exemplo: make exec c=container_name exec="ls -la"
+log:
+	docker logs $(c)
+
 exec: 
 	$(DOCKER_EXEC) $(c) $(exec) 
 
