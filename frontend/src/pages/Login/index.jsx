@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import BackgroundAnimation from '../../components/backgroundAnimation/backgroundAnimation'
 import Container from '../../components/containers'
 import Music from "../../assets/sounds/music.m4a"
@@ -10,15 +10,23 @@ import './index.css'
 import SoundControl from '../../components/soundControl/'
 import { useGoogleLogin } from '@react-oauth/google'
 import { v4 as uuidv4 } from 'uuid';
+import { AuthContext } from '../../context/AuthContex'
 
 function Login() {
   const [type, setType] = useState('google');
+  const { login } = useContext(AuthContext); 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const clientID = import.meta.env.VITE_REDIRECT_PAGE_AFTER_LOGIN
+  const clientID = import.meta.env.VITE_42_CLIENT_ID
   const redirect = import.meta.env.VITE_REDIRECT_PAGE_AFTER_LOGIN
-  const clientSecret = import.meta.env.VITE_42_CLIENT_SECRET;
   const state = uuidv4()
  
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    // Envie os dados do formulário para o AuthContext
+    login({ email, password });
+  };
 
   const handleLoginSuccess = (response) => {
     const {credential } = response;
@@ -28,6 +36,7 @@ function Login() {
     if (window.opener) {
       window.opener.postMessage({ credential }, window.location.origin);
       window.close();
+      setType('google');
     }
   };
 
@@ -42,12 +51,11 @@ function Login() {
 
   useEffect(() => {
     const handleMessage = (event) => {
-      if (event.origin !== window.location.origin || type === 'google' ) return;  
+      if (event.origin !== window.location.origin || type === 'google' ) return;
+      const { code } = event.data;
       if (code) {
-        console.log('Received code:', code);
-        const res = { credential: access_token };
+        const res = { credential: code };
         handleLoginSuccess(res);
-        setType('google');
       }
     };
 
@@ -64,8 +72,8 @@ function Login() {
       const height = 600;
       const left = window.screen.width / 2 - width / 2;
       const top = window.screen.height / 2 - height / 2;
-      window.open(authUrl, '_blank', `width=${width},height=${height},top=${top},left=${left}`);
       setType('42');
+      window.open(authUrl, '_blank', `width=${width},height=${height},top=${top},left=${left}`);
   }
 
   return (
@@ -73,10 +81,10 @@ function Login() {
         <BackgroundAnimation/>
         <SoundControl audioSrc={Music}/>
         <Container className="login-container"  title="Login">
-          <form className='form-login'>
-            <Input type="email" placeholder="Email"/>
-            <Input type="password" placeholder="Senha"/>
-            <Button>Login</Button>
+          <form className='form-login' onSubmit={handleFormSubmit}>
+            <Input type="email" placeholder="Email"  onChange={(e) => setEmail(e.target.value)}/>
+            <Input type="password" placeholder="Senha"  onChange={(e) => setPassword(e.target.value)}/>
+            <Button type="submit">Login</Button>
             <Button className="google-login" onClick={loginGoogle}>Login com Google</Button>
             <Button  className="a42-login" onClick={login42}>Login com 42</Button>
           </form>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import './input.css';
 
-const Input = ({ type, placeholder }) => {
+const Input = ({ type, placeholder, onChange }) => {
   const [inputType, setInputType] = useState(type);
 
   const togglePasswordVisibility = () => {
@@ -11,7 +11,7 @@ const Input = ({ type, placeholder }) => {
 
   return (
     <div className="input-field">
-      <input type={inputType} placeholder={placeholder} required />
+      <input type={inputType} placeholder={placeholder} required onChange={onChange}/>
       {type === 'password' && (
         <div className="toggle-visibility" onClick={togglePasswordVisibility}>
           {inputType === 'password' ? <FaEye size={25} color='rgba(0,255,234, 0.8)' /> : <FaEyeSlash size={25}  color='rgba(0,255,234, 0.8)'/>}

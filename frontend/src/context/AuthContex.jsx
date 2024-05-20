@@ -55,10 +55,33 @@ export const AuthProvider = ({ children }) => {
       getGoogleAuth(code);
   }
 
+  
+  const login = async ({ email, password }) => {
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (data.token) {
+        Cookies.set('auth_token', data.token, { sameSite: 'Lax', secure: true });
+        setIsAuthenticated(true);
+        navigate('/home');
+      } else {
+        throw new Error('Login failed');
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+    }
+  };
+
 
   useEffect(() => {
     const token = Cookies.get('auth_token');
-    console.log("use effect context:" ,token)
     if (token !== undefined) {
       validateLogin(token);
     } else {
@@ -104,7 +127,7 @@ export const AuthProvider = ({ children }) => {
   }, [location, setLoading, setIsAuthenticated, setError]);
 
   return (
-    <AuthContext.Provider value={{ loading, isAuthenticated }}>
+    <AuthContext.Provider value={{ loading, isAuthenticated, login }}>
       {children}
     </AuthContext.Provider>
   );
