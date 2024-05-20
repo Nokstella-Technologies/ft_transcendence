@@ -12,7 +12,7 @@ clean:
 
 # exemplo: make exec c=container_name exec="ls -la"
 log:
-	docker logs $(c)
+	docker logs -f $(c) 
 
 exec: 
 	$(DOCKER_EXEC) $(c) $(exec) 
