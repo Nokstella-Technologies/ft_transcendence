@@ -15,7 +15,6 @@
 	background: #111;
 	color: #00ffea;
 	font-size: 14px;
-	font-family: 'Press Start 2P', cursive;
 	border-radius: 5px;
 	cursor: pointer;
 	transition: all 0.3s ease;
@@ -39,7 +38,6 @@
 .dropdown-menu select option {
 	background: #111;
 	color: #00ffea;
-	font-family: 'Press Start 2P', cursive;
 	padding: 10px;
 	border: none;
 }
