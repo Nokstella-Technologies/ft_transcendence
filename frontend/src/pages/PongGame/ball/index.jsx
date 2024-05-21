@@ -8,7 +8,7 @@ const PADDLE_WIDTH = 5;
 const Ball = (canvasRef,  backgroundColor) => {
   const ball = {
     x: canvasRef.current.width / 2,
-    y: canvasRef.current.height / 2,
+    y: 50,
     dx: BALL_SPEED * (Math.random() > 0.5 ? 1 : -1),
     dy: BALL_SPEED * (Math.random() > 0.5 ? 1 : -1)
   };
@@ -34,7 +34,7 @@ const Ball = (canvasRef,  backgroundColor) => {
     }
 
     // Colisão com a parede esquerda
-    if (ball.x - BALL_RADIUS < 0) {
+    if (ball.x  <  0) {
       updateScore('player2');
       resetBall();
     }
@@ -45,26 +45,28 @@ const Ball = (canvasRef,  backgroundColor) => {
       resetBall();
     }
 
-    // Colisão com o paddle1
-    if (
-      ball.x - BALL_RADIUS < PADDLE_WIDTH &&
-      ball.y > paddle1.paddle.y &&
-      ball.y < paddle1.paddle.y + PADDLE_HEIGHT
-    ) {
-      ball.dx = -ball.dx;
-      ball.x = PADDLE_WIDTH + BALL_RADIUS; // Ajuste a posição da bola para evitar múltiplas colisões
-    }
-
-    // Colisão com o paddle2
-    if (
-      ball.x + BALL_RADIUS > canvas.width - PADDLE_WIDTH &&
-      ball.y > paddle2.paddle.y &&
-      ball.y < paddle2.paddle.y + PADDLE_HEIGHT
-    ) {
-      ball.dx = -ball.dx;
-      ball.x = canvas.width - PADDLE_WIDTH - BALL_RADIUS; // Ajuste a posição da bola para evitar múltiplas colisões
-    }
-  };
+  
+      // Colisão com o paddle1
+      if (
+        ball.x < PADDLE_WIDTH - 2 &&
+        ball.y >= paddle1.paddle.y && // Checa a colisão no eixo y
+        ball.y <= paddle1.paddle.y + PADDLE_HEIGHT
+      ) {
+        ball.dx = -ball.dx;
+        ball.x = PADDLE_WIDTH + BALL_RADIUS; // Ajuste a posição da bola para evitar múltiplas colisões
+      }
+      
+  
+      // Colisão com o paddle2
+      if (
+        ball.x + BALL_RADIUS > canvas.width - PADDLE_WIDTH &&
+        ball.y >= paddle2.paddle.y && // Checa a colisão no eixo y
+        ball.y <= paddle2.paddle.y + PADDLE_HEIGHT
+      ) {
+        ball.dx = -ball.dx;
+        ball.x = canvas.width - PADDLE_WIDTH - BALL_RADIUS; /// Ajuste a posição da bola para evitar múltiplas colisões
+      }
+    };
 
   const render =  () => {
     const ctx = canvasRef.current.getContext('2d');

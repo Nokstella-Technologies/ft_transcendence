@@ -7,7 +7,7 @@ all:
 stop:
 	docker-compose stop
 
-clean:
+clean: stop
 	docker-compose down --rmi all
 
 # exemplo: make exec c=container_name exec="ls -la"

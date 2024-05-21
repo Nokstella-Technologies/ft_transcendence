@@ -22,6 +22,8 @@ services:
       - ./.env
     depends_on:
       - postgres
+    networks:
+      - transcendence
 
   react:
     container_name: react
@@ -46,8 +48,12 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     env_file:
       - ./.env
+    networks:
+      - transcendence
 
 volumes:
   postgres-data:

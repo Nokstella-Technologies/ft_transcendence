@@ -12,7 +12,7 @@ const PADDLE_HEIGHT = 40;
 const PADDLE_WIDTH = 5;
 function Game() {
     const canvasRef = useRef(null);
-    const [score, setScore] = useState(0);
+    const [score, setScore] = useState({player1: 0, player2: 0});
     const [gameOver, setGameOver] = useState(false);
     const type = Cookies.get('type');
     const ball = useRef(null);
@@ -21,8 +21,8 @@ function Game() {
     const ia = useRef(null);
 
     const verifyScore = useCallback((player) => {
-        setScore(prevScore => player === 'player1' ? prevScore + 1 : prevScore - 1);
-    }, []);
+        setScore(prevScore => player === 'player1' ? prevScore.player1 + 1 : prevScore.player2 + 1);
+    }, [setScore]);
     
     const handleKeyDown = (e) => {
         e.preventDefault();
@@ -48,12 +48,12 @@ function Game() {
 
     useEffect(() => {
         ball.current = Ball(canvasRef, "#fff");
-        paddle1.current = Padlle(canvasRef, 'w', 's' , "#fff");
+        paddle1.current = Padlle(canvasRef, 'w', 's', 0 , "#fff");
         paddle2.current = type === undefined ? 
-            Padlle(canvasRef, 'iaUp', 'iaDown' , "#fff") :
-            Padlle(canvasRef,'ArrowUp', 'ArrowDown', "#fff");
+            Padlle(canvasRef, 'iaUp', 'iaDown',  canvasRef.current.width - PADDLE_WIDTH , "#fff") :
+            Padlle(canvasRef,'ArrowUp', 'ArrowDown',  canvasRef.current.width - PADDLE_WIDTH ,"#fff");
 
-        ia.current = IA(ball.current, paddle2.current);
+        ia.current = IA(canvasRef, ball.current, paddle2.current, paddle1.current);
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
@@ -70,7 +70,7 @@ function Game() {
             ball.current.move();
 
             if (type === undefined) {
-                ia.current.move(canvas);
+                ia.current.move();
             }
 
             animationFrameId = requestAnimationFrame(render);
@@ -81,14 +81,20 @@ function Game() {
         return () => {
             cancelAnimationFrame(animationFrameId);
         };
+        
         }, [verifyScore, type])
       
     return (
-        <div className="ping-pong-container" >
-
+        <>
+            <div>
+                <h1>Player1 :{`${score.player1}`}</h1>
+                <h1>Player2 :{`${score.player2}`}</h1>
+            </div>
             <SoundControl audioSrc={Music}/>
-            <canvas className='canvas_container' ref={canvasRef}></canvas>
-        </div>
+            <div className="ping-pong-container" >
+                <canvas className='canvas_container' ref={canvasRef}></canvas>
+            </div>
+        </>
     );
 }
 
