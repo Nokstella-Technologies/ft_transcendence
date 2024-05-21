@@ -7,9 +7,13 @@ import Cookies from 'js-cookie';
 import Ball from './ball';
 import IA from './IA';
 
-
-const PADDLE_HEIGHT = 40;
-const PADDLE_WIDTH = 5;
+export const vr =  {  
+    BALL_RADIUS: 5,
+    BALL_SPEED: 2,
+    PADDLE_HEIGHT : 20,
+    PADDLE_WIDTH: 5,
+    PADDLE_SPEED: 2,
+}
 function Game() {
     const canvasRef = useRef(null);
     const [score, setScore] = useState({player1: 0, player2: 0});
@@ -50,8 +54,8 @@ function Game() {
         ball.current = Ball(canvasRef, "#fff");
         paddle1.current = Padlle(canvasRef, 'w', 's', 0 , "#fff");
         paddle2.current = type === undefined ? 
-            Padlle(canvasRef, 'iaUp', 'iaDown',  canvasRef.current.width - PADDLE_WIDTH , "#fff") :
-            Padlle(canvasRef,'ArrowUp', 'ArrowDown',  canvasRef.current.width - PADDLE_WIDTH ,"#fff");
+            Padlle(canvasRef, 'iaUp', 'iaDown',  canvasRef.current.width - vr.PADDLE_WIDTH , "#fff") :
+            Padlle(canvasRef,'ArrowUp', 'ArrowDown',  canvasRef.current.width - vr.PADDLE_WIDTH ,"#fff");
 
         ia.current = IA(canvasRef, ball.current, paddle2.current, paddle1.current);
 
@@ -61,8 +65,8 @@ function Game() {
 
         const render = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            paddle1.current.render(0, canvas.height - PADDLE_HEIGHT);
-            paddle2.current.render(canvas.width - PADDLE_WIDTH, canvas.height - PADDLE_HEIGHT);
+            paddle1.current.render(0, canvas.height - vr.PADDLE_HEIGHT);
+            paddle2.current.render(canvas.width - vr.PADDLE_WIDTH, canvas.height - vr.PADDLE_HEIGHT);
             ball.current.render();
             ball.current.checkCollisions(paddle1.current, paddle2.current, verifyScore);
             paddle1.current.movePaddle();
