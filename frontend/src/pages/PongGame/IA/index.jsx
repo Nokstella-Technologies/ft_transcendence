@@ -2,22 +2,15 @@
 
 const IA = (canvas, ball, paddle, paddlePlayer) => {
  
-  function predictPowerUp(canvas, powerUps) {
-    if (powerUps.length === 0) return {predictedPuY: 0, predictedPuX: 0};
-    const pu = powerUps.reduce((max, item) => (item.x > max.x ? item : max), powerUps[0]);
-    return predictBallPosition(canvas, pu);
-    
-  }
-
-  function predictBallPosition(canvas, something) {
-    let predictedY = something.y;
-    let predictedX = something.x;
-    let dx = something.dx;
-    let dy = something.dy;
+  function predictBallPosition(canvas) {
+    let predictedY = ball.ball.y;
+    let predictedX = ball.ball.x;
+    let dx = ball.ball.dx;
+    let dy = ball.ball.dy;
     const maxSteps = 20; // Limitar o número de passos de simulação
     let steps = 0;
   
-    while (predictedX < paddle.paddle.x - something.radius && steps < maxSteps) {
+    while (predictedX < paddle.paddle.x - ball.ball.radius && steps < maxSteps) {
       predictedX += dx;
       predictedY += dy;
   
@@ -26,9 +19,9 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
         dy = -dy;
       }
 
-      if ((predictedX >= canvas.width - something.radius - paddle.paddle.width)) {
+      if (predictedX >= canvas.width - ball.ball.radius - paddle.paddle.width) {
         break;
-      }
+      }        
       steps++;
     }
   
@@ -36,16 +29,15 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
   }
   
   return {
-    move: (powerUps) => {
-      let {predictedY, predictedX} = predictBallPosition(canvas.current, ball.ball);
-      let {predictedPuY, predictedPuX} = predictPowerUp(canvas.current, powerUps)
-      if (predictedPuX > predictedX && predictedPuX - predictedX > 10) {
-        predictedY = predictedPuY;
+    move: () => {
+      let {predictedY, predictedX} = predictBallPosition(canvas.current);
+      if (predictedX < (canvas.current.width / 2)) {
+        predictedY = paddlePlayer.paddle.y;
       } 
-      if (predictedY <= paddle.paddle.y + (paddle.paddle.height /  3)) {
+      if (predictedY < paddle.paddle.y + (paddle.paddle.height /  3)) {
         paddle.handleKeyUp({ key: 'iaDown' });
         paddle.handleKeyDown({ key: 'iaUp' });
-      } else if (predictedY >= paddle.paddle.y + (paddle.paddle.height / 3)) {
+      } else if (predictedY > paddle.paddle.y + (paddle.paddle.height / 3)) {
         paddle.handleKeyUp({ key: 'iaUp' });
         paddle.handleKeyDown({ key: 'iaDown' });
       } else {

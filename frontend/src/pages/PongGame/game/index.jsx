@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-
 import Ball from '../ball';
 import Padlle from '../paddle';
 import IA from '../IA';
 import './index.css';
-import { newPowerUp } from '../powerUp';
+import PowerUp from '../powerUp';
 import { randomBetween } from "../../../utils/random";
 export const vr =  {  
     BALL_RADIUS: 5,
     BALL_SPEED: 2,
-    PADDLE_HEIGHT : 30,
+    PADDLE_HEIGHT : 20,
     PADDLE_WIDTH: 5,
     PADDLE_SPEED: 1.5,
 }
@@ -21,15 +20,15 @@ const Game =  ({type, setScoreP1, setScoreP2, gameOver}) => {
     const paddle1 = useRef(null);
     const [startGame, setGameStart] = useState(false);
     const paddle2 = useRef(null);
-    const powerUpsRef = useRef([]);
+    const [powerUps, setPowerUps] = useState([]);
     const ia = useRef(null);
 
     const verifyScore = useCallback((player) => {
         setScoreP1((prev) => player === 'player1' ? prev + 1 : prev);
         setScoreP2((prev) => player === 'player2' ? prev + 1 : prev);
-        powerUpsRef.current = [];
+        setPowerUps([]);
         setGameStart(false);
-    }, [setScoreP1, setScoreP2, setGameStart]);
+    }, [setScoreP1, setScoreP2, setPowerUps, setGameStart]);
     
     const handleKeyDown = (e) => {
         e.preventDefault();
@@ -57,12 +56,12 @@ const Game =  ({type, setScoreP1, setScoreP2, gameOver}) => {
         ctx.lineTo(canvasWidth / 2, canvasHeight);
         ctx.stroke();
         ctx.closePath();
-    }
+      }
 
     useEffect(() => {
         if (!gameOver && startGame) {
-            window.addEventListener('keydown', handleKeyDown);
-            window.addEventListener('keyup', handleKeyUp);
+               window.addEventListener('keydown', handleKeyDown);
+                window.addEventListener('keyup', handleKeyUp);
             return () => {
                 window.removeEventListener('keydown', handleKeyDown);
                 window.removeEventListener('keyup', handleKeyUp);
@@ -104,18 +103,19 @@ const Game =  ({type, setScoreP1, setScoreP2, gameOver}) => {
                 paddle1.current.movePaddle();
                 paddle2.current.movePaddle();
                 if (type === undefined) {
-                    ia.current.move(powerUpsRef.current);
+                    ia.current.move();
                 }
-                powerUpsRef.current.forEach((powerUp, index) => {
+                powerUps.forEach((powerUp, index) => {
                     powerUp.render();
-                    if (powerUp.checkCollision(paddle1.current, ball.current, paddle2.current)) {
-                        console.log("take power up");
-                        powerUpsRef.current.splice(index, 1);
+                    if (powerUp.checkCollision(paddle1.current, paddle2.current)) {
+                        console.log("take power up")
+                        setPowerUps((prev) => prev.filter((_, i) => i !== index));
                     }
                     if (powerUp.move()) {
-                        powerUpsRef.current.splice(index, 1);
+                        setPowerUps((prev) => prev.filter((_, i) => i !== index));
                     }
                 });
+                
                 
                 animationFrameId = requestAnimationFrame(render);
             };
@@ -135,15 +135,19 @@ const Game =  ({type, setScoreP1, setScoreP2, gameOver}) => {
                 cancelAnimationFrame(animationFrameId);
             };
         }
-    }, [verifyScore, type, gameOver, startGame]);
+    }, [verifyScore, type, gameOver, powerUps, startGame]);
+
+
 
     useEffect(() => {
         if (!gameOver && startGame) {
             const spawnPowerUp = () => {
                 console.log("Spawning new PowerUp");
-                const powerup = newPowerUp(canvasRef);
-                powerUpsRef.current.push(powerup);
-                const timeoutId = setTimeout(spawnPowerUp, randomBetween(5000, 10000)); // Spawn a cada 5-10 segundos
+                setPowerUps((prevPowerUps) => [
+                    ...prevPowerUps,
+                    PowerUp(canvasRef, '#ff0')
+                ]);
+                const timeoutId = setTimeout(spawnPowerUp, Math.floor(randomBetween(5000, 10000))); // Spawn a cada 5-10 segundos
                 timeouts.current.push(timeoutId);
             };
 
@@ -151,17 +155,16 @@ const Game =  ({type, setScoreP1, setScoreP2, gameOver}) => {
             spawnPowerUp();
 
             return () => {
-                console.log("Cleaning up timeouts");
                 timeouts.current.forEach(clearTimeout);
                 timeouts.current = [];
             };
         }
     }, [gameOver, startGame]);
-
+    
     return (
-        <div className="ping-pong-container">
-            <canvas className="canvas_container" ref={canvasRef}></canvas>
-        </div>
+            <div className="ping-pong-container" >
+                <canvas className='canvas_container' ref={canvasRef}></canvas>
+            </div>
     );
 }
 

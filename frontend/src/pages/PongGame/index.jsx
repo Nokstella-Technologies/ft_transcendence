@@ -33,15 +33,13 @@ const PageGame = () => {
     },[setGameOver, scoreP1, scoreP2])
 
     return (
-        <>
-        <SoundControl audioSrc={Music}/>
         <div className='container-pageGame'>
             <h1>Player1    VS    Player2</h1>
             <h1>{`${scoreP1}`}    -     {`${scoreP2}`}</h1>
+            <SoundControl audioSrc={Music}/>
             {gameOver ?  GameOver() :  renderGame()}
            
         </div>
-        </>
     );
 }
 
