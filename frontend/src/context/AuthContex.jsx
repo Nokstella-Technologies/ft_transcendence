@@ -79,6 +79,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async ({ email, password }) => { 
+
+  }
+
 
   useEffect(() => {
     const token = Cookies.get('auth_token');
@@ -127,7 +131,7 @@ export const AuthProvider = ({ children }) => {
   }, [location, setLoading, setIsAuthenticated, setError]);
 
   return (
-    <AuthContext.Provider value={{ loading, isAuthenticated, login }}>
+    <AuthContext.Provider value={{ loading, isAuthenticated, login , register}}>
       {children}
     </AuthContext.Provider>
   );
