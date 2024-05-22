@@ -11,7 +11,7 @@
 .canvas_container{
     margin: auto;
     width: 90%;
-    height: 90%;
+    height: 80%;
     border: 1px  solid #00ffea;
     box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.5);
     animation: canvasShadow 3s infinite alternate;
