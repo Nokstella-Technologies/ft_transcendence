@@ -17,7 +17,7 @@ const SoundControl = ({ audioSrc }) => {
   return (
     <div className="sound-icon" onClick={toggleSound}>
       <img src={isPlaying ? 'https://img.icons8.com/ios-glyphs/30/00ffea/musical-notes.png' : 'https://img.icons8.com/ios-glyphs/30/00ffea/mute.png'} alt="Sound Icon" />
-      <audio id="background-music" loop autoPlay>
+      <audio id="background-music" loop>
         <source src={audioSrc} type="audio/mpeg" />
         Seu navegador não suporta o elemento de áudio.
       </audio>

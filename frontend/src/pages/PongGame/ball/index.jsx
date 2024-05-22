@@ -53,8 +53,8 @@ const Ball = (canvasRef,  backgroundColor) => {
       // Colisão com o paddle1
       if (
         ball.x < paddle1.paddle.width &&
-        ball.y >= paddle1.paddle.y + 1 && // Checa a colisão no eixo y
-        ball.y <= paddle1.paddle.y + paddle1.paddle.height + 1
+        ball.y >= paddle1.paddle.y && // Checa a colisão no eixo y
+        ball.y <= paddle1.paddle.y + paddle1.paddle.height
       ) {
         ball.dy =   ball.speed * (ball.dy < 0 ? randomBetween(0.5, 1) : -randomBetween(0.5, 1))
         ball.dx = -ball.dx;
@@ -65,8 +65,8 @@ const Ball = (canvasRef,  backgroundColor) => {
       // Colisão com o paddle2
       if (
         ball.x + ball.radius > canvas.width - paddle2.paddle.width &&
-        ball.y >= paddle2.paddle.y + 1 && // Checa a colisão no eixo y
-        ball.y <= paddle2.paddle.y +  paddle2.paddle.height + 1
+        ball.y >= paddle2.paddle.y && // Checa a colisão no eixo y
+        ball.y <= paddle2.paddle.y +  paddle2.paddle.height
       ) {
         ball.dy = ball.speed * (ball.dy < 0  ? randomBetween(0.5, 1) : -randomBetween(0.5, 1))
         ball.dx = -ball.dx;
