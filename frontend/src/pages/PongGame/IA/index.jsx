@@ -1,4 +1,4 @@
-import { vr } from "..";
+import { vr } from "../game";
 
 const IA = (canvas, ball, paddle, paddlePlayer) => {
  
@@ -7,10 +7,10 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
     let predictedX = ball.ball.x;
     let dx = ball.ball.dx;
     let dy = ball.ball.dy;
-    const maxSteps = 50; // Limitar o número de passos de simulação
+    const maxSteps = 20; // Limitar o número de passos de simulação
     let steps = 0;
   
-    while (predictedX < paddle.paddle.x - vr.BALL_RADIUS && steps < maxSteps) {
+    while (predictedX < paddle.paddle.x - ball.ball.radius && steps < maxSteps) {
       predictedX += dx;
       predictedY += dy;
   
@@ -19,7 +19,7 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
         dy = -dy;
       }
 
-      if (predictedX >= canvas.width - vr.PADDLE_WIDTH - vr.BALL_RADIUS) {
+      if (predictedX >= canvas.width - paddle.paddle.speed - ball.ball.radius) {
         break;
       }        
       steps++;
@@ -31,13 +31,13 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
   return {
     move: () => {
       let {predictedY, predictedX} = predictBallPosition(canvas.current);
-      if (predictedX < canvas.current.width / 2 ) {
+      if (predictedX < canvas.current.width / 4 ) {
         predictedY = paddlePlayer.paddle.y;
       } 
-      if (predictedY < paddle.paddle.y - vr.PADDLE_HEIGHT /  2) {
+      if (predictedY < paddle.paddle.y - paddle.paddle.height/  2) {
         paddle.handleKeyUp({ key: 'iaDown' });
         paddle.handleKeyDown({ key: 'iaUp' });
-      } else if (predictedY > paddle.paddle.y + vr.PADDLE_HEIGHT / 2) {
+      } else if (predictedY > paddle.paddle.y + paddle.paddle.height / 2) {
         paddle.handleKeyUp({ key: 'iaUp' });
         paddle.handleKeyDown({ key: 'iaDown' });
       } else {

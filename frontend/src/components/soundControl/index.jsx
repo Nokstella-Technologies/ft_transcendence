@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './index.css';
 
 const SoundControl = ({ audioSrc }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   const toggleSound = () => {
     const audioElement = document.getElementById('background-music');

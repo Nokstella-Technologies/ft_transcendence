@@ -1,7 +1,14 @@
-import { vr } from "..";
+import { vr } from "../game";
 
 const Padlle = (canvasRef, up, down, x, backgroundColor) => {
-  const paddle = { x: x, y: 50, keys: { up: false, down: false } };
+  const paddle = { 
+    x: x, 
+    y: 50, 
+    width: vr.PADDLE_WIDTH, 
+    height: vr.PADDLE_HEIGHT, 
+    speed: vr.PADDLE_SPEED,  
+    keys: { up: false, down: false }
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === up) paddle.keys.up = true;
@@ -16,17 +23,17 @@ const Padlle = (canvasRef, up, down, x, backgroundColor) => {
   const movePaddle = () => {
     const cv = canvasRef.current;
     if (paddle.keys.up && paddle.y > 0 ) {
-      paddle.y = Math.min(paddle.y - vr.PADDLE_SPEED, cv.height - vr.PADDLE_HEIGHT);
+      paddle.y = Math.min(paddle.y - paddle.speed, cv.height - paddle.height);
     }
-    if (paddle.keys.down && paddle.y < cv.height - vr.PADDLE_HEIGHT) {
-      paddle.y = Math.max(paddle.y + vr.PADDLE_SPEED, 0);
+    if (paddle.keys.down && paddle.y < cv.height - paddle.height) {
+      paddle.y = Math.max(paddle.y + paddle.speed, 0);
     }
   };
 
   const render = () => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.fillStyle = backgroundColor; 
-    ctx.fillRect(paddle.x, paddle.y, vr.PADDLE_WIDTH, vr.PADDLE_HEIGHT);
+    ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
   }
 
   return  {

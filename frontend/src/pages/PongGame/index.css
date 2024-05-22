@@ -1,14 +1,9 @@
-.ping-pong-container{
+.container-pageGame {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100vw;
-    height: 100vh;
-}
-
-.canvas_container{
-    margin: auto;
-    width: 80%;
-    height: 80%;
-    /* border: 1px  #00ffea; */
+    width: 100%;
+    height: 100%;
+    
 }
