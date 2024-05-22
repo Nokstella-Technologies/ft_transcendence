@@ -1,13 +1,11 @@
-
+import { randomBetween } from '../../../utils/random';
 const PowerUp = (canvasRef, color, type) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    let x = centerX;
-    let y = centerY;
+    let x = randomBetween(20, canvas.width - 20);
+    let y = randomBetween(100, canvas.height - 100);
     const radius = 10;
-    const speed = (2 + Math.random()) * (2 * Math.random()); // Velocidade aleatória entre 1 e 3
+    const speed = randomBetween(1, 3);
     const angle = Math.random() * 2 * Math.PI; // Ângulo aleatório
     const dy = speed * Math.sin(angle);
     const dx = speed * Math.cos(angle);

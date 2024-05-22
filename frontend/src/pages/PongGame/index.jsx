@@ -8,6 +8,7 @@ const PageGame = () => {
     const [scoreP1, setScoreP1] = useState(0);
     const [scoreP2, setScoreP2] = useState(0);
     const [gameOver, setGameOver] = useState(false);
+    
 
     const GameOver = () => {
         return (
@@ -22,7 +23,11 @@ const PageGame = () => {
             </>
         )
     }
-    
+
+    const renderGame = () => {
+        return <Game setScoreP1={setScoreP1} setScoreP2={setScoreP2} gameOver={gameOver} />  
+    }
+
     useEffect(() => {
         if (scoreP1 === 5 || scoreP2 === 5) setGameOver(true);
     },[setGameOver, scoreP1, scoreP2])
@@ -32,7 +37,7 @@ const PageGame = () => {
             <h1>Player1    VS    Player2</h1>
             <h1>{`${scoreP1}`}    -     {`${scoreP2}`}</h1>
             <SoundControl audioSrc={Music}/>
-            {gameOver ?  GameOver() :  <Game setScoreP1={setScoreP1} setScoreP2={setScoreP2} gameOver   ={gameOver}/> }
+            {gameOver ?  GameOver() :  renderGame()}
            
         </div>
     );

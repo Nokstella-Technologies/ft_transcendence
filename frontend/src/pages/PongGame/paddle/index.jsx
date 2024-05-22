@@ -10,6 +10,15 @@ const Padlle = (canvasRef, up, down, x, backgroundColor) => {
     keys: { up: false, down: false }
   };
 
+  const resetPaddle = () => {
+    paddle.y = canvasRef.current.height / 2 - paddle.height / 2;
+    paddle.x = x;
+    paddle.width =  vr.PADDLE_WIDTH;
+    paddle.height = vr.PADDLE_HEIGHT;
+    paddle.speed = vr.PADDLE_SPEED;
+    paddle.keys = { up: false, down: false }
+  }
+
   const handleKeyDown = (e) => {
     if (e.key === up) paddle.keys.up = true;
     if (e.key === down) paddle.keys.down = true;
@@ -39,6 +48,7 @@ const Padlle = (canvasRef, up, down, x, backgroundColor) => {
   return  {
     paddle,
     render,
+    resetPaddle,
     handleKeyUp,
     handleKeyDown,
     movePaddle,

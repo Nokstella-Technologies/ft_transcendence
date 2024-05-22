@@ -1,11 +1,7 @@
 import { vr } from "../game";
+import { randomBetween } from "../../../utils/random";
 
 const Ball = (canvasRef,  backgroundColor) => {
-  function randomBetween(min, max) {
-   return (Math.random() * (min - max) + max).toFixed(4)
-
-  }
-
   const ball = {
     x: canvasRef.current.width / 2,
     y: canvasRef.current.height / 2,
@@ -40,12 +36,16 @@ const Ball = (canvasRef,  backgroundColor) => {
     if (ball.x  <  0) {
       updateScore('player2');
       resetBall();
+      paddle1.resetPaddle();
+      paddle2.resetPaddle();
     }
 
     // Colisão com a parede direita
     if (ball.x + ball.radius > canvas.width) {
       updateScore('player1');
       resetBall();
+      paddle1.resetPaddle();
+      paddle2.resetPaddle();
     }
 
     
@@ -58,7 +58,7 @@ const Ball = (canvasRef,  backgroundColor) => {
       ) {
         ball.dy =   ball.speed * (ball.dy < 0 ? randomBetween(0.5, 1) : -randomBetween(0.5, 1))
         ball.dx = -ball.dx;
-        ball.x = paddle1.paddle.width + ball.radius; // Ajuste a posição da bola para evitar múltiplas colisões
+        ball.x = paddle1.paddle.width + 2; // Ajuste a posição da bola para evitar múltiplas colisões
       }
       
   

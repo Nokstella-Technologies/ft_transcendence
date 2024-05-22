@@ -1,4 +1,4 @@
-import { vr } from "../game";
+
 
 const IA = (canvas, ball, paddle, paddlePlayer) => {
  
@@ -19,7 +19,7 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
         dy = -dy;
       }
 
-      if (predictedX >= canvas.width - paddle.paddle.speed - ball.ball.radius) {
+      if (predictedX >= canvas.width - ball.ball.radius - paddle.paddle.width) {
         break;
       }        
       steps++;
@@ -31,13 +31,13 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
   return {
     move: () => {
       let {predictedY, predictedX} = predictBallPosition(canvas.current);
-      if (predictedX < canvas.current.width / 4 ) {
+      if (predictedX < (canvas.current.width / 2)) {
         predictedY = paddlePlayer.paddle.y;
       } 
-      if (predictedY < paddle.paddle.y - paddle.paddle.height/  2) {
+      if (predictedY < paddle.paddle.y + (paddle.paddle.height /  3)) {
         paddle.handleKeyUp({ key: 'iaDown' });
         paddle.handleKeyDown({ key: 'iaUp' });
-      } else if (predictedY > paddle.paddle.y + paddle.paddle.height / 2) {
+      } else if (predictedY > paddle.paddle.y + (paddle.paddle.height / 3)) {
         paddle.handleKeyUp({ key: 'iaUp' });
         paddle.handleKeyDown({ key: 'iaDown' });
       } else {
