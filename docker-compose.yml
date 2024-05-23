@@ -55,6 +55,26 @@ services:
     networks:
       - transcendence
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - monitoring
+
   elasticsearch:
     image: elasticsearch:7.16.2
     container_name: elasticsearch
@@ -122,3 +142,6 @@ networks:
   transcendence:
     driver: bridge
   elk:
+    driver: bridge
+  monitoring:
+    driver: bridge
