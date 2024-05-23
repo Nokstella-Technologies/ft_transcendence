@@ -100,12 +100,6 @@ const Game =  ({type, setScoreP1, setScoreP2, gameOver}) => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 renderObject();
                 ball.current.move();
-                ball.current.checkCollisions(paddle1.current, paddle2.current, verifyScore);
-                paddle1.current.movePaddle();
-                paddle2.current.movePaddle();
-                if (type === undefined) {
-                    ia.current.move(powerUpsRef.current);
-                }
                 powerUpsRef.current.forEach((powerUp, index) => {
                     powerUp.render();
                     if (powerUp.checkCollision(paddle1.current, ball.current, paddle2.current)) {
@@ -117,6 +111,12 @@ const Game =  ({type, setScoreP1, setScoreP2, gameOver}) => {
                     }
                 });
                 
+                ball.current.checkCollisions(paddle1.current, paddle2.current, verifyScore);
+                paddle1.current.movePaddle();
+                paddle2.current.movePaddle();
+                if (type === undefined) {
+                    ia.current.move(powerUpsRef.current);
+                }
                 animationFrameId = requestAnimationFrame(render);
             };
             render();

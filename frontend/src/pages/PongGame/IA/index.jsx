@@ -4,7 +4,7 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
  
   function predictPowerUp(canvas, powerUps) {
     if (powerUps.length === 0) return {predictedPuY: 0, predictedPuX: 0};
-    const pu = powerUps.reduce((max, item) => (item.x > max.x ? item : max), powerUps[0]);
+    const pu = powerUps.reduce((max, item) => ((item.x > max.x) && item.dx > 0 ? item : max), powerUps[0]);
     return predictBallPosition(canvas, pu);
     
   }
@@ -37,10 +37,10 @@ const IA = (canvas, ball, paddle, paddlePlayer) => {
   
   return {
     move: (powerUps) => {
+      let pu = predictPowerUp(canvas.current, powerUps)
       let {predictedY, predictedX} = predictBallPosition(canvas.current, ball.ball);
-      let {predictedPuY, predictedPuX} = predictPowerUp(canvas.current, powerUps)
-      if (predictedPuX > predictedX && predictedPuX - predictedX > 10) {
-        predictedY = predictedPuY;
+      if (pu.predictedX > predictedX) {
+        predictedY = pu.predictedY;
       } 
       if (predictedY <= paddle.paddle.y + (paddle.paddle.height /  3)) {
         paddle.handleKeyUp({ key: 'iaDown' });
