@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from prometheus_client import make_wsgi_app
+from django.conf import settings
+from django.conf.urls import url
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+	url(r'^metrics$', TemplateView.as_view(template_name='metrics'))
 ]

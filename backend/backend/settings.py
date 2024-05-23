@@ -32,6 +32,7 @@ DEBUG = os.environ.get("DEBUG")
 # Application definition
 
 INSTALLED_APPS = [
+	'prometheus_client',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'prometheus.MetricsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
