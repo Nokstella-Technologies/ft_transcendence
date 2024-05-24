@@ -1,4 +1,4 @@
-# version: "3.8"
+version: "3.8"
 
 services:
   django:
@@ -55,49 +55,84 @@ services:
     networks:
       - transcendence
 
-  Elasticsearch:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - monitoring
+
+  elasticsearch:
     image: elasticsearch:7.16.2
     container_name: elasticsearch
     restart: always
     volumes:
-    - elastic_data:/usr/share/elasticsearch/data/
+      - elastic_data:/usr/share/elasticsearch/data/
     environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-      discovery.type: single-node    
+      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
+      discovery.type: single-node
     ports:
-    - '9200:9200'
-    - '9300:9300'
+      - '9200:9200'
+      - '9300:9300'
     networks:
       - elk
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2g
 
-  Logstash:
+  logstash:
     image: logstash:7.16.2
     container_name: logstash
     restart: always
     volumes:
-    - ./logstash/:/logstash_dir
-    command: logstash -f /logstash_dir/logstash.conf 
+      - ./logstash/:/logstash_dir
+    command: logstash -f /logstash_dir/logstash.conf
     depends_on:
-      - Elasticsearch
+      - elasticsearch
     ports:
-    - '9600:9600'
+      - '9600:9600'
     environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"    
+      LS_JAVA_OPTS: "-Xmx1g -Xms1g"
     networks:
       - elk
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2g
 
-  Kibana:
+  kibana:
     image: kibana:7.16.2
     container_name: kibana
-    restart: always       
+    restart: always
     ports:
-    - '5601:5601'
+      - '5601:5601'
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200  
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     depends_on:
-      - Elasticsearch  
+      - elasticsearch
     networks:
       - elk
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2g
 
 volumes:
   postgres-data:
@@ -107,3 +142,6 @@ networks:
   transcendence:
     driver: bridge
   elk:
+    driver: bridge
+  monitoring:
+    driver: bridge
