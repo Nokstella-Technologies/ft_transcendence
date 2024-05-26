@@ -3,7 +3,7 @@ import './profileLink.css';
 
 const ProfileLink = ({ username, profilePicture }) => {
   return (
-    <div className="profile-link" onClick={() => window.location.href = 'profile.html'}>
+    <div class="profile-link" onClick={() => window.location.href = 'profile.html'}>
       <img src={profilePicture} alt="Perfil" />
       <span>{username}</span>
     </div>

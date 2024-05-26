@@ -22,27 +22,27 @@ const Test = () => {
   };
 
   return (
-    <div className="test-container">
+    <div class="test-container">
       <BackgroundAnimation />
-      <div className="top-bar">
+      <div class="top-bar">
         <HomeButton onClick={() => window.location.href = 'home.html'} />
         <ProfileLink username="Usuário" profilePicture="https://via.placeholder.com/40" />
       </div>
-      <div className="container">
-        <div className="player" id="player1">
+      <div class="container">
+        <div class="player" id="player1">
           <img src="https://via.placeholder.com/80" alt="Player 1" />
           <p>Player 01 (Você)</p>
-          <button className="toggle-button" onClick={() => console.log('Trocar Lado')}>Trocar Lado</button>
+          <button class="toggle-button" onClick={() => console.log('Trocar Lado')}>Trocar Lado</button>
           <Info onClick={() => setShowPlayerPopup(true)} />
         </div>
-        <div className="ia">
+        <div class="ia">
           <img src="https://img.icons8.com/ios-glyphs/80/00ffea/artificial-intelligence.png" alt="IA" />
           <p>IA</p>
           <DropdownMenu label="Dificuldade:" options={difficultyOptions} onChange={handleDifficultyChange} />
           <Info onClick={() => setShowIAPopup(true)} />
         </div>
       </div>
-      <div className="buttons">
+      <div class="buttons">
         <button onClick={() => console.log('Start Game')}>Start Game</button>
       </div>
       <Popup

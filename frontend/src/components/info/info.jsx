@@ -3,7 +3,7 @@ import './info.css';
 
 const Info = ({ onClick }) => {
   return (
-    <div className="info-icon" onClick={onClick}>
+    <div class="info-icon" onClick={onClick}>
       <img src="https://img.icons8.com/ios-glyphs/30/00ffea/info.png" alt="Info" />
     </div>
   );

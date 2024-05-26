@@ -3,7 +3,7 @@ import './homeButton.css';
 
 const HomeButton = ({ onClick }) => {
   return (
-    <div className="home-button" onClick={onClick}>
+    <div class="home-button" onClick={onClick}>
       ← Home
     </div>
   );

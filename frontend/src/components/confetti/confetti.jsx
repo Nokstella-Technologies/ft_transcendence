@@ -17,7 +17,7 @@ const Confetti = () => {
         }
     }, []);
 
-    return <div className="confetti" id="confetti"></div>;
+    return <div class="confetti" id="confetti"></div>;
 };
 
 export default Confetti;

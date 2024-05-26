@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import ProtectedRoute from './ProtectedRoute';// Corrigi o nome do arquivo para AuthContext
-import Login from '../pages/Login';
+import Login from '../../pages/Login';
 import SignUp from '../pages/SingUp';
 import Home from '../pages/Home';
 import { AuthContext } from '../context/AuthContex';
