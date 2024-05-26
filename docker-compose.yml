@@ -1,5 +1,3 @@
-# version: "3.8"
-
 services:
   django:
     container_name: django
@@ -48,10 +46,29 @@ services:
       - "5432:5432"
     env_file:
       - ./.env
+    
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASSWORD=root
+
+  celery:
+    image: python:3.12.3-alpine
+    command: pip install celery -- celery -A backend worker -- loglevel=info
+    volumes:
+      - .:/backend
+    depends_on:
+      - postgres
+      - rabbitmq
 
 volumes:
   postgres-data:
-  
+
 networks:
   transcendence:
     driver: bridge

@@ -10,9 +10,9 @@ ENV PYTHONUNBUFFERED 1
 
 RUN pip install --upgrade pip
 
-COPY ./requirements /usr/src/app/requirements
+COPY ./requirements.txt /usr/src/app/requirements.txt
 
-RUN pip install -r requirements
+RUN pip install -r requirements.txt
 
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 
