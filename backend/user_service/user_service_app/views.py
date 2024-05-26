@@ -1,10 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt
 from .rabbitmq import channel
-import pika
 from .rabbitmq import connection
+import pika
+import json
 
 
 def register(request):
@@ -48,24 +50,50 @@ def login(request):
             print("Autenticação falhou para username:", username)
             return HttpResponse('Invalid login credentials')
 
-
-def send_message_to_queue(request):
+@csrf_exempt
+def send_to_rabbitmq(request):
     if request.method == 'POST':
-        channel.basic_publish(exchange='', routing_key='user', body=request.body)
-        print(f" [x] Sent '{request}'")
-    return HttpResponse(status=405)
+        try:
+            data = json.loads(request.body)
+            message = json.dumps(data)
+            channel.queue_declare(queue="user", durable=True)
+            channel.basic_publish(
+                exchange='',
+                routing_key="user",
+                body=message,
+                properties=pika.BasicProperties(
+                delivery_mode=2,  # make message persistent
+            ))
+            return JsonResponse({'status': 'success', 'data': data}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid method'}, status=405)
 
-# def receive_message_from_queue(message):
-#     channel.basic_publish(exchange='', routing_key='hello', body=message)
-#     print(f" [x] Sent '{message}'")
+@csrf_exempt
+def receive_from_rabbitmq(request):
+    if request.method == 'GET':
+        try:
+            method_frame, header_frame, body = channel.basic_get(queue='user', auto_ack=True)
+            if method_frame:
+                print(f" [x] Received {body.decode('utf-8')}")
+                return JsonResponse({'status': 'success', 'data': body.decode('utf-8')}, status=200)
+            else:
+                return JsonResponse({'status': 'empty', 'message': 'No messages in queue'}, status=200)
+        except Exception as e:
+            print(f"Error receivi   ng message: {e}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    else:
+        return HttpResponse(status=405)
+
 
 
 def callback(ch, method, properties, body):
     print(f" [x] Received {body}")
     channel = connection.channel()
-    channel.queue_declare(queue='hello')
+    channel.queue_declare(queue='user')
 
-    channel.basic_consume(queue='hello', on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(queue='user', on_message_callback=callback, auto_ack=True)
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
