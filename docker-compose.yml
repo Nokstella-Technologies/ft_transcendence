@@ -19,8 +19,9 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
     env_file:
-      - ./.env
+      - ./backend/.env
     depends_on:
+      - rabbitmq
       - postgres
     networks:
       - transcendence
@@ -123,6 +124,22 @@ services:
         limits:
           cpus: '1.0'
           memory: 2g
+
+  rabbitmq:
+    build:
+      context: ./rabbitmq
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASSWORD=guest
+      - RABBITMQ_USER=root
+      - RABBITMQ_PASSWORD=root
+      - RABBITMQ_PID_FILE=/var/lib/rabbitmq/mnesia/rabbitmq
+    networks:
+      - transcendence
 
 volumes:
   postgres-data:
