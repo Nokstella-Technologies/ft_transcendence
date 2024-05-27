@@ -17,7 +17,7 @@ class Login extends Component {
     render() {
       return `
       <div class="login">
-      ${BackgroundAnimation()}
+            ${BackgroundAnimation()}
               <div id="sound-control-container"></div>
               ${Container({
                 title: "Login Pong",

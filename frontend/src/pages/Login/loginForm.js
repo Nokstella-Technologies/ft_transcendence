@@ -34,9 +34,25 @@ class LoginForm extends Component {
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
 
-        document.getElementById('login-form').addEventListener('submit', (e) => {
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert(`Email: ${this.email()}, Password: ${this.password()}`);
+            let res = await fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.email(),
+                    password: this.password()
+                })
+            });
+            if (res.status === 200) {
+                window.location.href = '/game';
+                const body = JSON.parse(res.body)
+                sessionStorage.setItem('token', body.token);
+            } else {
+                alert(body.message);
+            }
         });
 
         emailInput.addEventListener('input', (e) => {
