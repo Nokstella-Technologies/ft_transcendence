@@ -1,6 +1,7 @@
 
 @import "./pages/Login/index.css";
 @import "./pages/PongGame/index.css";
+@import "./pages/SingUp/index.css";
 
 * {
   font-family: "Press Start 2P", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

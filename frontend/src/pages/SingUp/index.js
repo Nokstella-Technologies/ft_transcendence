@@ -3,9 +3,9 @@ import Component from '../../../react/Component.js';
 import SoundControl from '../../components/soundControl/index.js';
 import BackgroundAnimation from '../../components/backgroundAnimation/backgroundAnimation.js';
 import Container from '../../components/containers/index.js';
-import LoginForm from './loginForm.js';
+import RegisterForm from './registerFrom.js';
 
-class Login extends Component {
+class SingUp extends Component {
     constructor(to) {
         super(to);
     }
@@ -23,8 +23,8 @@ class Login extends Component {
                 title: "Login Pong",
                 className: "login-container",
                 children : `
-                <div id="login-form-container"></div>
-                <p> Já possui uma conta? <a href="/register">Cadastre-se</a></p>
+                <div id="register-form-container"></div>
+                <p> Já possui uma conta? <a href="/">Cadastre-se</a></p>
                       `
               })}
           </div>
@@ -35,9 +35,9 @@ class Login extends Component {
       const soundControl = new SoundControl('#sound-control-container', 'assets/sounds/music.m4a');
       soundControl.reRender();
 
-      const loginForm = new LoginForm('#login-form-container');
-      loginForm.reRender();
+      const register = new RegisterForm('#register-form-container');
+      register.reRender();
   }
 }
 
-export default Login;
+export default SingUp;
