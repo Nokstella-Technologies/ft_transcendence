@@ -1,15 +1,14 @@
-version: "3.8"
 
 services:
   user_service:
     container_name: user_service
     build:
       context: ./backend/user_service
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python3 manage.py runserver 0.0.0.0:8001
     volumes:
       - ./backend/user_service:/usr/src/app/
     ports:
-      - "8000:8000"
+      - "8001:8001"
     environment:
       - DEBUG=1
       - SECRET_KEY=757c082fdb2523061f228caaaa9347c2211f6f3bd93366c832bf1d94acf1eb4d
@@ -32,14 +31,12 @@ services:
     environment:
       - KONG_DATABASE=off
       - KONG_DECLARATIVE_CONFIG=/usr/local/kong/kong.yml
-    env_file: "./kong/.env"
+    env_file: "kong/.env"
     volumes:
       - ./kong/kong.yml:/usr/local/kong/kong.yml
     ports:
-      - "8000:8000"
-      - "8443:8443"
-      - "8001:8001"
-      - "8444:8444"
+      - "80:8000"  # Porta HTTP
+      - "443:8443"  # Porta HTTPS
     depends_on:
       - frontend
     networks:
@@ -50,6 +47,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
+    env_file:
+      - frontend/.env
     networks:
       - transcendence
 
