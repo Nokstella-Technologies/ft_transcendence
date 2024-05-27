@@ -14,8 +14,8 @@
     const resetBall = () => {
       ball.x = canvasRef.width / 2;
       ball.y = canvasRef.height / 2;
-      ball.dx = ball.speed * (Math.random() > 0.5 ? randomBetween(0.5, 1) : -randomBetween(0.5, 1))
-      ball.dy = ball.speed * (Math.random() > 0.5 ? randomBetween(0.5, 1) : -randomBetween(0.5, 1))
+      ball.dx = vr.BALL_SPEED * (Math.random() > 0.5 ? randomBetween(0.5, 1) : -randomBetween(0.5, 1))
+      ball.dy = vr.BALL_SPEED * (Math.random() > 0.5 ? randomBetween(0.5, 1) : -randomBetween(0.5, 1))
     }
 
     const move = () => {
@@ -47,8 +47,6 @@
         paddle2.resetPaddle();
         updateScore('player1');
       }
-
-      
     
         // Colisão com o paddle1
         if (

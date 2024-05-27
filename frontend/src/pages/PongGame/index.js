@@ -59,17 +59,14 @@
             if (!this.gameOver() && this.game == null) {
                 this.game = new Game('#game-container', undefined, score, this.gameOver);
                 this.game.reRender();
-            } else {
+            } else if (this.gameOver()){
                 document.querySelector('.btn').addEventListener('click', () => { 
-                    if (this.game) {
-                        this.game.destroy();
-                        this.game = null;
-                    }
-                    this.setScoreP1(0);
-                    this.setScoreP2(0);
+                    if (this.scoreP1() !== 0) this.setScoreP1(0);
+                    if (this.scoreP2() !== 0) this.setScoreP2(0);
                     this.setGameOver(false);
-                    this.reRender();
                 });
+            } else {
+                this.game.reRender();
             }
 
             this.useEffect(() => {

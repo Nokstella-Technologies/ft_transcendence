@@ -16,9 +16,7 @@ export const vr = {
 class Game extends Component {
     constructor(to, type, score, gameOver) {
         super(to);
-        const [startGame, setGameStart] = this.useState(false);
-        this.startGame = startGame;
-        this.setGameStart = setGameStart;
+        this.startGame = false;
         this.type = type;
         this.score = score;
         this.gameOver = gameOver;
@@ -34,7 +32,11 @@ class Game extends Component {
 
     verifyScore(player) {
         this.powerUpsRef = [];
-        this.setGameStart(false);
+        cancelAnimationFrame(this.animationFrameId);
+        this.timeouts.forEach(clearTimeout);
+        this.timeouts = [];
+        this.removeEventListeners()
+        this.startGame  = false;
         this.score(player);
     }
 
@@ -52,7 +54,7 @@ class Game extends Component {
 
     start(e) {
         e.preventDefault();
-        if (e.key === 'Enter') this.setGameStart(true);
+        if (e.key === 'Enter') this.startGame = true;
     }
 
     drawCenterLineAndCircle(ctx, canvasWidth, canvasHeight) {
@@ -81,7 +83,7 @@ class Game extends Component {
     }
 
     initEventListeners() {
-        if (this.startGame() && !this.gameOver()) {
+        if (this.startGame && !this.gameOver()) {
             window.addEventListener('keydown', this.handleKeyDown.bind(this));
             window.addEventListener('keyup', this.handleKeyUp.bind(this));
         } else {
@@ -100,13 +102,24 @@ class Game extends Component {
         this.paddle1.render(0, this.canvasRef.height - vr.PADDLE_HEIGHT);
         this.paddle2.render(this.canvasRef.width - vr.PADDLE_WIDTH, this.canvasRef.height - vr.PADDLE_HEIGHT);
         this.ball.render();
+        if (this.startGame && !this.gameOver()) {
+            const spawnPowerUp = () => {
+                console.log("Spawning new PowerUp");
+                const powerup = newPowerUp(this.canvasRef);
+                this.powerUpsRef.push(powerup);
+                const timeoutId = setTimeout(spawnPowerUp, randomBetween(5000, 10000)); // Spawn a cada 5-10 segundos
+                this.timeouts.push(timeoutId);
+            };
+            if (this.timeouts.length === 0) spawnPowerUp();
+        }
     }
 
     renderFrame() {
+        this.initEventListeners();
         const ctx = this.canvasRef.getContext('2d');
         ctx.clearRect(0, 0, this.canvasRef.width, this.canvasRef.height);
         this.renderObjects(ctx);
-        if (this.startGame() && !this.gameOver()) {
+        if (this.startGame && !this.gameOver()) {
             this.ball.move();
             this.powerUpsRef.forEach((powerUp, index) => {
                 powerUp.render();
@@ -124,7 +137,9 @@ class Game extends Component {
             if (this.type === undefined) {
                 this.ia.move(this.powerUpsRef);
             }
+            
         }
+        this.removeEventListeners();    
         this.animationFrameId = requestAnimationFrame(this.renderFrame.bind(this));
     }
 
@@ -134,23 +149,7 @@ class Game extends Component {
         this.initEventListeners();
         this.renderFrame();
 
-        this.useEffect(() => {
-            if (this.startGame() && !this.gameOver()) {
-                const spawnPowerUp = () => {
-                    console.log("Spawning new PowerUp");
-                    const powerup = newPowerUp(this.canvasRef);
-                    this.powerUpsRef.push(powerup);
-                    const timeoutId = setTimeout(spawnPowerUp, randomBetween(5000, 10000)); // Spawn a cada 5-10 segundos
-                    this.timeouts.push(timeoutId);
-                };
-                spawnPowerUp();
-                return () => {
-                    console.log("Cleaning up timeouts");
-                    this.timeouts.forEach(clearTimeout);
-                    this.timeouts = [];
-                };
-            }
-        }, [this.startGame, this.gameOver, this.powerUpsRef, this.canvasRef]);
+            
     }
 
     render() {
