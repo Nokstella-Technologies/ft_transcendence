@@ -1,11 +1,14 @@
-FROM node:alpine
+FROM nginx:latest
 
-RUN mkdir -p /usr/src/app
+WORKDIR /app
+# Copiar o restante do código da aplicação
 
-WORKDIR /usr/src/app
+COPY ./nginx.conf /etc/nginx/nginx.conf
+# Copiar os arquivos estáticos para o Nginx
+COPY . /usr/share/nginx/html
 
-COPY package.json .
+# Expor a porta que o Nginx está rodando
+EXPOSE 80
 
-EXPOSE 3000
-
-ENTRYPOINT [ "/bin/sh", "entry.sh" ]
+# Comando para rodar o Nginx
+CMD ["nginx", "-g", "daemon off;"]

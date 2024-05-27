@@ -28,13 +28,13 @@ class RegisterForm extends Component {
                     <input type="email" class="form-control" id="email" placeholder="Email" value="${this.email()}" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" id="username" placeholder="Username" value="${this.email()}" required>
+                    <input type="text" class="form-control" id="username" autocomplete="username" placeholder="Username" value="${this.email()}" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" id="password" placeholder="Senha" value="${this.password()}" required>
+                    <input type="password" class="form-control" id="password" autocomplete="new-password" placeholder="Nova Senha" value="${this.password()}" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" id="confirmedPassword" placeholder="Confirme Senha" value="${this.password()}" required>
+                    <input type="password" class="form-control" id="confirmedPassword" autocomplete="new-password" placeholder="Confirme Senha" value="${this.password()}" required>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Login</button>
             </form>

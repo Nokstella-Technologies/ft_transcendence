@@ -1,17 +1,6 @@
 version: "3.8"
 
 services:
-  nginx:
-    container_name: nginx
-    image: nginx:1.25.5-alpine
-    ports:
-      - 80:80
-      - 433:433
-    depends_on:
-      - django
-      - react
-    networks:
-      - transcendence
 
   django:
     container_name: django
@@ -37,19 +26,30 @@ services:
     networks:
       - transcendence
 
-  react:
-    container_name: react
+  kong:
+    image: kong:latest
+    container_name: kong
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/usr/local/kong/kong.yml
+    env_file: "./kong/.env"
+    volumes:
+      - ./kong/kong.yml:/usr/local/kong/kong.yml
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    depends_on:
+      - frontend
+    networks:
+      - transcendence
+
+  frontend:
     build:
       context: ./frontend
-    volumes:
-      - ./frontend:/usr/src/app
-    ports:
-      - 3000:3000
-    env_file:
-      - ./frontend/.env
-    depends_on:
-      - django
-      - postgres
+      dockerfile: Dockerfile
+    container_name: frontend
     networks:
       - transcendence
 
@@ -67,12 +67,6 @@ services:
     networks:
       - transcendence
 
-  gateway:
-    image: 
-    container_name: gateway
-    build:
-      context: ./gateway
-    command: python manage.py runserver
 
   prometheus:
     image: prom/prometheus:latest

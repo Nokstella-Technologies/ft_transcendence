@@ -19,10 +19,10 @@ class LoginForm extends Component {
         return `
             <form id="login-form">
                 <div class="form-group">
-                    <input type="email" class="form-control" id="email" placeholder="Email" value="${this.email()}" required>
+                    <input type="text" autocomplete="username" class="form-control" id="email" placeholder="Email" value="${this.email()}" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" id="password" placeholder="Senha" value="${this.password()}" required>
+                    <input type="password" autocomplete="current-password" class="form-control" id="password" placeholder="Senha" value="${this.password()}" required>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Login</button>
                 <button type="button" class="btn btn-dark btn-block" style="margin-top: 10px;">Login com 42</button>
