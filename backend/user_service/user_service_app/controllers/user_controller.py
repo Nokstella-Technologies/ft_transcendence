@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from json import JSONDecoder
+import json
+from django.http import JsonResponse
 from user_service_app.services.user_service import UserService
 
 class UserController:
@@ -8,7 +9,7 @@ class UserController:
     @csrf_exempt
     def register( request):
         if request.method == 'POST':
-            data = JSONDecoder(request.body)
+            data = json.loads(request.body.decode('utf-8'))
             res = UserService.user_service.create_user(data['email'], data['username'], data['password'])
             return res
         else :
