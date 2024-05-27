@@ -1,6 +1,18 @@
 version: "3.8"
 
 services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.25.5-alpine
+    ports:
+      - 80:80
+      - 433:433
+    depends_on:
+      - django
+      - react
+    networks:
+      - transcendence
+
   django:
     container_name: django
     build:
@@ -54,6 +66,13 @@ services:
       - ./.env
     networks:
       - transcendence
+
+  gateway:
+    image: 
+    container_name: gateway
+    build:
+      context: ./gateway
+    command: python manage.py runserver
 
   prometheus:
     image: prom/prometheus:latest
@@ -133,6 +152,7 @@ services:
         limits:
           cpus: '1.0'
           memory: 2g
+
 
 volumes:
   postgres-data:

@@ -56,7 +56,7 @@
 
             };
 
-            if (!this.gameOver()) {
+            if (!this.gameOver() && this.game == null) {
                 this.game = new Game('#game-container', undefined, score, this.gameOver);
                 this.game.reRender();
             } else {
@@ -80,4 +80,4 @@
         }
     }
 
-    export default PageGame;
+export default PageGame;
