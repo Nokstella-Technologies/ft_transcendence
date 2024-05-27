@@ -27,8 +27,7 @@ class UserService:
         except User.DoesNotExist:
             return JsonResponse({'message': 'User not found'}, status=404)
 
-    
-    def get_all_users(self):    
+    def get_all_users(self):
         users = User.objects.all().values()
         return JsonResponse(list(users), status=200, safe=False)
 
@@ -36,15 +35,9 @@ class UserService:
         try:
             user = User.objects.get(id=user_id)
             user.username = user_data.get('username', user.username)
-            user.email = user_data.get('email', user.email)
-            if 'password' in user_data:
-                user.password = make_password(user_data['password'])
+            user.profile_picture = user_data.get('profile_picture', user.profile_picture)
             user.save()
-            return JsonResponse({
-                'id': user.id,
-                'username': user.username,
-                'email': user.email
-            })
+            return JsonResponse(model_to_dict(user), status=200)
         except User.DoesNotExist:
             return JsonResponse({'message': 'User not found'}, status=404)
 
