@@ -1,27 +1,27 @@
 version: "3.8"
 
 services:
-
-  django:
-    container_name: django
+  user_service:
+    container_name: user_service
     build:
-      context: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+      context: ./backend/user_service
+    command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./backend:/usr/src/app/
+      - ./backend/user_service:/usr/src/app/
     ports:
-      - 8001:8000
+      - "8000:8000"
     environment:
       - DEBUG=1
-      - SECRET_KEY=fsadfaskldfjm;alsdkjf
+      - SECRET_KEY=757c082fdb2523061f228caaaa9347c2211f6f3bd93366c832bf1d94acf1eb4d
       - ALLOWED_HOSTS=localhost,127.0.0.1
       - POSTGRES_NAME=postgres
       - POSTGRES_DB=postgres
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
     env_file:
-      - ./.env
+      - ./backend/.env
     depends_on:
+      - rabbitmq
       - postgres
     networks:
       - transcendence
@@ -66,17 +66,6 @@ services:
       - ./.env
     networks:
       - transcendence
-
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    networks:
-      - monitoring
 
   grafana:
     image: grafana/grafana:latest
@@ -147,6 +136,21 @@ services:
           cpus: '1.0'
           memory: 2g
 
+  rabbitmq:
+    build:
+      context: ./rabbitmq
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASSWORD=guest
+      - RABBITMQ_USER=root
+      - RABBITMQ_PASSWORD=root
+      - RABBITMQ_PID_FILE=/var/lib/rabbitmq/mnesia/rabbitmq
+    networks:
+      - transcendence
 
 volumes:
   postgres-data:
@@ -159,3 +163,4 @@ networks:
     driver: bridge
   monitoring:
     driver: bridge
+
