@@ -3,7 +3,7 @@ import FriendList from '../friendList/friendList';
 
 const TopBar = ({ friends }) => {
     return (
-        <div className="top-bar">
+        <div class="top-bar">
             <FriendList friends={friends} />
         </div>
     );

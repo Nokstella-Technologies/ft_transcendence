@@ -26,19 +26,30 @@ services:
     networks:
       - transcendence
 
+  kong:
+    image: kong:latest
+    container_name: kong
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/usr/local/kong/kong.yml
+    env_file: "./kong/.env"
+    volumes:
+      - ./kong/kong.yml:/usr/local/kong/kong.yml
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    depends_on:
+      - frontend
+    networks:
+      - transcendence
 
-  react:
-    container_name: react
+  frontend:
     build:
       context: ./frontend
-    volumes:
-      - ./frontend:/usr/src/app
-    ports:
-      - 3000:3000
-    env_file:
-      - ./frontend/.env
-    depends_on:
-      - postgres
+      dockerfile: Dockerfile
+    container_name: frontend
     networks:
       - transcendence
 

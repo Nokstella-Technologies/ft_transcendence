@@ -3,7 +3,7 @@ import './dropdownMenu.css';
 
 const DropdownMenu = ({ label, options, onChange }) => {
   return (
-    <div className="dropdown-menu">
+    <div class="dropdown-menu">
       <label>{label}</label>
       <select onChange={onChange}>
         {options.map(option => (

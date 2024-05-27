@@ -29,24 +29,24 @@ const ThemeSelector = ({ onThemeChange }) => {
 
   const customContent = (
     <div>
-      <div className="message">Escolha a cor da raquete:</div>
-      <div className="color-picker">
+      <div class="message">Escolha a cor da raquete:</div>
+      <div class="color-picker">
         <div style={{ background: '#fff' }} onClick={() => setPaddleColor('#fff')}></div>
         <div style={{ background: '#ff69b4' }} onClick={() => setPaddleColor('#ff69b4')}></div>
         <div style={{ background: '#00ff00' }} onClick={() => setPaddleColor('#00ff00')}></div>
         <div style={{ background: '#ff4500' }} onClick={() => setPaddleColor('#ff4500')}></div>
         <div style={{ background: '#1e90ff' }} onClick={() => setPaddleColor('#1e90ff')}></div>
       </div>
-      <div className="message">Escolha a cor da bola:</div>
-      <div className="color-picker">
+      <div class="message">Escolha a cor da bola:</div>
+      <div class="color-picker">
         <div style={{ background: '#fff' }} onClick={() => setBallColor('#fff')}></div>
         <div style={{ background: '#ff69b4' }} onClick={() => setBallColor('#ff69b4')}></div>
         <div style={{ background: '#00ff00' }} onClick={() => setBallColor('#00ff00')}></div>
         <div style={{ background: '#ff4500' }} onClick={() => setBallColor('#ff4500')}></div>
         <div style={{ background: '#1e90ff' }} onClick={() => setBallColor('#1e90ff')}></div>
       </div>
-      <div className="message">Escolha a cor do background:</div>
-      <div className="color-picker">
+      <div class="message">Escolha a cor do background:</div>
+      <div class="color-picker">
         <div style={{ background: '#000' }} onClick={() => setBackgroundColor('#000')}></div>
         <div style={{ background: '#ff69b4' }} onClick={() => setBackgroundColor('#ff69b4')}></div>
         <div style={{ background: '#00ff00' }} onClick={() => setBackgroundColor('#00ff00')}></div>
@@ -59,17 +59,17 @@ const ThemeSelector = ({ onThemeChange }) => {
 
   return (
     <>
-      <div className="theme-selector">
+      <div class="theme-selector">
         {themes.map(theme => (
           <div
             key={theme.name}
-            className={`theme ${theme.name} ${selectedTheme === theme.name ? 'selected' : ''}`}
+            class={`theme ${theme.name} ${selectedTheme === theme.name ? 'selected' : ''}`}
             onClick={() => handleThemeChange(theme.name)}
           >
             <canvas id={`${theme.name}Canvas`} width="100" height="100"></canvas>
           </div>
         ))}
-        <div className="theme customize" onClick={() => handleThemeChange('customize')}>
+        <div class="theme customize" onClick={() => handleThemeChange('customize')}>
           <img src="https://img.icons8.com/ios-filled/50/00ffea/settings.png" alt="Customizar" />
         </div>
       </div>

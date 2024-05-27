@@ -1,16 +1,10 @@
-import { randomBetween } from '../../../utils/random';
+import { randomBetween } from '../../../utils/random.js';
 
 export const newPowerUp = (canvasref) => {
   const execs = [
     {
       exec: (paddleTake, ball, paddleRival) => {
           ball.ball.speed += 2;
-      },
-      color: "#f00"
-  },
-  {
-      exec: (paddleTake, ball, paddleRival) => {
-          if (ball.ball.speed > 2) ball.ball.speed -= 2;
       },
       color: "#f00"
   },
@@ -40,16 +34,16 @@ export const newPowerUp = (canvasref) => {
   },
   {
       exec: (paddleTake, ball, paddleRival) => {
-          paddleTake.paddle.height += 10;
+          paddleTake.paddle.height += 20;
           if (paddleTake.paddle.y > 5) paddleTake.paddle.y -= 5;
       },
       color: "#ff0"
   },
   {
       exec: (paddleTake, ball, paddleRival) => {
-          if (paddleTake.paddle.height > 2) {
-              paddleTake.paddle.height -= 10;
-              paddleTake.paddle.y += 5;
+          if (paddleTake.paddle.height > 40) {
+              paddleTake.paddle.height -= 20;
+              paddleTake.paddle.y += 10;
           }
       },
       color: "#ff0"
@@ -62,7 +56,10 @@ export const newPowerUp = (canvasref) => {
   },
   {
       exec: (paddleTake, ball, paddleRival) => {
-        if (paddleRival.paddle.height > 2)paddleRival.paddle.height -= 10;
+        if (paddleRival.paddle.height > 40) {
+            paddleRival.paddle.height -= 20;
+            paddleRival.paddle.y += 10;
+        }
       },
       color: "#00f"
   },
@@ -97,12 +94,12 @@ export const newPowerUp = (canvasref) => {
 }
 
 const PowerUp = (canvasRef, color, exec) => {
-  const canvas = canvasRef.current;
+  const canvas = canvasRef;
   const ctx = canvas.getContext('2d');
   let x = Math.floor(randomBetween(20, canvas.width - 20));
   let y = Math.floor(randomBetween(100, canvas.height - 100));
-  const radius = 2;
-  const speed = randomBetween(1, 3);
+  const radius = 7;
+  const speed = randomBetween(3, 5);
   let angle = Math.random() * 2 * Math.PI; // Ângulo aleatório
   let dy = speed * Math.sin(angle);
   let dx = speed * Math.cos(angle);
