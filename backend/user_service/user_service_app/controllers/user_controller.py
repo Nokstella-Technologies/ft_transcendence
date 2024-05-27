@@ -10,16 +10,24 @@ class UserController:
     def register( request):
         if request.method == 'POST':
             data = json.loads(request.body.decode('utf-8'))
-            res = UserService.user_service.create_user(data['email'], data['username'], data['password'])
+            print(data)
+            res = UserService().create_user(data['email'], data['username'], data['password'])
             return res
         else :
             return JsonResponse({'message': 'Method not allowed'}, status=405)
         
     @staticmethod
     @csrf_exempt
-    def get_user(request, user_id):
+    def get_user(request, id):
         if request.method == 'GET':
-            res = UserService.user_service.get_user(user_id)
-            return res
+            return UserService().get_user(id)
+        else:
+            return JsonResponse({'message': 'Method not allowed'}, status=405)
+        
+    @staticmethod
+    @csrf_exempt
+    def get_all_user(request):
+        if request.method == 'GET':
+            return UserService().get_all_users()
         else:
             return JsonResponse({'message': 'Method not allowed'}, status=405)
