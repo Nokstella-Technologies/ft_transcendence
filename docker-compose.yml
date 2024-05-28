@@ -35,8 +35,8 @@ services:
     volumes:
       - ./kong/kong.yml:/usr/local/kong/kong.yml
     ports:
-      - "80:8000"  # Porta HTTP
-      - "443:8443"  # Porta HTTPS
+      - "8000:8000"  # Porta HTTP
+      - "8443:8443"  # Porta HTTPS
     depends_on:
       - frontend
     networks:
@@ -47,6 +47,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
+    ports:
+      - "80:80"  # Porta HTTP
+      - "443:443"  # Porta HTTPS
     env_file:
       - frontend/.env
     networks:
