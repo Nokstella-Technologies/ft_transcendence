@@ -6,3 +6,5 @@ services:
       - name: frontend
         paths:
           - "/"
+        strip_path: false
+        preserve_host: true
