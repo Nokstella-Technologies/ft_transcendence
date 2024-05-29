@@ -10,9 +10,13 @@
   
 }
 
+#login-form-container {
+  margin-bottom: 30px;
+}
+
 .login-container {
   align-items: center;
-  margin:  auto;
+  margin:  20px auto;
   width: 100%;
   max-width: 500px;
   padding: 20px;

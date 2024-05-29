@@ -2,6 +2,7 @@
 @import "./pages/Login/index.css";
 @import "./pages/PongGame/index.css";
 @import "./pages/SingUp/index.css";
+@import "./pages/Home/index.css";
 
 * {
   font-family: "Press Start 2P", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -12,7 +13,6 @@
 
 #app {
   background: transparent;
-  display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;

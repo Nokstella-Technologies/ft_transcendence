@@ -87,7 +87,7 @@ export default class Component {
         this.mount();
 
         const activeElement = document.getElementById(activeElementId);
-        if (activeElement) {
+        if (activeElement && (activeElement.type === 'email' || activeElement.type === 'password' || activeElement.type === 'text')) {
             let change = false;
             activeElement.focus();
             if (activeElement.type === 'email') {
