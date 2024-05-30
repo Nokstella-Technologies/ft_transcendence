@@ -1,4 +1,5 @@
 import Component from '../../../react/Component.js';
+import authProvider from '../../provider/authProvider.js';
 
 class LoginForm extends Component {
     constructor(to) {
@@ -36,23 +37,12 @@ class LoginForm extends Component {
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            let res = await fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: this.email(),
-                    password: this.password()
-                })
+            await authProvider.login(this.email(), this.password()).then(() =>{
+                window.location.href = '/home';
+            }).catch(err => {
+                alert(err.message)
             });
-            if (res.status === 200) {
-                window.location.href = '/game';
-                const body = JSON.parse(res.body)
-                sessionStorage.setItem('token', body.token);
-            } else {
-                alert(body.message);
-            }
+            
         });
 
         emailInput.addEventListener('input', (e) => {
