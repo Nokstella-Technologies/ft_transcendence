@@ -15,7 +15,7 @@ def verify_jwt_token(request):
 
     try:
         strn, status = decode_jwt(token)
-        
+
         return JsonResponse({'message': strn}, status=status)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)

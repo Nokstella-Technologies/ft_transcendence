@@ -14,7 +14,7 @@ class UserController:
             return res
         else :
             return JsonResponse({'message': 'Method not allowed'}, status=405)
-        
+
     @staticmethod
     @csrf_exempt
     def get_user(request, id):
@@ -22,7 +22,7 @@ class UserController:
             return UserService().get_user(id)
         else:
             return JsonResponse({'message': 'Method not allowed'}, status=405)
-        
+
     @staticmethod
     @csrf_exempt
     def get_all_user(request):
@@ -39,7 +39,7 @@ class UserController:
             return UserService().update_user(id, data)
         else:
             return JsonResponse({'message': 'Method not allowed'}, status=405)
-    
+
     @staticmethod
     @csrf_exempt
     def delete_user(request, id):

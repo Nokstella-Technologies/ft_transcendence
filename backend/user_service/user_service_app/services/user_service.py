@@ -36,7 +36,7 @@ class UserService:
 
     def update_user(self, user_id, user_data):
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(user_id=user_id)
             user.username = user_data.get('username', user.username)
             user.profile_picture = user_data.get('profile_picture', user.profile_picture)
             user.save()
@@ -46,7 +46,7 @@ class UserService:
 
     def delete_user(self, user_id):
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(user_id=user_id)
             user.delete()
             return JsonResponse({'message': 'User deleted'})
         except User.DoesNotExist:
