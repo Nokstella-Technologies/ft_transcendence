@@ -11,14 +11,17 @@ def start_consumer():
         username = credentials.get('username')
         password = credentials.get('password')
 
+        try:
         # Verificar as credenciais no banco de dados
-        user = User.objects.get(username=username)
-        
-        if check_password(password, user.password):
-            response = json.dumps({'valid': True, 'user': model_to_dict(user)})
-        else:
+            user = User.objects.filter(username=username).values('user_id', 'username', 'email', 'is_auth', 'status', 'password').first()
+            if check_password(password, user["password"]):
+                user["password"] = None
+                user["user_id"] = str(user["user_id"])
+                response = json.dumps({'valid': True, 'user': user})
+            else:
+                response = json.dumps({'valid': False, 'user': {}})
+        except Exception as e:
             response = json.dumps({'valid': False, 'user': {}})
-
         ch.basic_publish(
             exchange='',
             routing_key=props.reply_to,
