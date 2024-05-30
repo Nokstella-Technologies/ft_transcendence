@@ -2,8 +2,10 @@ from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from user_service_app.models.user import User
 from user_service_app.models.player_stats import PlayerStats
+from user_service_app.models.game_appearance import GameAppearance
 from django.forms.models import model_to_dict
 import json
+
 
 class UserService:
     def create_user(self, email, username, password):
@@ -18,6 +20,7 @@ class UserService:
         # Cria o novo usuário com hashing de senha
         user = User.objects.create(username=username, email=email, password_hash=make_password(password), status='offline')
         PlayerStats.objects.create(user_id=user)
+        GameAppearance.objects.create(user_id=user)
         return JsonResponse(model_to_dict(user), status=201)
 
     def get_user(self, user_id):

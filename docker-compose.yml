@@ -26,6 +26,31 @@ services:
     networks:
       - transcendence
 
+  auth_service:
+    container_name: auth_service
+    build:
+      context: ./backend/auth_service
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend/auth_service:/usr/src/app/
+    ports:
+      - "8001:8000"
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=757c082fdb2523061f228caaaa9347c2211f6f3bd93366c832bf1d94acf1eb4d
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+      - POSTGRES_NAME=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - transcendence
+
 
   react:
     container_name: react

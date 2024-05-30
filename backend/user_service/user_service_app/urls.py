@@ -12,10 +12,10 @@ urlpatterns = [
     path('get_all_users/', UserController().get_all_user, name='get_all_users'),
     path('send_message/', views.send_to_rabbitmq, name='send_message'),
     path('receive_message/', views.receive_from_rabbitmq, name='receive_message'),
-    path('list_friends/', UserController().list_friends, name='list_friend'),
-    path('add_friend/<uuid:id>', UserController().add_friend, name='add_friend'),
-    path('remove_friend/<uuid:id>', UserController().remove_friend, name='remove_friend'),
-    path('search_friend/', UserController().search_friend, name='search_friend'),
-    path('search_user/', UserController().search_user, name='search_user'),
+    # path('list_friends/', UserController().list_friends, name='list_friend'),
+    # path('add_friend/<uuid:id>', UserController().add_friend, name='add_friend'),
+    # path('remove_friend/<uuid:id>', UserController().remove_friend, name='remove_friend'),
+    # path('search_friend/', UserController().search_friend, name='search_friend'),
+    # path('search_user/', UserController().search_user, name='search_user'),
 ]
 
