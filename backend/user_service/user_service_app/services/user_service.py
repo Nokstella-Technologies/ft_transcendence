@@ -18,7 +18,7 @@ class UserService:
             return JsonResponse({'message': 'Email already exists'}, status=409)
 
         # Cria o novo usuário com hashing de senha
-        user = User.objects.create(username=username, email=email, password_hash=make_password(password), status='offline')
+        user = User.objects.create(username=username, email=email, password=make_password(password), status='offline')
         PlayerStats.objects.create(user_id=user)
         GameAppearance.objects.create(user_id=user)
         return JsonResponse(model_to_dict(user), status=201)

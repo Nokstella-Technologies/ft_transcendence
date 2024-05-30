@@ -1,10 +1,7 @@
 import json
-import jwt
-import pika
-from datetime import datetime, timedelta
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from ..service.auth_service import login_service
 
 @csrf_exempt
 def login(request):

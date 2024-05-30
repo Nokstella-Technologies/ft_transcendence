@@ -1,2 +1,3 @@
-Django
 djangorestframework
+pika
+Django==4.2.2
