@@ -15,7 +15,7 @@ def generate_jwt_token(user):
         "exp": int((datetime.utcnow() + timedelta(hours=24)).timestamp())
     }).encode()).decode().strip('=')
     signature = base64.urlsafe_b64encode(hmac.new(secret_key.encode(), f"{header}.{payload}".encode(), hashlib.sha256).digest()).decode().strip('=')
-    
+
     return f"{header}.{payload}.{signature}"
 
 def decode_jwt(token):
@@ -29,9 +29,8 @@ def decode_jwt(token):
         return "Invalid Token", 401
 
     payload_data = json.loads(base64.urlsafe_b64decode(payload + '=='))
-    
+
     if datetime.utcnow().timestamp() > payload_data['exp']:
         return "Token expired", 401
     return "Token Valid", 200
 
-    
