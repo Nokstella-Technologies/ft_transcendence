@@ -13,6 +13,7 @@ services:
       - ./backend/.env
     depends_on:
       - rabbitmq
+      - gateway
       - postgres
     networks:
       - transcendence
@@ -21,35 +22,31 @@ services:
     container_name: auth_service
     build:
       context: ./backend/auth_service
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python3 manage.py runserver 0.0.0.0:8002
     volumes:
       - ./backend/auth_service:/usr/src/app/
     ports:
-      - "8002:8000"
+      - "8002:8002"
     env_file:
       - ./backend/.env
     depends_on:
       - rabbitmq
+      - gateway
       - postgres
     networks:
       - transcendence
 
-  kong:
-    image: kong:latest
-    container_name: kong
-    environment:
-      - KONG_DATABASE=off
-      - KONG_DECLARATIVE_CONFIG=/usr/local/kong/kong.yml
-    env_file: "kong/.env"
+  gateway:
+    container_name: gateway
+    build:
+      context: ./backend/gateway
+    command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./kong/kong.yml:/usr/local/kong/kong.yml
+      - ./backend/gateway:/usr/src/app/
     ports:
-      - "8000:8000"  # Porta HTTP
-      - "8443:8443"  # Porta HTTPS
-    depends_on:
-      - frontend
-      - user_service
-      - auth_service
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
     networks:
       - transcendence
 
