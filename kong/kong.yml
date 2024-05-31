@@ -1,10 +1,32 @@
-_format_version: "1.1"
+_format_version: "3.0"
+_transform: true
+
 services:
-  - name: frontend
-    url: http://frontend
+  - name: user_service
+    url: http://localhost:8001
     routes:
-      - name: frontend
+      - name: user_service_public_route
         paths:
-          - "/"
-        strip_path: false
-        preserve_host: true
+          - /user/create
+      - name: user_service_private_route
+        paths:
+          - /user/
+        plugins:
+          - name: request-transformer
+            config:
+              http_method: GET
+              add:
+                headers:
+                  - "X-Auth-Token: {request.headers.Authorization}"
+              remove:
+                headers:
+                  - "Authorization"
+             
+            
+
+  - name: auth_service
+    url: http://localhost:8002
+    routes:
+      - name: auth_service_route
+        paths:
+          - /auth

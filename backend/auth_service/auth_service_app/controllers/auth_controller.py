@@ -7,11 +7,12 @@ from ..utils.jwt import decode_jwt
 
 @csrf_exempt
 def verify_jwt_token(request):
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith('Bearer '):
+    print(request.headers)
+    if request.method != 'GET':
+        return JsonResponse({"message":"Only GET requests are allowed"}, 405)
+    token = request.headers.get('X-Auth-Token')
+    if not token:
         return JsonResponse({'error': 'Authorization header missing or malformed'}, status=401)
-
-    token = auth_header.split(' ')[1]
 
     try:
         strn, status = decode_jwt(token)

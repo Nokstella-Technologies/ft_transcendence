@@ -8,7 +8,7 @@ services:
     volumes:
       - ./backend/user_service:/usr/src/app/
     ports:
-      - "8000:8000"
+      - "8001:8001"
     env_file:
       - ./backend/.env
     depends_on:
@@ -25,7 +25,7 @@ services:
     volumes:
       - ./backend/auth_service:/usr/src/app/
     ports:
-      - "8001:8000"
+      - "8002:8000"
     env_file:
       - ./backend/.env
     depends_on:
@@ -48,6 +48,8 @@ services:
       - "8443:8443"  # Porta HTTPS
     depends_on:
       - frontend
+      - user_service
+      - auth_service
     networks:
       - transcendence
 
