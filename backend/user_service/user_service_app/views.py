@@ -37,9 +37,6 @@ def login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # Adicionando mensagens de depuração
-        print(f"Tentativa de login com username: {username} e senha: {password}")
-
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
@@ -81,7 +78,7 @@ def receive_from_rabbitmq(request):
             else:
                 return JsonResponse({'status': 'empty', 'message': 'No messages in queue'}, status=200)
         except Exception as e:
-            print(f"Error receivi   ng message: {e}")
+            print(f"Error receiving message: {e}")
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     else:
         return HttpResponse(status=405)
@@ -89,7 +86,6 @@ def receive_from_rabbitmq(request):
 
 
 def callback(ch, method, properties, body):
-    print(f" [x] Received {body}")
     channel = connection.channel()
     channel.queue_declare(queue='user')
 

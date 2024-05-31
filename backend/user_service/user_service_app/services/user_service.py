@@ -26,7 +26,15 @@ class UserService:
     def get_user(self, user_id):
         try:
             user = User.objects.get(user_id=user_id)
-            return JsonResponse(model_to_dict(user), status=200)
+            stats = PlayerStats.objects.filter(user_id=user_id).values()
+            appearance = GameAppearance.objects.filter(user_id=user_id).values()
+
+            user_data = model_to_dict(user)
+            user_data['user_id'] = user_id
+            user_data['stats'] = list(stats)
+            user_data['appearance'] = list(appearance)
+
+            return JsonResponse(user_data, status=200)
         except User.DoesNotExist:
             return JsonResponse({'message': 'User not found'}, status=404)
 

@@ -6,7 +6,6 @@ import urllib
 
 def generate_qr_code(user):
     secret = generate_secret()
-    print(user)
     user_db = User.objects.get(user_id=user['user_id'])
 
     # Salve a chave secreta no perfil do usuário
