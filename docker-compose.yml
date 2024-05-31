@@ -35,6 +35,23 @@ services:
     networks:
       - transcendence
 
+  game_service:
+    container_name: game_service
+    build:
+      context: ./backend/game_service
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend/game_service:/usr/src/app/
+    ports:
+      - "8002:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - transcendence
+
 
   react:
     container_name: react
