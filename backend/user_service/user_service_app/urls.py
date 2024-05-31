@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from user_service_app.controllers.user_controller import UserController
 from user_service_app.controllers.friend_controller import FriendController
+from user_service_app.controllers.game_appearance_controller import GameAppearanceController
 from .controllers.two_fa_controller import qr_generator
 
 urlpatterns = [
@@ -20,6 +21,7 @@ urlpatterns = [
 	path('accept_friend/<uuid:id>', FriendController.accept_friend, name='accept_friend'),
     path('remove_friend/<uuid:id>', FriendController().remove_friend, name='remove_friend'),
     path('search_user/', FriendController().search_user, name='search_user'),
-
+    path('update_appearance/<uuid:user_id>', GameAppearanceController.update_appearance, name='update_appearance'),
+    path('get_appearance/<uuid:user_id>', GameAppearanceController.get_appearance, name='get_appearance'),
 ]
 
