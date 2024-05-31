@@ -2,7 +2,7 @@ import React from 'react';
 
 const PlayerCard = ({ player, place }) => {
     return (
-        <div className={`place ${place}`}>
+        <div class={`place ${place}`}>
             <img src={player.image} alt={player.name} />
             <p>{player.name}</p>
         </div>

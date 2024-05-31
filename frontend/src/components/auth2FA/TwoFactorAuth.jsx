@@ -10,10 +10,10 @@ const TwoFactorAuth = () => {
   };
 
   return (
-    <div className="a2fa-container-login">
-      <label className="switch">
+    <div class="a2fa-container-login">
+      <label class="switch">
         <input type="checkbox" onChange={handleToggle} />
-        <span className="slider"></span>
+        <span class="slider"></span>
       </label>
       <label>Autenticação de 2 Fatores</label>
       <Popup

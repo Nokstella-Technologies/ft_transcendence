@@ -3,7 +3,7 @@ import './link.css';
 
 const Link = ({ href, children }) => {
   return (
-    <a href={href} className="custom-link">
+    <a href={href} class="custom-link">
       {children}
     </a>
   );
