@@ -1,8 +1,12 @@
 import Component from '../../../react/Component.js';
+import authProvider from '../../provider/authProvider.js';
 
 class LoginForm extends Component {
     constructor(to) {
         super(to);
+        if (window.location.search.search("code") !== -1) {
+            // authProvider.login42(window.location.search)
+        }
         this.init();
     }
 
@@ -36,23 +40,12 @@ class LoginForm extends Component {
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            let res = await fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: this.email(),
-                    password: this.password()
-                })
+            await authProvider.login(this.email(), this.password()).then(() =>{
+                window.location.href = '/home';
+            }).catch(err => {
+                alert(err.message)
             });
-            if (res.status === 200) {
-                window.location.href = '/game';
-                const body = JSON.parse(res.body)
-                sessionStorage.setItem('token', body.token);
-            } else {
-                alert(body.message);
-            }
+            
         });
 
         emailInput.addEventListener('input', (e) => {
@@ -63,6 +56,15 @@ class LoginForm extends Component {
             this.setPassword(e.target.value);
 
         }); 
+
+        const login42 = async () => {
+            const clientID = "u-s4t2ud-02969ded8f525ab740688ae88c19e30b6f5f25582c0fa571d8db9c20e27ccfe3"
+            const redirect = "https://localhost/"
+            const authUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirect)}&response_type=code`;
+            window.location.href = authUrl;
+        }
+
+        document.querySelector('.btn-dark').addEventListener('click', login42);
     }
 }
 

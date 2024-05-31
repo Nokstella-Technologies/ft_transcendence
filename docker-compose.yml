@@ -2,48 +2,50 @@ version: "3.8"
 
 services:
   user_service:
-    container_name: user_service
+    container_name: user-service
     build:
       context: ./backend/user_service
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/user_service:/usr/src/app/
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     env_file:
       - ./backend/.env
     depends_on:
       - rabbitmq
+      - gateway
       - postgres
     networks:
       - transcendence
 
   auth_service:
-    container_name: auth_service
+    container_name: auth-service
     build:
       context: ./backend/auth_service
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/auth_service:/usr/src/app/
-    ports:
-      - "8001:8000"
+    expose:
+      - "8000"
     env_file:
       - ./backend/.env
     depends_on:
       - rabbitmq
+      - gateway
       - postgres
     networks:
       - transcendence
 
   game_service:
-    container_name: game_service
+    container_name: game-service
     build:
       context: ./backend/game_service
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/game_service:/usr/src/app/
-    ports:
-      - "8002:8000"
+    expose:
+      - "8000"
     env_file:
       - ./backend/.env
     depends_on:
@@ -52,13 +54,27 @@ services:
     networks:
       - transcendence
 
+  gateway:
+    container_name: gateway
+    build:
+      context: ./backend/gateway
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend/gateway:/usr/src/app/
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    networks:
+      - transcendence
 
-  react:
-    container_name: react
+  frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
     volumes:
-      - ./frontend:/usr/src/app
+      - ./frontend:/usr/share/nginx/html
     ports:
       - 3000:3000
     env_file:
@@ -82,15 +98,15 @@ services:
     networks:
       - transcendence
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    networks:
-      - monitoring
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   ports:
+  #     - "3001:3000"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   networks:
+  #     - monitoring
 
   # elasticsearch:
   #   image: elasticsearch:7.16.2
