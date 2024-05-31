@@ -1,3 +1,4 @@
+version: "3.8"
 
 services:
   user_service:
@@ -58,10 +59,11 @@ services:
     volumes:
       - ./frontend:/usr/share/nginx/html
     ports:
-      - "80:80"  # Porta HTTP
-      - "443:443"  # Porta HTTPS
+      - 3000:3000
     env_file:
-      - frontend/.env
+      - ./frontend/.env
+    depends_on:
+      - postgres
     networks:
       - transcendence
 
