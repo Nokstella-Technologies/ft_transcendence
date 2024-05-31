@@ -15,10 +15,8 @@ def verify_jwt_token(request):
     token = request.headers.get('X-Auth-Token')
     if not token:
         return JsonResponse({'error': 'Authorization header missing or malformed'}, status=401)
-
     try:
         strn, status = decode_jwt(token)
-
         return JsonResponse({'message': strn}, status=status)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)

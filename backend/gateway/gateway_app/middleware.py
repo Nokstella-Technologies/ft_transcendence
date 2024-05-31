@@ -1,5 +1,12 @@
-import requests
+import http.client
+from urllib.parse import urlparse
 from django.http import JsonResponse
+from django.utils.deprecation import MiddlewareMixin
+
+class DisableCSRF(MiddlewareMixin):
+    def process_request(self, request):
+        setattr(request, '_dont_enforce_csrf_checks', True)
+
 
 class AuthMiddleware:
     def __init__(self, get_response):
@@ -9,7 +16,9 @@ class AuthMiddleware:
         ]
         # Define the route prefixes that do not require authentication
         self.public_prefixes = [
-            '/public/',  # Example: all routes starting with /public/
+            '/public/user/create',
+            '/public/auth/login',
+            '/public/auth/oauth2/authorize'  # Example: all routes starting with /public/
         ]
 
 
@@ -29,12 +38,22 @@ class AuthMiddleware:
                     token = bearer.split(' ')[1]
                     if (token == ''): 
                         return JsonResponse({'error': 'Invalid token'}, status=401)
-                    response = requests.post('http://localhost:8002/auth/authorized', headers={'X-Auth-Token': token})
-                    if response.status_code != 200:
+                     
+                    # Prepare connection and request
+                    parsed_url = urlparse('http://auth-service:8000/auth/authorized/')
+                    conn = http.client.HTTPConnection(parsed_url.hostname, parsed_url.port)
+                    headers = {'X-Auth-Token': token}
+                    conn.request("GET", parsed_url.path, headers=headers)
+                    
+                    # Get response
+                    response = conn.getresponse()
+                    if response.status != 200:
                         return JsonResponse({'error': 'Invalid token'}, status=401)
-                except requests.RequestException as e:
+                    conn.close()
+                    return self.get_response(request)
+                except Exception as e:
                     return JsonResponse({'error': str(e)}, status=500)
-            else:
-                return JsonResponse({'error': 'No token provided'}, status=401)
-        response = self.get_response(request)
-        return response
+                finally:
+                    conn.close()
+        return JsonResponse({'error': 'No token provided'}, status=401)
+        
