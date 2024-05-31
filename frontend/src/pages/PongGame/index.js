@@ -57,7 +57,7 @@
             };
 
             if (!this.gameOver() && this.game == null) {
-                this.game = new Game('#game-container', undefined, score, this.gameOver);
+                this.game = new Game('#game-container', "player2", score, this.gameOver);
                 this.game.reRender();
             } else if (this.gameOver()){
                 document.querySelector('.btn').addEventListener('click', () => { 
