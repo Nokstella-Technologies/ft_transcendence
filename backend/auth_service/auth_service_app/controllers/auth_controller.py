@@ -55,21 +55,14 @@ def oauth_callback(request):
         'redirect_uri': redirect_uri
     }
 
-    print("Token Data:", token_data)
-
     conn = http.client.HTTPSConnection(token_host)
     headers = {'Content-type': 'application/x-www-form-urlencoded'}
     conn.request('POST', token_path, urlencode(token_data), headers)
     response = conn.getresponse()
-    print (response)
     token_response = response.read().decode()
     token_json = json.loads(token_response)
     access_token = token_json.get('access_token')
     conn.close()
-
-    print("Response Status:", response.status)
-    print("Response Reason:", response.reason)
-    print("Token Response:", token_json)
 
     if access_token:
         user_info_host = 'api.intra.42.fr'

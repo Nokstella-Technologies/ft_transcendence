@@ -1,5 +1,5 @@
+
 import json
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from user_service_app.services.user_service import UserService

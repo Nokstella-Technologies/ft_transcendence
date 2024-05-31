@@ -44,9 +44,7 @@ def handle_authenticate_or_register(user_info):
 def start_consumer():
     def on_request(ch, method, props, body):
         data = json.loads(body)
-        print(" [x] Received %r" % data)
         action = data.get('action')
-        print (action)
         response = {}
 
          # Diferencia entre os tipos de ação

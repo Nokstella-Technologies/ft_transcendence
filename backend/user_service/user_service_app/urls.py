@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from user_service_app.controllers.user_controller import UserController
+from user_service_app.controllers.friend_controller import FriendController
 from .controllers.two_fa_controller import qr_generator
 
 urlpatterns = [
@@ -14,10 +15,11 @@ urlpatterns = [
     path('send_message/', views.send_to_rabbitmq, name='send_message'),
     path('receive_message/', views.receive_from_rabbitmq, name='receive_message'),
     path('2fa_qrcode/', qr_generator, name='qr_generator'),
-    # path('list_friends/', UserController().list_friends, name='list_friend'),
-    # path('add_friend/<uuid:id>', UserController().add_friend, name='add_friend'),
-    # path('remove_friend/<uuid:id>', UserController().remove_friend, name='remove_friend'),
-    # path('search_friend/', UserController().search_friend, name='search_friend'),
-    # path('search_user/', UserController().search_user, name='search_user'),
+    path('list_friends/<uuid:id>', FriendController().list_friends, name='list_friend'),
+    path('add_friend/<uuid:id>', FriendController().add_friend, name='add_friend'),
+	path('accept_friend/<uuid:id>', FriendController.accept_friend, name='accept_friend'),
+    path('remove_friend/<uuid:id>', FriendController().remove_friend, name='remove_friend'),
+    path('search_user/', FriendController().search_user, name='search_user'),
+
 ]
 

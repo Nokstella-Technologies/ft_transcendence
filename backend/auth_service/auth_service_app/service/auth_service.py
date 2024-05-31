@@ -72,7 +72,6 @@ def authenticate_or_register_user(user_data):
         nonlocal response
         if correlation_id == properties.correlation_id:
             response = json.loads(body)
-            print (response)
             ch.stop_consuming()
 
     channel.basic_consume(
