@@ -4,6 +4,9 @@ import authProvider from '../../provider/authProvider.js';
 class LoginForm extends Component {
     constructor(to) {
         super(to);
+        if (window.location.search.search("code") !== -1) {
+            // authProvider.login42(window.location.search)
+        }
         this.init();
     }
 
@@ -53,6 +56,15 @@ class LoginForm extends Component {
             this.setPassword(e.target.value);
 
         }); 
+
+        const login42 = async () => {
+            const clientID = "u-s4t2ud-02969ded8f525ab740688ae88c19e30b6f5f25582c0fa571d8db9c20e27ccfe3"
+            const redirect = "https://localhost/"
+            const authUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirect)}&response_type=code`;
+            window.location.href = authUrl;
+        }
+
+        document.querySelector('.btn-dark').addEventListener('click', login42);
     }
 }
 
