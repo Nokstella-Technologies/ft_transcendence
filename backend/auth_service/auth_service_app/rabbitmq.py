@@ -9,6 +9,5 @@ try:
     connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq", 5672, '/', credentials))
     channel = connection.channel()
     print("ok test rabbitmq connected")
-
 except Exception as e:
     print(e)
