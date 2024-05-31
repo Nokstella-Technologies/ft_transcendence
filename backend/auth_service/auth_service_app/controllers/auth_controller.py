@@ -1,13 +1,11 @@
 import json
 import http.client
+import os
 from urllib.parse import urlencode
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from ..service.auth_service import login_service, authenticate_or_register_user
 from ..utils.jwt import decode_jwt, generate_jwt_token
-
-
-
 
 @csrf_exempt
 def verify_jwt_token(request):
@@ -40,11 +38,14 @@ def login(request):
 @csrf_exempt
 def oauth_callback(request):
     code =  json.loads(request.body).get('code')
-    client_id = 'u-s4t2ud-02969ded8f525ab740688ae88c19e30b6f5f25582c0fa571d8db9c20e27ccfe3'
-    client_secret = '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'
+    client_id = os.getenv('CLIENT_42_ID', 'err')
+    client_secret = os.getenv('CLIENT_42_SECRET', 'err')
     redirect_uri = 'https://localhost'
     token_host = 'api.intra.42.fr'
     token_path = '/oauth/token'
+
+    if client_id == 'err' or client_secret == 'err':
+        return JsonResponse({'error': '42 Client ID or 42 Client Secret not found'}, status=400)
 
     token_data = {
         'grant_type': 'authorization_code',
