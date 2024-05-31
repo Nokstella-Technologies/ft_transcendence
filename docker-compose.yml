@@ -1,22 +1,15 @@
+version: "3.8"
 
 services:
   user_service:
     container_name: user_service
     build:
       context: ./backend/user_service
-    command: python3 manage.py runserver 0.0.0.0:8001
+    command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/user_service:/usr/src/app/
     ports:
-      - "8001:8001"
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=757c082fdb2523061f228caaaa9347c2211f6f3bd93366c832bf1d94acf1eb4d
-      - ALLOWED_HOSTS=localhost,127.0.0.1
-      - POSTGRES_NAME=postgres
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - "8000:8000"
     env_file:
       - ./backend/.env
     depends_on:
@@ -25,33 +18,36 @@ services:
     networks:
       - transcendence
 
-  kong:
-    image: kong:latest
-    container_name: kong
-    environment:
-      - KONG_DATABASE=off
-      - KONG_DECLARATIVE_CONFIG=/usr/local/kong/kong.yml
-    env_file: "kong/.env"
+  auth_service:
+    container_name: auth_service
+    build:
+      context: ./backend/auth_service
+    command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./kong/kong.yml:/usr/local/kong/kong.yml
+      - ./backend/auth_service:/usr/src/app/
     ports:
-      - "8000:8000"  # Porta HTTP
-      - "8443:8443"  # Porta HTTPS
+      - "8001:8000"
+    env_file:
+      - ./backend/.env
     depends_on:
-      - frontend
+      - rabbitmq
+      - postgres
     networks:
       - transcendence
 
-  frontend:
+
+  react:
+    container_name: react
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    container_name: frontend
+    volumes:
+      - ./frontend:/usr/src/app
     ports:
-      - "80:80"  # Porta HTTP
-      - "443:443"  # Porta HTTPS
+      - 3000:3000
     env_file:
-      - frontend/.env
+      - ./frontend/.env
+    depends_on:
+      - postgres
     networks:
       - transcendence
 
@@ -61,7 +57,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       - CHOKIDAR_USEPOLLING=true
     env_file:
@@ -79,64 +75,64 @@ services:
     networks:
       - monitoring
 
-  elasticsearch:
-    image: elasticsearch:7.16.2
-    container_name: elasticsearch
-    restart: always
-    volumes:
-      - elastic_data:/usr/share/elasticsearch/data/
-    environment:
-      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
-      discovery.type: single-node
-    ports:
-      - '9200:9200'
-      - '9300:9300'
-    networks:
-      - elk
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2g
+  # elasticsearch:
+  #   image: elasticsearch:7.16.2
+  #   container_name: elasticsearch
+  #   restart: always
+  #   volumes:
+  #     - elastic_data:/usr/share/elasticsearch/data/
+  #   environment:
+  #     ES_JAVA_OPTS: "-Xmx1g -Xms1g"
+  #     discovery.type: single-node
+  #   ports:
+  #     - '9200:9200'
+  #     - '9300:9300'
+  #   networks:
+  #     - elk
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1.0'
+  #         memory: 2g
 
-  logstash:
-    image: logstash:7.16.2
-    container_name: logstash
-    restart: always
-    volumes:
-      - ./logstash/:/logstash_dir
-    command: logstash -f /logstash_dir/logstash.conf
-    depends_on:
-      - elasticsearch
-    ports:
-      - '9600:9600'
-    environment:
-      LS_JAVA_OPTS: "-Xmx1g -Xms1g"
-    networks:
-      - elk
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2g
+  # logstash:
+  #   image: logstash:7.16.2
+  #   container_name: logstash
+  #   restart: always
+  #   volumes:
+  #     - ./logstash/:/logstash_dir
+  #   command: logstash -f /logstash_dir/logstash.conf
+  #   depends_on:
+  #     - elasticsearch
+  #   ports:
+  #     - '9600:9600'
+  #   environment:
+  #     LS_JAVA_OPTS: "-Xmx1g -Xms1g"
+  #   networks:
+  #     - elk
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1.0'
+  #         memory: 2g
 
-  kibana:
-    image: kibana:7.16.2
-    container_name: kibana
-    restart: always
-    ports:
-      - '5601:5601'
-    environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-    depends_on:
-      - elasticsearch
-    networks:
-      - elk
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2g
+  # kibana:
+  #   image: kibana:7.16.2
+  #   container_name: kibana
+  #   restart: always
+  #   ports:
+  #     - '5601:5601'
+  #   environment:
+  #     - ELASTICSEARCH_URL=http://elasticsearch:9200
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - elk
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1.0'
+  #         memory: 2g
 
   rabbitmq:
     build:
