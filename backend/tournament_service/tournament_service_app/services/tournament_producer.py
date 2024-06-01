@@ -1,0 +1,1 @@
+def publish_game_to_game_service(game)

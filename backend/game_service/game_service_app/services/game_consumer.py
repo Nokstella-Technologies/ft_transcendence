@@ -5,8 +5,6 @@ from ..rabbitmq import parameters
 from ..models import Game
 from django.forms.models import model_to_dict
 
-
-
 connection = pika.BlockingConnection(parameters=parameters)
 channel = connection.channel()
 

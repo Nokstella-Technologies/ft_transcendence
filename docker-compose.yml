@@ -53,6 +53,23 @@ services:
       - postgres
     networks:
       - transcendence
+  
+  tournament_service:
+    container_name: tournament-service
+    build:
+      context: ./backend/tournament_service
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend/tournament_service:/usr/src/app/
+    expose:
+      - "8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - transcendence
 
   gateway:
     container_name: gateway
