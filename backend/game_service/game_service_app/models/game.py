@@ -8,7 +8,7 @@ class Game(models.Model):
     score_player1 = models.IntegerField(default=0)
     score_player2 = models.IntegerField(default=0)
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    end_time = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=50)
     type = models.CharField(max_length=50)
 

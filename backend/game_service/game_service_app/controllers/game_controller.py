@@ -10,12 +10,14 @@ def start_game(request):
 		data = json.loads(request.body.decode('utf-8'))
 		player1_id = data['player1_id']
 		player2_id = data['player2_id']
+		type = data['type']
 		if not player1_id or not player2_id:
 			return JsonResponse({"Error": "Both players are required."}, status=400)
 		message={
 			"action": "start_game",
 			"player1_id": player1_id,
-			"player2_id": player2_id
+			"player2_id": player2_id,
+			"type": type
 		}
 		response = send_to_queue("START_GAME", message)
 		return JsonResponse(response)

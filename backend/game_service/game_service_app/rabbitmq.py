@@ -6,8 +6,9 @@ rabbitmq_user = os.getenv('RABBITMQ_USER', 'guest')
 rabbitmq_pass = os.getenv('RABBITMQ_PASS', 'guest')
 try:
     credentials = pika.PlainCredentials("guest", "guest")
-    connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq", 5672, '/', credentials))
+    parameters = pika.ConnectionParameters("rabbitmq", 5672, '/', credentials)
+    connection = pika.BlockingConnection(parameters=parameters)
     channel = connection.channel()
-    print("ok test rabbitmq connected")
+    print("Rabbitmq connected")
 except Exception as e:
     print(e)
