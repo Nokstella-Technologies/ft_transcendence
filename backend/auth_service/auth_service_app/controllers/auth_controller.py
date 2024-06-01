@@ -9,7 +9,6 @@ from ..utils.jwt import decode_jwt, generate_jwt_token
 
 @csrf_exempt
 def verify_jwt_token(request):
-    print(request.headers)
     if request.method != 'GET':
         return JsonResponse({"message":"Only GET requests are allowed"}, 405)
     token = request.headers.get('X-Auth-Token')
