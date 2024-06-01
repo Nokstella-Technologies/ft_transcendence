@@ -22,8 +22,9 @@ class LoginForm extends Component {
     render() {
         return `
             <form id="login-form">
+                <div id="error-message" class="text-danger"></div>
                 <div class="form-group">
-                    <input type="text" autocomplete="username" class="form-control" id="email" placeholder="Email" value="${this.email()}" required>
+                    <input type="text" autocomplete="username" class="form-control" id="email" placeholder="Username" value="${this.email()}" required>
                 </div>
                 <div class="form-group">
                     <input type="password" autocomplete="current-password" class="form-control" id="password" placeholder="Senha" value="${this.password()}" required>
@@ -37,16 +38,22 @@ class LoginForm extends Component {
     mount() {
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('error-message');
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await authProvider.login(this.email(), this.password()).then(() =>{
-                window.location.href = '/home';
-            }).catch(err => {
-                alert(err.message)
+            if (this.email() === '' || this.password() === '') {
+                this.errorMessage = 'Por favor, preencha todos os campos.';
+            }
+            try {
+                const res = await authProvider.login(this.email(), this.password())
+                if (res.status === 200) {
+                    window.location.href = '/home';
+                }
+            } catch(err) {
+                errorMessage.textContent = 'Usuário ou senha inválidos';
+            }       
             });
-            
-        });
 
         emailInput.addEventListener('input', (e) => {
             this.setEmail(e.target.value);

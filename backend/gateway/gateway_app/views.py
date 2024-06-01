@@ -42,7 +42,7 @@ class ProxyView(View):
             conn.request(method=request.method, url=url, body=request.body, headers=headers)
             response = conn.getresponse()
             response_data = response.read()
-
+            conn.close()
             return HttpResponse(response_data, status=response.status, content_type=response.getheader('Content-Type'))
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
