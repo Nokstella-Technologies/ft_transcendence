@@ -5,19 +5,20 @@ from ..rabbitmq import channel
 from ..services.game_producer import send_to_queue
 
 @csrf_exempt
-def start_game(request):
-	if request.method == 'POST':
+def update_game(request, id):
+	if request.method == 'PUT':
 		data = json.loads(request.body.decode('utf-8'))
-		player1_id = data['player1_id']
-		player2_id = data['player2_id']
-		type = data['type']
-		if not player1_id or not player2_id or not type:
-			return JsonResponse({"Error": "Both players are required."}, status=400)
+		score_player1 = data['score_player1']
+		score_player2 = data['score_player2']
+		end = data['end']
+		if not score_player1 or not score_player2:
+			return JsonResponse({"Error": "Score games are required."}, status=400)
 		message={
-			"action": "start_game",
-			"player1_id": player1_id,
-			"player2_id": player2_id,
-			"type": type
+			"action": "update_game",
+			"score_player1": score_player1,
+			"score_player2": score_player2,
+			"id": str(id),
+			"end": end
 		}
 		response = send_to_queue("START_GAME", message)
 		return JsonResponse(response)

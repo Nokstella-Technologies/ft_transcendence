@@ -7,7 +7,7 @@ import uuid
 @csrf_exempt
 def send_to_queue(queue_name, message):
     result = channel.queue_declare(queue=queue_name, durable=True)
-    callback_queue=channel.queue_declare(queue=queue_name+"_RESPONSE", exclusive=True).method.queue
+    callback_queue=channel.queue_declare(queue=queue_name+"_RESPONSE").method.queue
     correlation_id = str(uuid.uuid4())
     response = None
 
