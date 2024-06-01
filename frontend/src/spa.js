@@ -13,7 +13,7 @@ async function route(path) {
         "/register": new SingUp('#app'),
         "/home": new Home("#app"),
     }
-    if (path === "" || path === "/" || path === "register")  {
+    if (path === "" || path === "/" || path === "/register")  {
         return routes[path]
     }
     return await securityRoutes(routes[path])

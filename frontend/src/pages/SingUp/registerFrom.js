@@ -1,4 +1,5 @@
 import Component from '../../../react/Component.js';
+import authProvider from '../../provider/authProvider.js';
 
 class RegisterForm extends Component {
     constructor(to) {
@@ -10,33 +11,34 @@ class RegisterForm extends Component {
         const [email, setEmail] = this.useState('');
         const [username, setUsername] = this.useState('');
         const [password, setPassword] = this.useState('');
-        const [Confirmpassword, setConfirmPassword] = this.useState('');
+        const [confirmPassword, setConfirmPassword] = this.useState('');
         this.email = email;
         this.setEmail = setEmail;
         this.password = password;
         this.setPassword = setPassword;
         this.username = username;
         this.setUsername = setUsername;
-        this.Confirmpassword = Confirmpassword;
+        this.confirmPassword = confirmPassword;
         this.setConfirmPassword = setConfirmPassword;
     }
 
     render() {
         return `
             <form id="register-form">
+                <div id="error-message" class="text-danger"></div>
                 <div class="form-group">
                     <input type="email" class="form-control" id="email" placeholder="Email" value="${this.email()}" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" id="username" autocomplete="username" placeholder="Username" value="${this.email()}" required>
+                    <input type="text" class="form-control" id="username" autocomplete="username" placeholder="Username" value="${this.username()}" required>
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-control" id="password" autocomplete="new-password" placeholder="Nova Senha" value="${this.password()}" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" id="confirmedPassword" autocomplete="new-password" placeholder="Confirme Senha" value="${this.password()}" required>
+                    <input type="password" class="form-control" id="confirmedPassword" autocomplete="new-password" placeholder="Confirme Senha" value="${this.confirmPassword()}" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Login</button>
+                <button type="submit" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Registrar</button>
             </form>
         `;
     }
@@ -46,25 +48,30 @@ class RegisterForm extends Component {
         const username = document.getElementById('username');
         const passwordInput = document.getElementById('password');
         const confirmedPassword = document.getElementById('confirmedPassword');
+        const errorMessage = document.getElementById('error-message');
 
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            let res = await fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: this.email(),
-                    password: this.password()
-                })
-            });
-            if (res.status === 200) {
-                window.location.href = '/game';
-                const body = JSON.parse(res.body)
-                sessionStorage.setItem('token', body.token);
-            } else {
-                alert(body.message);
+            errorMessage.textContent = '';
+
+            // Validação dos campos
+            if (!this.email() || !this.username() || !this.password() || !this.confirmPassword()) {
+                errorMessage.textContent = 'Por favor, preencha todos os campos.';
+                return;
+            }
+
+            // Verificar se as senhas são iguais
+            if (this.password() !== this.confirmPassword()) {
+                errorMessage.textContent = 'As senhas não coincidem.';
+                return;
+            }
+            try {
+                const res = await authProvider.createAccount(this.username(), this.email(), this.password())
+                if (res.status === 201) {
+                    window.location.href = '/';
+                }
+            }catch(err) {
+                errorMessage.textContent = "usuario already existis";
             }
         });
 
