@@ -19,7 +19,9 @@ def start_game(request):
 			"player2_id": player2_id,
 			"type": type
 		}
+		# TODO validar se user existe no banco
 		response = send_to_queue("START_GAME", message)
+		# TODO se for torneio criar fila de endgae pro torneio consumir
 		return JsonResponse(response)
 	else:
 		return HttpResponseBadRequest("Only POST request are allowed.")
