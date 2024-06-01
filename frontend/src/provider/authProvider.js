@@ -21,24 +21,41 @@ class AuthProvider {
     }
 
     async login(username, password) {
-        // request com o username e password para criar token
-        console.log(username, password);
-        if (username !== "test@test" && password !== "test") {
-            throw new Error("Usuário ou senha inválidos");
+        const res = await fetch('http://localhost:8000/public/auth/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+        if (res.status === 200) {
+            const data = await res.json();
+            sessionStorage.setItem("token", data.token);
+            this.authenticated = true;
+            return user;
         }
-        const user = {
-            user_id: "test" ,
-            username: username,
-            email: "luizlcezario@gmail.com",
-            is_auth: false ,
-            profile_picture: "https://img.icons8.com/ios-glyphs/30/00ffea/user",
-            status: "active",
+        throw new Error("Erro ao logar");
+    }
+
+    async createAccount(username, email, password) {
+        const res = await fetch('http://localhost:8000/public/user/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password
+            })
+        })
+        if (res.status === 201) {
+            return res;
         }
-        sessionStorage.setItem("token", "token");
-        sessionStorage.setItem("user",  JSON.stringify(user));
-        this.user = user;
-        this.authenticated = true;
-        return user;
+        throw new Error("Erro ao criar conta");
     }
 
     async isAuthenticated(token) {
