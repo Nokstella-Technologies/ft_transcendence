@@ -16,7 +16,7 @@ def send_to_queue(queue_name, message):
             response = json.loads(body)
             ch.stop_consuming()
 
-    channel.basic_consuming(
+    channel.basic_consume(
         queue='',
         on_message_callback=on_response,
         auto_ack = True,
