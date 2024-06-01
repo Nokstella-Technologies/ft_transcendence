@@ -1,104 +1,44 @@
 import json
-import pika
-import time
-from ..utils.jwt import generate_jwt_token
-from django.http import JsonResponse
-from ..rabbitmq import channel, connection
-import uuid
+from urllib.parse import urlencode
+import http.client
+from .auth_user_consumer import authenticate_user
 
-TIMEOUT_SECONDS = 5
+
 
 def login_service(username, password):
-	credentials = {'username': username, 'password': password}
+    credentials = {'username': username, 'password': password, 'action': 'authenticate'}
+    return authenticate_user(credentials)
 
-	valid_credentials = authenticate_user(credentials)
+def verify_2fa_secret(token, user_data):
+    data = {'action':'verify_2fa_secret', 'token': token, 'user_id': user_data}
+    return authenticate_user(data)
+      
 
-	if valid_credentials != None and valid_credentials['valid'] == True:
-		token = generate_jwt_token(valid_credentials["user"])
-		return JsonResponse({'token': token})
-	else:
-		return JsonResponse({'error': 'Invalid credentials'}, status=401)
 
-def authenticate_user(credentials):
-    credentials['action'] = 'authenticate'
-    channel.queue_declare(queue='CREDENTIALS_TO_AUTHENTICATE')
-    response = None
-    response_queue = channel.queue_declare(queue='AUTH_LOGIN', exclusive=True).method.queue
+def login_42_service(user_data):
+    host_42 = 'api.intra.42.fr'
+    token_path = '/oauth/token'
+    conn = http.client.HTTPSConnection(host_42)
+    headers = {'Content-type': 'application/x-www-form-urlencoded'}
+    conn.request('POST', token_path, urlencode(user_data), headers)
+    response = conn.getresponse()
+    token_response = response.read().decode()
+    token_json = json.loads(token_response)
+    access_token = token_json.get('access_token')
+    conn.close()
+    if access_token:
+        user_info_path = '/v2/me'
+        conn = http.client.HTTPSConnection(host_42)
+        headers = {'Authorization': f'Bearer {access_token}'}
+        conn.request('GET', user_info_path, headers=headers)
+        response = conn.getresponse()
+        user_info_response = response.read().decode()
+        user_info = json.loads(user_info_response)
+        conn.close()
+        user_info['action'] = 'authenticate_or_register'
+        return authenticate_user(user_info)
+        
+          
 
-    correlation_id = str(uuid.uuid4())
-
-    def on_response(ch, method, properties, body):
-        nonlocal response
-        if correlation_id == properties.correlation_id:
-            response = json.loads(body)
-            ch.stop_consuming()
-
-    channel.basic_consume(
-        queue=response_queue,
-        on_message_callback=on_response,
-        auto_ack=True
-    )
-
-    channel.basic_publish(
-        exchange='',
-        routing_key='CREDENTIALS_TO_AUTHENTICATE',
-        properties=pika.BasicProperties(
-            reply_to=response_queue,
-            correlation_id=correlation_id
-        ),
-        body=json.dumps(credentials)
-    )
-
-    start_time = time.time()
-
-    while response is None and (time.time() - start_time) < TIMEOUT_SECONDS:
-        connection.process_data_events(time_limit=1)  # Processa eventos por até 1 segundo
-
-    if response is None:
-        print("Timeout occurred, no response received.")
-        channel.stop_consuming()
-        return None
-    return response
-
-def authenticate_or_register_user(user_data):
-    user_data['action'] = 'authenticate_or_register'
-    channel.queue_declare(queue='USER_INFO_TO_AUTHENTICATE')
-    response = None
-    response_queue = channel.queue_declare(queue='AUTH_USER_RESPONSE', exclusive=True).method.queue
-
-    correlation_id = str(uuid.uuid4())
-
-    def on_response(ch, method, properties, body):
-        nonlocal response
-        if correlation_id == properties.correlation_id:
-            response = json.loads(body)
-            ch.stop_consuming()
-
-    channel.basic_consume(
-    queue=response_queue,
-    on_message_callback=on_response,
-    auto_ack=True
-    )
-
-    channel.basic_publish(
-    exchange='',
-    routing_key='USER_INFO_TO_AUTHENTICATE',
-    properties=pika.BasicProperties(
-        reply_to=response_queue,
-        correlation_id=correlation_id
-    ),
-    body=json.dumps(user_data)
-    )
-
-    start_time = time.time()
-
-    while response is None and (time.time() - start_time) < TIMEOUT_SECONDS:
-        connection.process_data_events(time_limit=5)  # Processa eventos por até 5 segundo
-
-    if response is None:
-        print("Timeout occurred, no response received.")
-        channel.stop_consuming()
-        return None
-    return response
 
 

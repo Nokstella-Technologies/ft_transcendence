@@ -26,11 +26,11 @@ def decode_jwt(token):
     ).decode().strip('=')
 
     if signature != expected_signature:
-        return "Invalid Token", 401
+        return None, "Invalid Token", 401
 
     payload_data = json.loads(base64.urlsafe_b64decode(payload + '=='))
 
     if datetime.utcnow().timestamp() > payload_data['exp']:
-        return "Token expired", 401
-    return "Token Valid", 200
+        return None, "Token expired", 401
+    return payload_data, "Token Valid", 200
 
