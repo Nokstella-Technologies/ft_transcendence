@@ -8,6 +8,7 @@ TIMEOUT_SECONDS = 5
 
 def authenticate_user(credentials):
     queue_name = 'AUTH_USER'
+    print("test")
     if (channel is None) or (connection is None):
         reconnect_to_rabbitmq()
         return authenticate_user(credentials)

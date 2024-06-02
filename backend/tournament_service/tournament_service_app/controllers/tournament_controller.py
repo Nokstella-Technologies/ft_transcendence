@@ -39,32 +39,33 @@ def create_tournament(request):
         try:
             user_id = get_payload(request, 'user')
             tournament = Tournament.objects.create(status='Created')
-            TournamentParticipant.objects.create(tournament=tournament, user_id=user_id)
-            return JsonResponse ({
-                'tournament': tournament,
-                'status': tournament.status,
-                'created_at': tournament.created_at,
-                'updated_at': tournament.updated_at
-                })
+            tp = TournamentParticipant.objects.create(tournament=tournament, user_id=user_id)
+            print(tournament)
+            res = model_to_dict(tournament)
+            res['id'] = str(tournament.id)
+            res['participants'] = [model_to_dict(tp)]
+            return JsonResponse ({'tournament': res}, status=201)
         except Exception as e:
             return JsonResponse ({'Error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-def add_participants(request, tournament_id):
+def add_participants(request, id):
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     user_id = get_payload(request, 'user')
     if user_id is None:
         return JsonResponse({'Error': 'Invalid user id'},status=401)
     try:
-        tournament = Tournament.objects.get(id=tournament_id)
+        tournament = Tournament.objects.get(id=id)
         if TournamentParticipant.objects.filter(tournament=tournament, user_id=user_id).exists():
             return JsonResponse({'Error': 'User Already registeres in this tournament'},status=400)
         TournamentParticipant.objects.create( tournament=tournament, user_id=user_id)
-        tournament = model_to_dict(tournament)
-        tournament['id'] = tournament.id
-        return JsonResponse({'tournament': tournament}, status=200)
+        res = model_to_dict(tournament)
+        tps = TournamentParticipant.objects.filter(tournament=tournament).values('user_id')
+        res["id"] = str(tournament.id)
+        res["participants"] = [tp for tp in tps]
+        return JsonResponse({'tournament': res}, status=200)
     except Tournament.DoesNotExist:
         return JsonResponse({'Error': 'Tournament not found'},status=404)
     except Exception as e:
