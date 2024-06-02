@@ -11,6 +11,7 @@ class ProxyView(View):
         '/public/auth/': 'http://auth-service:8000',
         '/protected/auth/': 'http://auth-service:8000',
         '/protected/user/': 'http://user-service:8000',
+        '/protected/game/': 'http://game-service:8000',
     }
 
     def get_service_url(self, path):
