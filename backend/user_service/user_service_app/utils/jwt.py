@@ -7,9 +7,6 @@ def get_payload(request, field):
 	if not auth_header or not auth_header.startswith('Bearer '):
 		return None
 	token = auth_header.split(' ')[1]
-
 	header, payload, signature = token.split('.')
-
 	payload_data = json.loads(base64.urlsafe_b64decode(payload + '=='))
-
 	return payload_data[field]

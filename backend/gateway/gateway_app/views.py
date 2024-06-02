@@ -9,6 +9,7 @@ class ProxyView(View):
     service_mapping = {
         '/public/user/': 'http://user-service:8000',
         '/public/auth/': 'http://auth-service:8000',
+        '/protected/auth/': 'http://auth-service:8000',
         '/protected/user/': 'http://user-service:8000',
         '/protected/game/': 'http://game-service:8000',
         '/protected/tournament/': 'http://tournament-service:8000',
