@@ -3,7 +3,6 @@ services:
     container_name: user-service
     build:
       context: ./backend/user_service
-    command: sh -c "sleep 10 && python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/user_service:/usr/src/app/
     expose:
@@ -21,7 +20,6 @@ services:
     container_name: auth-service
     build:
       context: ./backend/auth_service
-    command: sh -c "sleep 10 && python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/auth_service:/usr/src/app/
     expose:
@@ -39,7 +37,6 @@ services:
     container_name: game-service
     build:
       context: ./backend/game_service
-    command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/game_service:/usr/src/app/
     expose:
@@ -56,7 +53,6 @@ services:
     container_name: tournament-service
     build:
       context: ./backend/tournament_service
-    command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/tournament_service:/usr/src/app/
     expose:
@@ -73,7 +69,6 @@ services:
     container_name: gateway
     build:
       context: ./backend/gateway
-    command: sh -c "sleep 10 && python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/gateway:/usr/src/app/
     ports:
