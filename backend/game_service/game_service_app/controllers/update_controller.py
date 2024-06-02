@@ -1,7 +1,6 @@
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
-from ..rabbitmq import channel
 from ..services.game_producer import send_to_queue
 
 @csrf_exempt
@@ -21,6 +20,8 @@ def update_game(request, id):
 			"end": end
 		}
 		response = send_to_queue("START_GAME", message)
-		return JsonResponse(response)
+		if response is None:
+			return JsonResponse({"error":"Game not found."}, status=404)
+		return JsonResponse(response, status=200, safe=False)
 	else:
-		return HttpResponseBadRequest("Only POST request are allowed.")
+		return JsonResponse("Only POST request are allowed.")

@@ -1,20 +1,14 @@
 import json
 import pika
 from django.utils import timezone
-from ..rabbitmq import connect_to_rabbitmq
+import pika.exceptions
+from ..rabbitmq import create_connection
 from ..models import Game
 from django.forms.models import model_to_dict
 
-connection, channel = connect_to_rabbitmq()
-
-def reconnect_to_rabbitmq():
-    global connection, channel
-    if connection is not None:
-        connection.close()
-    connection, channel = connect_to_rabbitmq()
-    return connection, channel
 
 def start_game_local(data):
+
     player1_id = data.get('player1_id')
     player2_id = data.get('player2_id')
     type = data.get('type')
@@ -33,7 +27,9 @@ def update_game(data):
     score_player2 = data.get('score_player2')
     end = data.get('end')
     id = data.get('id')
-    game = Game.objects.get(game_id=id)
+    game = Game.objects.filter(game_id=id).first()
+    if (game is None):
+        return {'status': 'error', 'message': 'Game not found'}
     if not game.end_time and game.status == 'active':
         game.score_player1 = score_player1
         game.score_player2 = score_player2
@@ -48,6 +44,7 @@ def update_game(data):
     return { 'game': response }
 
 def start_consumer():
+    _, channel = create_connection()
     def on_request(ch, method, props, body):
         data = json.loads(body)
         action = data.get('action')
@@ -65,13 +62,17 @@ def start_consumer():
             body = json.dumps(response)
         )
         ch.basic_ack(delivery_tag=method.delivery_tag)
-    if channel is None or connection is None:
-        reconnect_to_rabbitmq()
-    channel.basic_qos(prefetch_count=1)
-    channel.queue_declare(queue='START_GAME', durable=True)
-    channel.basic_consume(queue='START_GAME', on_message_callback=on_request)
-    print("[X] Awating RCP request...")
-    channel.start_consuming()
+
+    try:
+        channel.basic_qos(prefetch_count=1)
+        channel.queue_declare(queue='START_GAME', durable=True)
+        channel.basic_consume(queue='START_GAME', on_message_callback=on_request)
+        print("[X] Awating RCP request...")
+        channel.start_consuming()
+    except pika.exceptions.ConnectionClosedByBroker as e:
+        print("lost connection reset",str(e))
+        _, channel = create_connection()
+        start_consumer()
 
 if __name__ == '__main__':
     start_consumer()

@@ -1,7 +1,7 @@
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
-from ..rabbitmq import channel
+
 from ..services.game_producer import send_to_queue
 
 @csrf_exempt
@@ -19,9 +19,9 @@ def start_game(request):
 			"player2_id": player2_id,
 			"type": type
 		}
-		# TODO validar se user existe no banco
 		response = send_to_queue("START_GAME", message)
-		# TODO se for torneio criar fila de endgae pro torneio consumir
-		return JsonResponse(response)
+		if response is None:
+			return JsonResponse({"error":"Game not found."}, status=404)
+		return JsonResponse(response, status=200, safe=False)
 	else:
-		return HttpResponseBadRequest("Only POST request are allowed.")
+		return JsonResponse("Only POST request are allowed.", status=400)
