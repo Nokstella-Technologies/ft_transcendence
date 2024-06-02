@@ -5,7 +5,7 @@ services:
     container_name: user-service
     build:
       context: ./backend/user_service
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: sh -c "sleep 10 && python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/user_service:/usr/src/app/
     expose:
@@ -23,7 +23,7 @@ services:
     container_name: auth-service
     build:
       context: ./backend/auth_service
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: sh -c "sleep 10 && python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/auth_service:/usr/src/app/
     expose:
@@ -58,7 +58,7 @@ services:
     container_name: gateway
     build:
       context: ./backend/gateway
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: sh -c "sleep 10 && python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/gateway:/usr/src/app/
     ports:
@@ -175,12 +175,13 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASSWORD=guest
-      - RABBITMQ_USER=root
-      - RABBITMQ_PASSWORD=root
-      - RABBITMQ_PID_FILE=/var/lib/rabbitmq/mnesia/rabbitmq
+    env_file:
+      - rabbitmq/.env
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - transcendence
 

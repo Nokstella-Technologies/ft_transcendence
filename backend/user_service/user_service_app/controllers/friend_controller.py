@@ -93,7 +93,7 @@ class FriendController:
             query = request.GET.get('query', '')
             try:
                 users = User.objects.filter(username__icontains=query)
-                users_data = [model_to_dict(user) for user in users]
+                users_data = [model_to_dict(user, exclude={"otp_secret", "password"}) for user in users]
                 return JsonResponse(users_data, safe=False, status=200)
             except Exception as e:
                 return JsonResponse({'message': str(e)}, status=400)
