@@ -28,12 +28,12 @@ def login(request):
         password = data.get('password')
 
         if not username or not password:
-            return JsonResponse({'error': 'Username and password are required'}, status=400)
+            return JsonResponse({'error': 'Username and password are required'}, status=401)
         res = login_service(username, password)
         if (res["valid"] == False and res):
             return JsonResponse({'error': 'Failed to retrieve access token'}, status=401)
         elif (res["valid"] == True and res["user"]["is_auth"] == True):
-            return JsonResponse({'2af_auth': "test"}, status=200)
+            return JsonResponse({'2af_auth': "required", "email": res["user"]["email"]}, status=200)
         elif (res["valid"] == True and res["user"]):
             return JsonResponse({'jwt_token': generate_jwt_token(res["user"]["user_id"])})
         return JsonResponse({'error': 'Failed to retrieve user info'}, status=401)
@@ -62,9 +62,9 @@ def oauth_callback(request):
         return JsonResponse({'error': str(e)}, status=401)
     if (res["valid"] == False and res):
         return JsonResponse({'error': 'Failed to retrieve access token'}, status=401)
-    elif (res["valid"] == True and res["qrcode_valid"] == False):
-        return JsonResponse({'qrcode_valid': res["qrcode_valid"]}, status=200)
-    elif (res["valid"] == True and res["qrcode_valid"] == True and res["user"]):
+    elif (res["valid"] == True and res["user"]["is_auth"] == True):
+        return JsonResponse({'2af_auth': "required", "email": res["user"]["email"]}, status=200)
+    elif (res["valid"] == True and res["user"]):
         return JsonResponse({'jwt_token': generate_jwt_token(res["user"]["user_id"])})
     return JsonResponse({'error': 'Failed to retrieve user info'}, status=401)
 
@@ -80,7 +80,26 @@ def verify_2fa(request):
     if not token:
         return JsonResponse({'error': 'Token is required'}, status=404)
     try:
-        res = verify_2fa_secret(token, payload['user'])
+        res = verify_2fa_secret(token, payload['user'], 'verify_2fa_secret')
         return JsonResponse({'user': res}, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def login_2fa(request):
+    if request.method != 'POST':
+        return JsonResponse("Only POST requests are allowed", 405)
+    data = json.loads(request.body)
+    email = data.get('email')
+    token = data.get('token')
+
+    if not email or not token:
+        return JsonResponse({'error': 'code are required'}, status=401)
+    try:
+        res = verify_2fa_secret(token, email, 'login_2fa')
+        if res["valid"] == True and res["user"]:
+            return JsonResponse({'jwt_token': generate_jwt_token(res["user"]["user_id"])})
+        return JsonResponse({'error': 'Failed to retrieve user info'}, status=401)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=401)
+

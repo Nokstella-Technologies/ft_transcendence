@@ -9,11 +9,9 @@ def login_service(username, password):
     credentials = {'username': username, 'password': password, 'action': 'authenticate'}
     return authenticate_user(credentials)
 
-def verify_2fa_secret(token, user_data):
-    data = {'action':'verify_2fa_secret', 'token': token, 'user_id': user_data}
+def verify_2fa_secret(token, user_data, action):
+    data = {'action': action, 'token': token, 'user_id': user_data}
     return authenticate_user(data)
-      
-
 
 def login_42_service(user_data):
     host_42 = 'api.intra.42.fr'

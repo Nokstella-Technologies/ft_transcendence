@@ -17,6 +17,7 @@ class AuthMiddleware:
         # Define the route prefixes that do not require authentication
         self.public_prefixes = [
             '/public/user/create',
+            '/public/auth/login/code',
             '/public/auth/login',
             '/public/auth/oauth2/authorize'  # Example: all routes starting with /public/
         ]
@@ -52,6 +53,7 @@ class AuthMiddleware:
                     conn.close()
                     return self.get_response(request)
                 except Exception as e:
+                    conn.close()
                     return JsonResponse({'error': str(e)}, status=500)
                 finally:
                     conn.close()

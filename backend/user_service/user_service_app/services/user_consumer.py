@@ -32,7 +32,7 @@ def handle_authenticate_or_register(user_info):
     try:
         user = User.objects.filter(email=email).first()
         if user:
-            res = model_to_dict(user)
+            res = model_to_dict(user, exclude={"otp_secret", "password"})
             res["user_id"] = str(user["user_id"])
             response = {'valid': True, 'user': res}
         else:
@@ -41,31 +41,34 @@ def handle_authenticate_or_register(user_info):
                 email=email,
                 password=make_password(str(uuid.uuid4())),
                 status='online')
-            res = model_to_dict(user)
+            res = model_to_dict(user, exclude={"otp_secret", "password"})
             res["user_id"] = str(user["user_id"])
             response = {'valid': True, 'user': res}
     except Exception as e:
         response = {'valid': False, 'user': {}, 'error': str(e)}
     return response
 
-def handle_authenticate_2fa(data):
+def handle_authenticate_2fa(data, isID):
     user_id = data.get('user_id')
     token = data.get('token')
 
     try:
-        user = User.objects.get(user_id=user_id)
+        if (isID):
+            user = User.objects.get(user_id=user_id)
+        else:
+            user = User.objects.get(email=user_id)
         
-        if user.otp_secret and user.is_auth == False:
+        if user.otp_secret and user.is_auth == False and isID:
             # Verifica o token 2FA
             if verify_otp(user.otp_secret, token):
                 user.is_auth = True
                 user.save()
-                res = model_to_dict(user)
+                res = model_to_dict(user, exclude={"otp_secret", "password"})
                 res["user_id"] = str(user.user_id)
                 return {'valid': True, 'user': res}
-        elif user.otp_secret and user.is_auth == True:
+        elif user.otp_secret and user.is_auth == True and isID == False:
             if verify_otp(user.otp_secret, token):
-                res = model_to_dict(user)
+                res = model_to_dict(user, exclude={"otp_secret", "password"})
                 res["user_id"] = str(user.user_id)
                 return {'valid': True, 'user': res}
         return {'valid': False, 'user': {}}
@@ -85,7 +88,9 @@ def start_consumer():
         elif action == 'authenticate_or_register':
             response = handle_authenticate_or_register(data)
         elif action == 'verify_2fa_secret':
-            response = handle_authenticate_2fa(data)
+            response = handle_authenticate_2fa(data, True)
+        elif action == 'login_2fa':
+            response = handle_authenticate_2fa(data, False)
         else:
             response = {'valid': False, 'user': {}}
 
