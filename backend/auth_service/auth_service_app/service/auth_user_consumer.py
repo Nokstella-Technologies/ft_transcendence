@@ -1,6 +1,6 @@
 import json
 import pika
-from ..rabbitmq import channel, connection
+from ..rabbitmq import channel, connection, reconnect_to_rabbitmq
 import uuid
 import time
 
@@ -8,6 +8,9 @@ TIMEOUT_SECONDS = 5
 
 def authenticate_user(credentials):
     queue_name = 'AUTH_USER'
+    if (channel is None) or (connection is None):
+        reconnect_to_rabbitmq()
+        return authenticate_user(credentials)
     channel.queue_declare(queue=queue_name)
     response = None
     response_queue = channel.queue_declare(queue= queue_name + 'RESPONSE', exclusive=True).method.queue

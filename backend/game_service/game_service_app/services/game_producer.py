@@ -1,11 +1,14 @@
 from django.views.decorators.csrf import csrf_exempt
-from ..rabbitmq import channel, connection
+from ..rabbitmq import channel, connection, reconnect_to_rabbitmq
 import json
 import pika
 import uuid
 
 @csrf_exempt
 def send_to_queue(queue_name, message):
+    if (channel is None) or (connection is None):
+        reconnect_to_rabbitmq()
+        return send_to_queue(queue_name, message)
     channel.queue_declare(queue=queue_name, durable=True)
     callback_queue=channel.queue_declare(queue=queue_name+"_RESPONSE").method.queue
     correlation_id = str(uuid.uuid4())

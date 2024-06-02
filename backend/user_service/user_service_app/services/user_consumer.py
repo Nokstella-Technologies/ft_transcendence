@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from ..utils.qr_code_otp import verify_otp
 from django.forms.models import model_to_dict
-from ..rabbitmq import channel
+from ..rabbitmq import channel, reconnect_to_rabbitmq
 from ..models.user import User
 
 def handle_authenticate(credentials):
@@ -105,7 +105,9 @@ def start_consumer():
 
         # Função para autenticar usuário por email e senha
 
-
+    if (channel is None):
+        reconnect_to_rabbitmq()
+        return start_consumer()
     channel.basic_qos(prefetch_count=1)
     channel.queue_declare(queue='AUTH_USER')
     channel.basic_consume(queue='AUTH_USER', on_message_callback=on_request)

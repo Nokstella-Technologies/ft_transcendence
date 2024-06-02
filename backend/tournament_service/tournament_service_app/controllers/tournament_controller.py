@@ -1,7 +1,9 @@
+from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
-from ..models.tournament import Tournament, TournamentGame, TournamentParticipant
+from ..models.tournament import Tournament, TournamentParticipant
 from ..utils.jwt import get_payload
+
 # from ..services.tournament_producer import publish_game_to_game_service
 # import json
 
@@ -50,22 +52,21 @@ def create_tournament(request):
 
 @csrf_exempt
 def add_participants(request, tournament_id):
-    if request.method == 'POST':
-        user_id = get_payload(request, 'user')
-        if user_id is None:
-            return JsonResponse({'Error': 'Invalid user id'},status=401)
-        try:
-            tournament = Tournament.objects.get(tournament_id=tournament_id)
-            if TournamentParticipant.objects.filter(tournament=tournament, user_id=user_id).exists():
-                return JsonResponse({'Error': 'User Already registeres in this tournament'},status=400)
-            participant=TournamentParticipant.objects.create(
-                tournament=tournament,
-                user_id=user_id
-            )
-            return JsonResponse({'Status': 'Participant added successfully'},status=200)
-        except Tournament.DoesNotExist:
-            return JsonResponse({'Error': 'Tournament not found'},status=404)
-        except Exception as e:
-            return JsonResponse({'Error': str(e)},status=400)
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    user_id = get_payload(request, 'user')
+    if user_id is None:
+        return JsonResponse({'Error': 'Invalid user id'},status=401)
+    try:
+        tournament = Tournament.objects.get(id=tournament_id)
+        if TournamentParticipant.objects.filter(tournament=tournament, user_id=user_id).exists():
+            return JsonResponse({'Error': 'User Already registeres in this tournament'},status=400)
+        TournamentParticipant.objects.create( tournament=tournament, user_id=user_id)
+        tournament = model_to_dict(tournament)
+        tournament['id'] = tournament.id
+        return JsonResponse({'tournament': tournament}, status=200)
+    except Tournament.DoesNotExist:
+        return JsonResponse({'Error': 'Tournament not found'},status=404)
+    except Exception as e:
+        return JsonResponse({'Error': str(e)},status=400)
 

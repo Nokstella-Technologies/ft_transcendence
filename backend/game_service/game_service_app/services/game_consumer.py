@@ -1,12 +1,18 @@
 import json
 import pika
 from django.utils import timezone
-from ..rabbitmq import parameters
+from ..rabbitmq import connect_to_rabbitmq
 from ..models import Game
 from django.forms.models import model_to_dict
 
-connection = pika.BlockingConnection(parameters=parameters)
-channel = connection.channel()
+connection, channel = connect_to_rabbitmq()
+
+def reconnect_to_rabbitmq():
+    global connection, channel
+    if connection is not None:
+        connection.close()
+    connection, channel = connect_to_rabbitmq()
+    return connection, channel
 
 def start_game_local(data):
     player1_id = data.get('player1_id')
@@ -59,7 +65,8 @@ def start_consumer():
             body = json.dumps(response)
         )
         ch.basic_ack(delivery_tag=method.delivery_tag)
-
+    if channel is None or connection is None:
+        reconnect_to_rabbitmq()
     channel.basic_qos(prefetch_count=1)
     channel.queue_declare(queue='START_GAME', durable=True)
     channel.basic_consume(queue='START_GAME', on_message_callback=on_request)
