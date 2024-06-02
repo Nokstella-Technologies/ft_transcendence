@@ -11,7 +11,6 @@ from ..models.user import User
 def handle_authenticate(credentials):
     username = credentials.get('username')
     password = credentials.get('password')
-
     try:
         user = User.objects.filter(username=username).values('user_id', 'username', 'email', 'is_auth', 'status', 'password').first()
         if check_password(password, user.get('password')):
