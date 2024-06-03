@@ -6,6 +6,7 @@ class Tournament(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=50)
+    round_now = models.IntegerField(default=1)
 
     __str__ = lambda self: f"{self.id} - {self.status}"
 
@@ -16,11 +17,16 @@ class TournamentParticipant(models.Model):
     score = models.IntegerField(default=0)
     registered_at = models.DateTimeField(auto_now_add=True)
 
+    __str__ = lambda self: f"{self.id}"
+
 
 class TournamentGame(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    game_id = models.UUIDField(default=uuid.uuid4, editable=False)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="tornament")
-    player1_id = models.UUIDField()
-    player2_id = models.UUIDField(null=True, blank=True)  # Para casos de "bye"
+    player1_id = models.ForeignKey(TournamentParticipant, on_delete=models.CASCADE, related_name="player1")
+    player2_id = models.ForeignKey(TournamentParticipant, on_delete=models.CASCADE, related_name="player2")
     status = models.CharField(max_length=50, default='pending')
     round_number = models.IntegerField()
+
+    __str__ = lambda self: f"{self.id}"
