@@ -77,3 +77,21 @@ def find_next_match(tournament_id):
     res['player1_id'] = str(matches.player1_id)
     res['player2_id'] = str(matches.player2_id)
     return { "game": res }
+
+
+def find_tournament(id):
+    tournament = Tournament.objects.get(id=id)
+    if (tournament is None):
+        return None
+    participantes = TournamentParticipant.objects.filter(tournament=tournament)
+    games = TournamentGame.objects.filter(tournament=tournament)
+    res = model_to_dict(tournament)
+    if tournament.status == 'Finished':
+        winner = max(participantes, key=lambda tp: tp.score)
+        res['winner'] = model_to_dict(winner)
+        res['winner']['id'] = str(winner.id)
+    res['id'] = str(tournament.id)
+    res['participants'] = [model_to_dict(tp) for tp in participantes]
+    res['games'] = [model_to_dict(tg) for tg in games]
+    return res
+        

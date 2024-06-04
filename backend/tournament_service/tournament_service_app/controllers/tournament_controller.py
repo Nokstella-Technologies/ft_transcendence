@@ -68,12 +68,10 @@ def find_tournament(request, id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
-        tournament = Tournament.objects.get(id=id)
-        res = model_to_dict(tournament)
-        res['id'] = str(tournament.id)
-        res['participants'] = [model_to_dict(tp) for tp in TournamentParticipant.objects.filter(tournament=tournament)]
-        res['games'] = [model_to_dict(tg) for tg in TournamentGame.objects.filter(tournament=tournament)]
-        return JsonResponse({'tournament': res}, status=200)
+        res = find_tournament(id)
+        if res is None:
+            return JsonResponse({'error': 'Tournament not found'}, status=404)
+        return JsonResponse(res, status=200)
     except Tournament.DoesNotExist:
         return JsonResponse({'error': 'Tournament not found'}, status=404)
     except Exception as e:
