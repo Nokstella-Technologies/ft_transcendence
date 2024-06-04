@@ -1,6 +1,5 @@
 import json
 import pika
-from django.utils import timezone
 import pika.exceptions
 from ..rabbitmq import create_connection
 from ..models.tournament import TournamentGame, Tournament, TournamentParticipant
