@@ -1,12 +1,15 @@
 from django.views.decorators.csrf import csrf_exempt
-from ..rabbitmq import channel, connection
+from ..rabbitmq import create_connection
 import json
 import pika
 import uuid
+import time
 
-@csrf_exempt
+
+
 def send_to_queue(queue_name, message):
-    result = channel.queue_declare(queue=queue_name, durable=True)
+    connection, channel = create_connection()
+    channel.queue_declare(queue=queue_name, durable=True)
     callback_queue=channel.queue_declare(queue=queue_name+"_RESPONSE").method.queue
     correlation_id = str(uuid.uuid4())
     response = None
@@ -33,8 +36,16 @@ def send_to_queue(queue_name, message):
         body=json.dumps(message),
     )
 
-    while response is None:
+    start_time = time.time()
+    while response is None or time.time() - start_time < 5:
         connection.process_data_events()
+    if response is None:
+        print("Timeout occurred, no response received.")
+        channel.stop_consuming()
+        connection.close()
+        return None
     connection.close()
+    if response.get('status') == 'error':
+        return None
     return response
 

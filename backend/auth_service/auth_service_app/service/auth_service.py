@@ -3,8 +3,6 @@ from urllib.parse import urlencode
 import http.client
 from .auth_user_consumer import authenticate_user
 
-
-
 def login_service(username, password):
     credentials = {'username': username, 'password': password, 'action': 'authenticate'}
     return authenticate_user(credentials)
@@ -35,8 +33,7 @@ def login_42_service(user_data):
         conn.close()
         user_info['action'] = 'authenticate_or_register'
         return authenticate_user(user_info)
-        
-          
+
 
 
 

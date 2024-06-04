@@ -12,6 +12,7 @@ async function route(path) {
         "/game": new PageGame("#app"),
         "/register": new SingUp('#app'),
         "/home": new Home("#app"),
+        "/profile": new Profile("#app"),
     }
     if (path === "" || path === "/" || path === "/register")  {
         return routes[path]

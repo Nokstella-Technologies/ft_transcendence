@@ -7,6 +7,7 @@ import LoginForm from './loginForm.js';
 
 class Login extends Component {
     constructor(to) {
+
         super(to);
     }
 
@@ -19,7 +20,7 @@ class Login extends Component {
       <div class="login">
             ${BackgroundAnimation()}
               <div id="sound-control-container"></div>
-              ${Container({
+              ${new PopContainer({
                 title: "Login Pong",
                 className: "login-container",
                 children : `
