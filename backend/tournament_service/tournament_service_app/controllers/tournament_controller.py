@@ -53,7 +53,7 @@ def start_tournament(request, id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
-        tournament = Tournament.objects.filter(id=id).first()
+        tournament = Tournament.objects.get(id=id)
         if tournament.status != 'Created' or tournament is None :
             return JsonResponse({'error': 'Tournament is not ongoing'}, status=400)
         response = create_next_match(tournament)

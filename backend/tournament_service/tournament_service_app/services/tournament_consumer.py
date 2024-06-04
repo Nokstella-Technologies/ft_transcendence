@@ -9,10 +9,12 @@ from django.forms.models import model_to_dict
 UPDATE_QUEUE = 'UPDATE_GAME_TOURNAMENT'
 FINISHED_QUEUE = 'FINISHED_GAME_TOURNAMENT'
 
-def start_game_local(data, tournament_id):
+def create_game_local(data, tournament_id):
+
     tournament = Tournament.objects.filter(id=tournament_id).first()
+    if tournament is None or tournament.status != 'Started':
+        return {'status': 'error', 'message': 'Tournament not found or not created'}
     game = data.get('game')
-    
     player1 = TournamentParticipant.objects.filter(user_id = game.get('player1_id'), tournament=tournament).first()
     player2 = TournamentParticipant.objects.filter(user_id = game.get('player2_id'), tournament=tournament).first()
     round_number = data.get('round_number')
@@ -22,6 +24,7 @@ def start_game_local(data, tournament_id):
     if tg is not None:
         return {'status': 'error', 'message': 'Game already exists'}
     game = TournamentGame.objects.create(
+        game_id= game.get('game_id'),
         tournament=tournament,
         player1_id=player1,
         player2_id=player2,
@@ -30,47 +33,58 @@ def start_game_local(data, tournament_id):
     )
     return { 'game': game }
 
-# def update_game(data):
-#     score_player1 = data.get('score_player1')
-#     score_player2 = data.get('score_player2')
-#     status = data.get('status')
-#     end = data.get('end')
-#     id = data.get('id')
-#     game = Game.objects.filter(game_id=id).first()
-#     game.status = status
-#     if (game is None):
-#         return {'status': 'error', 'message': 'Game not found'}
-#     if not game.end_time and game.status == 'active':
-#         game.score_player1 = score_player1
-#         game.score_player2 = score_player2
-#         if end:
-#             game.end_time = timezone.now()
-#             game.status = 'Finished'
-#     game.save()
-#     response = model_to_dict(game)
-#     response['game_id'] = str(game.game_id)
-#     response['player1_id'] = str(game.player1_id)
-#     response['player2_id'] = str(game.player2_id)
-#     return { 'game': response }
+def start_game(data):
+    tournGame = TournamentGame.objects.filter(game_id=data['game_id']).first()
+    if tournGame is None or tournGame.status != 'pending':
+        return {'status': 'error', 'message': 'Game not found or not pending'}
+    tournGame.status = 'active'
+    tournGame.save()
+    return { 'game': model_to_dict(tournGame) }
+
+def end_game(data):
+    game = data.get('game')
+    print("game: ", data)
+    tournGame = TournamentGame.objects.filter(game_id=game['game_id']).first()
+    if tournGame is None or tournGame.status != 'active':
+        return {'status': 'error', 'message': 'Game not found or not active'}
+    p1 =tournGame.player1_id
+    p2 =tournGame.player2_id
+    winner = game['winner']
+    if (winner == 'Tie'):
+        p1.score += 1
+        p2.score += 1
+    elif (winner == p1.user_id):
+        p1.score += 3
+    else:
+        p2.score += 3
+    tournGame.status = 'finished'
+    tournGame.save()
+    p1.save()
+    p2.save()
 
 def start_consumer():
     _, channel = create_connection()
     def on_request(ch, method, props, body):
         data = json.loads(body)
-        if data.get('action') == 'start_game':
-            start_game_local(data, props.correlation_id)
-            ch.basic_ack(delivery_tag=method.delivery_tag)
-        
+        if data.get('action') == 'create_game':
+            res = create_game_local(data, data.get('tournament_id'))
+        elif data.get('action') == 'start_game':
+            res = start_game(data)
+        elif data.get('action') == 'end_game':
+            res = end_game(data)
+        print("response: ", res)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
     try:
         channel.basic_qos(prefetch_count=1)
         channel.queue_declare(queue=UPDATE_QUEUE, durable=True)
         channel.basic_consume(queue=UPDATE_QUEUE, on_message_callback=on_request)
+        channel.queue_declare(queue=FINISHED_QUEUE, durable=True)
+        channel.basic_consume(queue=FINISHED_QUEUE, on_message_callback=on_request)
         print("[X] Awating RCP request...")
         channel.start_consuming()
     except pika.exceptions.ConnectionClosedByBroker as e:
         print("lost connection reset",str(e))
-        _, channel = create_connection()
         start_consumer()
 
 if __name__ == '__main__':

@@ -27,43 +27,58 @@ def start_game_local(data, status='active'):
 def update_game(data):
     score_player1 = data.get('score_player1')
     score_player2 = data.get('score_player2')
-    status = data.get('status')
     end = data.get('end')
     id = data.get('id')
-    game = Game.objects.filter(game_id=id).first()
-    game.status = status
+    game = Game.objects.get(game_id=id)
+    is_end_now = False
+    winner = None
     if (game is None):
         return {'status': 'error', 'message': 'Game not found'}
-    if not game.end_time and game.status == 'active':
+    if game.status == 'active':
         game.score_player1 = score_player1
         game.score_player2 = score_player2
-        if end:
+        if end and game.end_time == None:
             game.end_time = timezone.now()
+            is_end_now = True
             game.status = 'Finished'
+        if end:
+            if score_player1 > score_player2:
+                winner = game.player1_id
+            elif score_player1 < score_player2:
+                winner = game.player2_id
+            else:
+                winner = "Tie"
     game.save()
     response = model_to_dict(game)
+    response['end_time'] = str(game.end_time)
+    response['winner'] = str(winner)
     response['game_id'] = str(game.game_id)
     response['player1_id'] = str(game.player1_id)
     response['player2_id'] = str(game.player2_id)
-    return { 'game': response }
+    return { 'game': response }, is_end_now
 
 def start_consumer():
     _, channel = create_connection()
     def on_request(ch, method, props, body):
         data = json.loads(body)
         action = data.get('action')
-        print(f"Received action:{action}")
         if action == 'start_game':
+            print(f"Received start game request")
             response = start_game_local(data)
         elif action == 'update_game':
-            response = update_game(data)
-            if (response.get('game').get('status') == 'Finished'):
-                ch.basic_publish(
-                    exchange = '',
-                    routing_key = FINISHED_QUEUE,
-                    properties = pika.BasicProperties(correlation_id=props.correlation_id),
-                    body = json.dumps(response)
-                )
+            print(f"Received update game request")
+            response, ended = update_game(data)
+            print(f"Game ended: {ended}")
+            if (response.get('game').get('status') == 'Finished' and data.get('end') == True):
+                if (response.get('game').get('type') == 'tournament'):
+                    response['action'] = 'end_game'
+                    print(f"Sending end game request")
+                    ch.basic_publish(
+                        exchange = '',
+                        routing_key = FINISHED_QUEUE,
+                        properties = pika.BasicProperties(correlation_id=props.correlation_id),
+                        body = json.dumps(response)
+                    )
         else:
            response = {'status': 'error', 'message': 'Unknown action'}
         ch.basic_publish(
@@ -77,16 +92,20 @@ def start_consumer():
     def on_tournament_request(ch, method, props, body):
         print(f"Received tournament request")
         data = json.loads(body)
+        print(f"Received data:{data}")
         action = data.get('action')
         if action == 'create_game':
+            print(f"Received create game request")
             response = start_game_local(data, status='pending')
             response['round_number'] = data.get('round_number')
         elif action == 'start_game':
+            print(f"Received start game request")
             id = data.get('id')
             game = Game.objects.filter(game_id=id).first()
             if game is None:
                 response = {'status': 'error', 'message': 'Game not found'}
             game.status = 'active'
+            game.save()
             response = model_to_dict(game)
             response['game_id'] = str(game.game_id)
             response['player1_id'] = str(game.player1_id)
@@ -94,6 +113,8 @@ def start_consumer():
         else :
             response = {'status': 'error', 'message': 'Unknown action'}
         response['action'] = action
+        response['tournament_id'] = data.get('tournament_id')
+        print(response)
         ch.basic_publish(
             exchange = '',
             routing_key = UPDATE_QUEUE,

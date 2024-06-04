@@ -1,4 +1,3 @@
-import { sleep } from "../utils/sleep.js";
 
 class AuthProvider {
     constructor() {

@@ -1,6 +1,7 @@
 from ..models.tournament import Tournament, TournamentParticipant, TournamentGame
 from .tournament_producer import publish
 from django.forms.models import model_to_dict
+
 def create_next_match(tournamet):
     if (tournamet.status == 'Created'):
         participants = TournamentParticipant.objects.filter(tournament=tournamet)
@@ -18,9 +19,9 @@ def create_next_match(tournamet):
                     "player2_id": str(player2.user_id),
                     "round_number": round_number,
                     "type": "tournament",
+                    "tournament_id": str(tournamet.id)
 		        }
-                if (round_number == 1):
-                    publish("TOURNAMENT_GAME", message, str(tournamet.id))
+                publish("TOURNAMENT_GAME", message, str(tournamet.id))
             round_number += 1
         tournamet.status = 'Started'
         tournamet.round_now = 1
@@ -56,7 +57,11 @@ def find_next_match(tournament_id):
         tournament.save()
         return {"status": "finished"}
     if matches.status == 'pending':
-        matches.status = 'active'
+        message = {
+            'action': 'start_game',
+            'id': str(matches.game_id),
+        }
+        publish("TOURNAMENT_GAME", message, str(tournament.id))
         matches.save()
         res = model_to_dict(matches)
     elif matches.status == 'active':
