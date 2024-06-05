@@ -45,7 +45,7 @@ def oauth_callback(request):
     code =  json.loads(request.body).get('code')
     client_id = os.getenv('CLIENT_42_ID', 'err')
     client_secret = os.getenv('CLIENT_42_SECRET', 'err')
-    redirect_uri = 'https://localhost'
+    redirect_uri = 'https://localhost/'
 
     if client_id == 'err' or client_secret == 'err':
         return JsonResponse({'error': '42 Client ID or 42 Client Secret not found'}, status=400)
@@ -60,6 +60,8 @@ def oauth_callback(request):
         res = login_42_service(data)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=401)
+    if not res:
+        return JsonResponse({'error': 'Failed to retrieve access token'}, status=401)
     if (res["valid"] == False and res):
         return JsonResponse({'error': 'Failed to retrieve access token'}, status=401)
     elif (res["valid"] == True and res["user"]["is_auth"] == True):

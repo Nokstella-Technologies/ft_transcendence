@@ -24,7 +24,7 @@ class SingUp extends Component {
                 className: "login-container",
                 children : `
                 <div id="register-form-container"></div>
-                <p> Já possui uma conta? <a href="/">Cadastre-se</a></p>
+                <p> Já possui uma conta? <a href="/">Faça login</a></p>
                       `
               })}
           </div>

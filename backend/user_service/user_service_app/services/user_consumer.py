@@ -29,12 +29,12 @@ def handle_authenticate(credentials):
 def handle_authenticate_or_register(user_info):
     email = user_info.get('email')
     username = user_info.get('login')
-
+    print( "email: ", email, "username: ", username)
     try:
         user = User.objects.filter(email=email).first()
         if user:
             res = model_to_dict(user, exclude={"otp_secret", "password"})
-            res["user_id"] = str(user["user_id"])
+            res["user_id"] = str(user.user_id)
             response = {'valid': True, 'user': res}
         else:
             user = User.objects.create(
@@ -43,10 +43,11 @@ def handle_authenticate_or_register(user_info):
                 password=make_password(str(uuid.uuid4())),
                 status='online')
             res = model_to_dict(user, exclude={"otp_secret", "password"})
-            res["user_id"] = str(user["user_id"])
+            res["user_id"] = str(user.user_id)
             response = {'valid': True, 'user': res}
     except Exception as e:
         response = {'valid': False, 'user': {}, 'error': str(e)}
+    
     return response
 
 def handle_authenticate_2fa(data, isID):
@@ -84,6 +85,7 @@ def start_consumer():
         action = data.get('action')
         response = {}
 
+        print("action: ", action)
          # Diferencia entre os tipos de ação
         if action == 'authenticate':
             response = handle_authenticate(data)
