@@ -33,6 +33,7 @@ def login_42_service(user_data):
         conn.close()
         user_info['action'] = 'authenticate_or_register'
         return authenticate_user(user_info)
+    return None
 
 
 

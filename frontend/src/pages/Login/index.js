@@ -20,7 +20,7 @@ class Login extends Component {
       <div class="login">
             ${BackgroundAnimation()}
               <div id="sound-control-container"></div>
-              ${new PopContainer({
+              ${Container({
                 title: "Login Pong",
                 className: "login-container",
                 children : `

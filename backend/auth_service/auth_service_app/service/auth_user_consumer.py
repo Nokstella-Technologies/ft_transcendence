@@ -4,7 +4,7 @@ from ..rabbitmq import create_connection
 import uuid
 import time
 
-TIMEOUT_SECONDS = 5
+TIMEOUT_SECONDS = 10
 
 def authenticate_user(credentials):
     connection, channel = create_connection()
@@ -39,10 +39,9 @@ def authenticate_user(credentials):
     )
 
     start_time = time.time()
-
     while response is None and (time.time() - start_time) < TIMEOUT_SECONDS:
         connection.process_data_events(time_limit=1)  # Processa eventos por até 1 segundo
-
+    print("Response: ", response)
     if response is None:
         print("Timeout occurred, no response received.")
         channel.stop_consuming()

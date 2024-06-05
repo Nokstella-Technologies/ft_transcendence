@@ -12,7 +12,6 @@ async function route(path) {
         "/game": new PageGame("#app"),
         "/register": new SingUp('#app'),
         "/home": new Home("#app"),
-        "/profile": new Profile("#app"),
     }
     if (path === "" || path === "/" || path === "/register")  {
         return routes[path]
@@ -23,16 +22,13 @@ async function route(path) {
 async function securityRoutes(componet) {
     const loading = new Loading("#app");
     loading.reRender();
-    await authProvider.isAuthenticated().then((auth) => {
-        if (auth) {
-            return componet
-        }
+    const res = authProvider.isAuthenticated()
+    if (res) {
+        return componet
+    } else {
         window.history.pushState({}, '', '/'); 
         return new Login("#app")
-    }).catch(() => {
-        window.history.pushState({}, '', '/'); 
-        return new Login("#app")
-    })
+    }
 }
 
  const render = async () => {
@@ -52,9 +48,18 @@ async function securityRoutes(componet) {
             render();
         });
     });
-    window.addEventListener('popstate', render);
 };
+
+const navigateTo = (url) => {
+    if (window.location.pathname !== url) {
+        window.history.pushState({}, '', url);
+        render();
+    }
+};
+
+window.navigateTo = navigateTo;
 
 document.addEventListener('DOMContentLoaded', () => {
     render();
+    window.addEventListener('popstate', render);
 });
