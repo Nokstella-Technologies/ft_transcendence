@@ -1,14 +1,16 @@
 import Component from "../../../react/Component.js";
 import MainPage from "../../components/mainPage/index.js";
 import TopBar from "../../components/topBar/topBar.js"
+import authProvider from "../../provider/authProvider.js";
+import userProvider from "../../provider/userProvider.js";
 
 class Home extends Component {
   constructor(to) {
     super(to);
     this.init();
   }
-  init() {
-  
+  init() { 
+    
   }
 
   render () {
@@ -18,15 +20,18 @@ class Home extends Component {
     `
   }
 
-  mount () {
-    const topBar = new TopBar('#top_bar', [
-      {username: "Amigo 1", status: "online"}, 
-      {username: "Amigo 2", status: "offline"}],
-      true,
-      {username: "Luiz", profilePicture: "https://img.icons8.com/ios-glyphs/30/00ffea/user"}
-    );
+  async mount () {
+    const {_, token} = authProvider.get()
+    await userProvider.getUser(token).then((res) => {
+    }).catch((err) => {
+      console.log(err)
+      authProvider.logout();
+    }); 
+    
+    const { apperance} = userProvider.get();
+    const topBar = new TopBar('#top_bar', true);
     topBar.reRender();
-    const mainPage = new MainPage('#Content_home')
+    const mainPage = new MainPage('#Content_home', apperance)
     mainPage.reRender();
   
   }

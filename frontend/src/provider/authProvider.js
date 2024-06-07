@@ -12,7 +12,7 @@ class AuthProvider {
 
 
     get() {
-        return {auth: this.authenticated, user: this.user};
+        return {auth: this.authenticated, token: this.token};
     }
 
     async validate2fa(code, email) {
@@ -77,7 +77,6 @@ class AuthProvider {
             }
             return data;
         } else {
-            console.log(res)
             throw new Error("Erro ao logar com 42");
         }
 }

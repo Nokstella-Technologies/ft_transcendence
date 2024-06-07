@@ -1,6 +1,6 @@
 import json
 import os
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from ..service.auth_service import login_service, login_42_service, verify_2fa_secret
 from ..utils.jwt import decode_jwt, generate_jwt_token
@@ -73,7 +73,7 @@ def oauth_callback(request):
 @csrf_exempt
 def verify_2fa(request):
     if request.method != 'POST':
-        return HttpResponseBadRequest("Only POST requests are allowed", 405)
+        return JsonResponse("Only POST requests are allowed", 405)
     data = json.loads(request.body)
     payload, _, _ = decode_jwt(request.headers.get('Authorization').split(' ')[1])
     if not payload:

@@ -30,17 +30,14 @@ class ThemeSelector extends Component {
     }
 
 
-  handleThemeChange(theme, color) {
-    if (theme === 'customize') {
-        this.setShowPopup(true);
-    } else {
-        this.selectedTheme = theme;
-        this.onThemeChange(theme, {
-          paddleColor: color,
-          ballColor: color,
-          backgroundColor: '#000'
-        });
-    }
+  handleThemeChange(new_themes) {
+    this.selectedTheme = new_themes.theme;
+    this.onThemeChange( {
+      theme: new_themes.theme,
+      paddleColor: new_themes.paddleColor,
+      ballColor: new_themes.ballColor,
+      backgroundColor: new_themes.backgroundColor
+    });
   }
 
 
@@ -94,18 +91,30 @@ class ThemeSelector extends Component {
                 ctx.fillRect(35, 35, 10, 10); // ball
           }
           document.querySelector(`.${theme.name}`).addEventListener('click', () => {
-              this.handleThemeChange(theme.name,theme.color);
+              this.handleThemeChange({
+                theme: theme.name,
+                paddleColor: theme.color,
+                ballColor: theme.color,
+                backgroundColor: '#000'
+              });
           });
         });
         document.querySelector(`.customize`).addEventListener('click', () => {
-          this.handleThemeChange('customize');
+          this.selectedTheme = "customize";
+          this.setCustomTheme({
+            theme: 'customize',
+            paddleColor: this.customTheme().paddleColor,
+            ballColor: this.customTheme().ballColor,
+            backgroundColor: this.customTheme().backgroundColor
+          })
+          this.setShowPopup(true);
         });
         if (this.showPopup() ) {
           colors.forEach((color, idx) => {
             document.querySelector(`#paddle_${idx}` ).addEventListener('click', () => {
               const custom  = this.customTheme();
               this.setCustomTheme({
-                theme: custom.theme,
+                theme: 'customize',
                 paddleColor: color,
                 ballColor: custom.ballColor,
                 backgroundColor: custom.backgroundColor
@@ -114,7 +123,7 @@ class ThemeSelector extends Component {
             document.querySelector(`#ball_${idx}`).addEventListener('click', () => {
               const custom  = this.customTheme();
               this.setCustomTheme({
-                theme: custom.theme,
+                theme: 'customize',
                 paddleColor: custom.paddleColor,
                 ballColor: color,
                 backgroundColor: custom.backgroundColor
@@ -123,7 +132,7 @@ class ThemeSelector extends Component {
             document.querySelector(`#background_${idx}`).addEventListener('click', () => {
               const custom  = this.customTheme();
               this.setCustomTheme({
-                theme: custom.theme,
+                theme: 'customize',
                 paddleColor: custom.paddleColor,
                 ballColor: custom.ballColor,
                 backgroundColor: Bckcolor[idx]
@@ -132,7 +141,7 @@ class ThemeSelector extends Component {
           })
           document.querySelector("#save_custom").addEventListener('click', () => {
             this.setShowPopup(false);
-            this.onThemeChange('customize', this.customTheme());
+            this.onThemeChange(this.customTheme());
           })
         }
         
