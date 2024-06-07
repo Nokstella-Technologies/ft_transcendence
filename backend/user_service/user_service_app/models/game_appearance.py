@@ -6,6 +6,7 @@ import uuid
 
 class GameAppearance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    theme = models.TextField(default='original')
     user_id = models.ForeignKey(User, related_name='game_appearance', on_delete=models.CASCADE)
     paddle_color = models.TextField(default='#FFF')
     ball_color = models.TextField(default='#FFF')

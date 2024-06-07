@@ -1,17 +1,19 @@
 import Component from "../../../react/Component.js"
+import authProvider from "../../provider/authProvider.js"
+import userProvider from "../../provider/userProvider.js"
 import Footer from "../footer/index.js"
 import ThemeSelector from "../themeSelector/index.js"
 
 class MainPage extends Component{
-    constructor(to){
+    constructor(to, apperance){
         super(to)
         this.init()
         const [customizeSchema, setCustomizeSchema] = this.useState({
-            theme: 'original',
-            paddleColor: '#fff',
-            ballColor: '#fff',
-            backgroundColor: '#000'
-        });
+            theme: apperance.theme,
+            paddleColor: apperance.paddle_color,
+            ballColor: apperance.ball_color,
+            backgroundColor: apperance.background_color
+        }); 
         this.customizeSchema = customizeSchema;
         this.setCustomizeSchema = setCustomizeSchema;
     }
@@ -38,12 +40,14 @@ class MainPage extends Component{
     
     
     mount(){
-        const changeTheme = (theme, color) =>{
+        const changeTheme = (new_apperance) =>{
+            const {token} = authProvider.get()
+            userProvider.setNewApperence(token, new_apperance)
             this.setCustomizeSchema({
-                theme,
-                paddleColor: color,
-                ballColor: color,
-                backgroundColor: '#000'
+                theme: new_apperance.theme,
+                paddleColor: new_apperance.paddleColor,
+                ballColor: new_apperance.ballColor,
+                backgroundColor: new_apperance.backgroundColor
             })
         }
         const themes =  new ThemeSelector('.themes', changeTheme, this.customizeSchema().theme, this.customizeSchema())

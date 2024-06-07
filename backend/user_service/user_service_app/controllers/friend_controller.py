@@ -16,7 +16,10 @@ class FriendController:
             user = User.objects.get(user_id=id)
             accepted_friends = UserFriends.objects.filter(user=user, status='accepted').values()
             pending_friends = UserFriends.objects.filter(user=user, status='pending').values()
-
+            for friend in accepted_friends:
+                friend['friend'] = model_to_dict(User.objects.get(user_id=friend['friend_id']), exclude={"otp_secret", "password"})
+            for friend in pending_friends:
+                friend['friend'] = model_to_dict(User.objects.get(user_id=friend['friend_id']), exclude={"otp_secret", "password"}) 
             friends_data = {
                 'accepted': list(accepted_friends),
                 'pending': list(pending_friends)

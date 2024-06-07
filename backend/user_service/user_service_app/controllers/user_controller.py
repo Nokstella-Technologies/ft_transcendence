@@ -3,7 +3,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from user_service_app.services.user_service import UserService
-
+from ..utils.jwt import get_payload
 class UserController:
     @staticmethod
     @csrf_exempt
@@ -17,8 +17,9 @@ class UserController:
 
     @staticmethod
     @csrf_exempt
-    def get_user(request, id):
+    def get_user(request):
         if request.method == 'GET':
+            id = get_payload(request, 'user')
             return UserService().get_user(id)
         else:
             return JsonResponse({'message': 'Method not allowed'}, status=405)
