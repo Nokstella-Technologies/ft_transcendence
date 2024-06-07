@@ -71,7 +71,6 @@ class UserProviders {
             const data = await res.json();
             this.friends = data.accepted;
             this.friends = this.friends.concat(data.pending);
-            console.log(this.friends);
             return data;
         } else 
             throw new Error("Erro ao tentar pegar os amigos");

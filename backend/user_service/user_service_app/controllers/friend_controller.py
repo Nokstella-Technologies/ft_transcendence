@@ -12,10 +12,14 @@ class FriendController:
     @staticmethod
     @csrf_exempt
     def list_friends(request, id):
+        if (request.method != 'GET'):
+            return JsonResponse({'message': 'Method not allowed'}, status=405)
         try:
             user = User.objects.get(user_id=id)
-            accepted_friends = UserFriends.objects.filter(user=user, status='accepted').values()
-            pending_friends = UserFriends.objects.filter(user=user, status='pending').values()
+            accepted_friends_request = UserFriends.objects.filter(user=user, status='accepted').values()
+            accepted_friends_recived = UserFriends.objects.filter(friend=user, status='accepted').values()
+            accepted_friends = list(accepted_friends_request) + list(accepted_friends_recived)
+            pending_friends = UserFriends.objects.filter(status='pending', friend=user).values()
             for friend in accepted_friends:
                 friend['friend'] = model_to_dict(User.objects.get(user_id=friend['friend_id']), exclude={"otp_secret", "password"})
             for friend in pending_friends:
@@ -60,7 +64,7 @@ class FriendController:
                 body = json.loads(request.body.decode('utf-8'))
                 friend_id = body.get('friend_id')
                 friend = User.objects.get(user_id=friend_id)
-                friendship = UserFriends.objects.get(friend=friend, id=id, status='pending')
+                friendship = UserFriends.objects.get(user=friend, id=id, status='pending')
                 friendship.status = 'accepted'
                 friendship.save()
                 return JsonResponse({'message': 'Friend request accepted successfully'}, status=200)
