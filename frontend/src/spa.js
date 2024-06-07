@@ -2,6 +2,7 @@ import Home from './pages/Home/index.js';
 import Login from './pages/Login/index.js';
 import PageGame from './pages/PongGame/index.js';
 import SingUp from './pages/SingUp/index.js';
+import VsAI from './pages/VsAI/index.js';
 
 const routes = {
     "/": new Login("#app"),
@@ -9,6 +10,7 @@ const routes = {
     "/game": new PageGame("#app"),
     "/register": new SingUp('#app'),
     "/home": new Home("#app"),
+    "/VsAI": new VsAI("#app"),
 };  
 
 
