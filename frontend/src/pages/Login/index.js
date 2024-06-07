@@ -7,6 +7,7 @@ import LoginForm from './loginForm.js';
 
 class Login extends Component {
     constructor(to) {
+
         super(to);
     }
 

@@ -21,7 +21,7 @@ class UserService:
         user = User.objects.create(username=username, email=email, password=make_password(password), status='offline')
         PlayerStats.objects.create(user_id=user)
         GameAppearance.objects.create(user_id=user)
-        return JsonResponse(model_to_dict(user), status=201)
+        return JsonResponse(model_to_dict(user, exclude={"otp_secret", "password"}), status=201)
 
     def get_user(self, user_id):
         try:
@@ -29,7 +29,7 @@ class UserService:
             stats = PlayerStats.objects.filter(user_id=user_id).values()
             appearance = GameAppearance.objects.filter(user_id=user_id).values()
 
-            user_data = model_to_dict(user)
+            user_data = model_to_dict(user, exclude={"otp_secret", "password"})
             user_data['user_id'] = user_id
             user_data['stats'] = list(stats)
             user_data['appearance'] = list(appearance)
@@ -48,7 +48,7 @@ class UserService:
             user.username = user_data.get('username', user.username)
             user.profile_picture = user_data.get('profile_picture', user.profile_picture)
             user.save()
-            return JsonResponse(model_to_dict(user), status=200)
+            return JsonResponse(model_to_dict(user, exclude={"otp_secret", "password"}), status=200)
         except User.DoesNotExist:
             return JsonResponse({'message': 'User not found'}, status=404)
 

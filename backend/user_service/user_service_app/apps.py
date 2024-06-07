@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 import sys
 import threading
+
 class UserServiceAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'user_service_app'

@@ -16,7 +16,10 @@ class FriendController:
             user = User.objects.get(user_id=id)
             accepted_friends = UserFriends.objects.filter(user=user, status='accepted').values()
             pending_friends = UserFriends.objects.filter(user=user, status='pending').values()
-
+            for friend in accepted_friends:
+                friend['friend'] = model_to_dict(User.objects.get(user_id=friend['friend_id']), exclude={"otp_secret", "password"})
+            for friend in pending_friends:
+                friend['friend'] = model_to_dict(User.objects.get(user_id=friend['friend_id']), exclude={"otp_secret", "password"}) 
             friends_data = {
                 'accepted': list(accepted_friends),
                 'pending': list(pending_friends)
@@ -93,7 +96,7 @@ class FriendController:
             query = request.GET.get('query', '')
             try:
                 users = User.objects.filter(username__icontains=query)
-                users_data = [model_to_dict(user) for user in users]
+                users_data = [model_to_dict(user, exclude={"otp_secret", "password"}) for user in users]
                 return JsonResponse(users_data, safe=False, status=200)
             except Exception as e:
                 return JsonResponse({'message': str(e)}, status=400)

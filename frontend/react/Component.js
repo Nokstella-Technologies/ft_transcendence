@@ -1,4 +1,46 @@
 const componentState = new Map();
+function deepEqual(a, b) {
+    if (a === b) {
+        return true;
+    }
+
+    if (a == null || b == null || typeof a !== "object" || typeof b !== "object") {
+        return false;
+    }
+
+    if (Array.isArray(a) !== Array.isArray(b)) {
+        return false;
+    }
+
+    if (Array.isArray(a)) {
+        if (a.length !== b.length) {
+            return false;
+        }
+
+        for (let i = 0; i < a.length; i++) {
+            if (!deepEqual(a[i], b[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+
+    if (keysA.length !== keysB.length) {
+        return false;
+    }
+
+    for (let key of keysA) {
+        if (!deepEqual(a[key], b[key])) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 export default class Component {
     constructor(to) {
@@ -26,7 +68,7 @@ export default class Component {
         }
 
         const setState = (newValue) => {
-            if (newValue === currentState[stateIndex]) return;
+            if (deepEqual(newValue, currentState[stateIndex])) return;
             currentState[stateIndex] = newValue;
             componentState.set(this.componentId, { ...componentState.get(this.componentId), state: currentState });
             this.reRender();

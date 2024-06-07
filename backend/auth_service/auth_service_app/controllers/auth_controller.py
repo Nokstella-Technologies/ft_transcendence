@@ -1,23 +1,19 @@
 import json
-import http.client
 import os
-from urllib.parse import urlencode
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from ..service.auth_service import login_service, authenticate_or_register_user
+from ..service.auth_service import login_service, login_42_service, verify_2fa_secret
 from ..utils.jwt import decode_jwt, generate_jwt_token
 
 @csrf_exempt
 def verify_jwt_token(request):
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith('Bearer '):
+    if request.method != 'GET':
+        return JsonResponse({"message":"Only GET requests are allowed"}, 405)
+    token = request.headers.get('X-Auth-Token')
+    if not token:
         return JsonResponse({'error': 'Authorization header missing or malformed'}, status=401)
-
-    token = auth_header.split(' ')[1]
-
     try:
-        strn, status = decode_jwt(token)
-
+        _, strn, status = decode_jwt(token)
         return JsonResponse({'message': strn}, status=status)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
@@ -25,59 +21,87 @@ def verify_jwt_token(request):
 @csrf_exempt
 def login(request):
     if request.method != 'POST':
-        return HttpResponseBadRequest("Only POST requests are allowed")
+        return JsonResponse("Only POST requests are allowed", 405)
     else:
         data = json.loads(request.body)
         username = data.get('username')
         password = data.get('password')
 
         if not username or not password:
-            return JsonResponse({'error': 'Username and password are required'}, status=400)
-        return login_service(username, password)
+            return JsonResponse({'error': 'Username and password are required'}, status=401)
+        res = login_service(username, password)
+        if (res["valid"] == False and res):
+            return JsonResponse({'error': 'Failed to retrieve access token'}, status=401)
+        elif (res["valid"] == True and res["user"]["is_auth"] == True):
+            return JsonResponse({'2af_auth': "required", "email": res["user"]["email"]}, status=200)
+        elif (res["valid"] == True and res["user"]):
+            return JsonResponse({'jwt_token': generate_jwt_token(res["user"]["user_id"])})
+        return JsonResponse({'error': 'Failed to retrieve user info'}, status=401)
 
 @csrf_exempt
 def oauth_callback(request):
+    if request.method != 'POST':
+        return JsonResponse("Only POST requests are allowed", 405)
     code =  json.loads(request.body).get('code')
     client_id = os.getenv('CLIENT_42_ID', 'err')
     client_secret = os.getenv('CLIENT_42_SECRET', 'err')
-    redirect_uri = 'https://localhost'
-    token_host = 'api.intra.42.fr'
-    token_path = '/oauth/token'
+    redirect_uri = 'https://localhost/'
 
     if client_id == 'err' or client_secret == 'err':
         return JsonResponse({'error': '42 Client ID or 42 Client Secret not found'}, status=400)
-
-    token_data = {
+    data = {
         'grant_type': 'authorization_code',
         'client_id': client_id,
         'client_secret': client_secret,
         'code': code,
         'redirect_uri': redirect_uri
     }
+    try:
+        res = login_42_service(data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=401)
+    if not res:
+        return JsonResponse({'error': 'Failed to retrieve access token'}, status=401)
+    if (res["valid"] == False and res):
+        return JsonResponse({'error': 'Failed to retrieve access token'}, status=401)
+    elif (res["valid"] == True and res["user"]["is_auth"] == True):
+        return JsonResponse({'2af_auth': "required", "email": res["user"]["email"]}, status=200)
+    elif (res["valid"] == True and res["user"]):
+        return JsonResponse({'jwt_token': generate_jwt_token(res["user"]["user_id"])})
+    return JsonResponse({'error': 'Failed to retrieve user info'}, status=401)
 
-    conn = http.client.HTTPSConnection(token_host)
-    headers = {'Content-type': 'application/x-www-form-urlencoded'}
-    conn.request('POST', token_path, urlencode(token_data), headers)
-    response = conn.getresponse()
-    token_response = response.read().decode()
-    token_json = json.loads(token_response)
-    access_token = token_json.get('access_token')
-    conn.close()
+@csrf_exempt
+def verify_2fa(request):
+    if request.method != 'POST':
+        return JsonResponse("Only POST requests are allowed", 405)
+    data = json.loads(request.body)
+    payload, _, _ = decode_jwt(request.headers.get('Authorization').split(' ')[1])
+    if not payload:
+        return JsonResponse({'error': 'Invalid token'}, status=401)
+    token = data.get('token')
+    if not token:
+        return JsonResponse({'error': 'Token is required'}, status=404)
+    try:
+        res = verify_2fa_secret(token, payload['user'], 'verify_2fa_secret')
+        return JsonResponse({'user': res}, status=200)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
-    if access_token:
-        user_info_host = 'api.intra.42.fr'
-        user_info_path = '/v2/me'
-        conn = http.client.HTTPSConnection(user_info_host)
-        headers = {'Authorization': f'Bearer {access_token}'}
-        conn.request('GET', user_info_path, headers=headers)
-        response = conn.getresponse()
-        user_info_response = response.read().decode()
-        user_info = json.loads(user_info_response)
-        conn.close()
+@csrf_exempt
+def login_2fa(request):
+    if request.method != 'POST':
+        return JsonResponse("Only POST requests are allowed", 405)
+    data = json.loads(request.body)
+    email = data.get('email')
+    token = data.get('token')
 
-        user = authenticate_or_register_user(user_info)
-        if user != None and user['valid'] == True:
-            jwt_token = generate_jwt_token(user["user"])
-            return JsonResponse({'jwt_token': jwt_token})
-    return JsonResponse({'error': 'Failed to retrieve access token'}, status=400)
+    if not email or not token:
+        return JsonResponse({'error': 'code are required'}, status=401)
+    try:
+        res = verify_2fa_secret(token, email, 'login_2fa')
+        if res["valid"] == True and res["user"]:
+            return JsonResponse({'jwt_token': generate_jwt_token(res["user"]["user_id"])})
+        return JsonResponse({'error': 'Failed to retrieve user info'}, status=401)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=401)
 

@@ -9,13 +9,13 @@ class GameAppearanceController:
 
     @staticmethod
     @csrf_exempt
-    def update_appearance(request, user_id):
+    def update_appearance(request, id):
         if request.method == 'POST':
             try:
                 data = json.loads(request.body)
-                user = User.objects.get(user_id=user_id)
+                user = User.objects.get(user_id=id)
                 appearance, created = GameAppearance.objects.get_or_create(user_id=user)
-
+                appearance.theme = data.get('theme', appearance.theme)
                 appearance.paddle_color = data.get('paddle_color', appearance.paddle_color)
                 appearance.ball_color = data.get('ball_color', appearance.ball_color)
                 appearance.background_color = data.get('background_color', appearance.background_color)
@@ -29,10 +29,10 @@ class GameAppearanceController:
         return JsonResponse({'message': 'Method not allowed'}, status=405)
 
     @staticmethod
-    def get_appearance(request, user_id):
+    def get_appearance(request, id):
         if request.method == 'GET':
             try:
-                user = User.objects.get(user_id=user_id)
+                user = User.objects.get(user_id=id)
                 appearance = GameAppearance.objects.get(user_id=user)
                 return JsonResponse(model_to_dict(appearance), status=200)
             except User.DoesNotExist:
