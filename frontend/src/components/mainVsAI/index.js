@@ -4,8 +4,8 @@ import userProvider from "../../provider/userProvider.js"
 import Footer from "../footer/index.js"
 import ThemeSelector from "../themeSelector/index.js"
 
-class MainPage extends Component{
-    constructor(to, apperance){
+class MainVsAI extends Component{
+    constructor(to, apperance, isplayer){
         super(to)
         this.init()
         const [customizeSchema, setCustomizeSchema] = this.useState({
@@ -16,6 +16,9 @@ class MainPage extends Component{
         }); 
         this.customizeSchema = customizeSchema;
         this.setCustomizeSchema = setCustomizeSchema;
+        this.isplayer = isplayer;
+        const {user} = userProvider.get();
+        this.user = user;
     }
 
     init(){
@@ -23,15 +26,18 @@ class MainPage extends Component{
     }
 
     render(){
-        return `
-            <h1 class="mt-5">Pong</h1>
-            <div class="game-modes d-flex flex-column align-items-center mt-5">
-                <button class="btn btn-lg">Modo Solo</button>
-                <button class="btn btn-lg mt-3">Modo Desafio</button>
-                <button class="btn btn-lg mt-3">Modo Torneio</button>
+        return `<div class="player-selection">
+                 ${this.isplayer ? `<div class="player-card">
+                                    <img src="path/to/player-icon.png" alt="Player Icon" width="80" height="80">
+                                    <p>${this.user.username}</p>
+                                    <button>Trocar Lado</button>
+                                    </div>` :
+                                    `<div class="ai-card">
+                                    <img src="path/to/ai-icon.png" alt="AI Icon" width="80" height="80">
+                                    <p>IA</p>
+                                </div>`}
             </div>
-            <p class="mt-3">Escolha um dos temas abaixo:</p>
-            <div class="themes d-flex justify-content-center mt-3"> </div>
+            <button id="start-game">Start Game</button>
             ${Footer()}
         `
     }
@@ -40,7 +46,7 @@ class MainPage extends Component{
     
     
     mount(){
-        document.querySelector(".btn").addEventListener("click", () => navigateTo("/vsai"))
+        /* document.querySelector(".btn").addEventListener("click", () => navigateTo("/vsai"))
         const changeTheme = (new_apperance) =>{
             const {token} = authProvider.get()
             userProvider.setNewApperence(token, new_apperance)
@@ -52,10 +58,10 @@ class MainPage extends Component{
             })
         }
         const themes =  new ThemeSelector('.themes', changeTheme, this.customizeSchema().theme, this.customizeSchema())
-        themes.reRender()
+        themes.reRender() */
     }
 
 }
 
 
-export default MainPage
+export default MainVsAI

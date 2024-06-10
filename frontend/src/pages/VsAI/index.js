@@ -1,11 +1,13 @@
 
 import Component from '../../../react/Component.js';
-import SoundControl from '../../components/soundControl/index.js';
 import BackgroundAnimation from '../../components/backgroundAnimation/backgroundAnimation.js';
 import Container from '../../components/containers/index.js';
-import LoginForm from './loginForm.js';
+import TopBar from "../../components/topBar/topBar.js"
+import authProvider from "../../provider/authProvider.js";
+import userProvider from "../../provider/userProvider.js";
+import MainVsAI from "../../components/mainVsAI/index.js"
 
-class Login extends Component {
+class VsAI extends Component {
     constructor(to) {
         super(to);
     }
@@ -16,28 +18,40 @@ class Login extends Component {
 
     render() {
       return `
-      <div class="login">
-            ${BackgroundAnimation()}
-              <div id="sound-control-container"></div>
-              ${Container({
-                title: "Login Pong",
-                className: "login-container",
-                children : `
-                <div id="login-form-container"></div>
-                <p> Já possui uma conta? <a href="/register">Cadastre-se</a></p>
-                      `
-              })}
-          </div>
-      `;
+      <nav id="top_bar" class="navbar navbar-expand-lg navbar-custom"> </nav>
+      <div id="content_home">
+      ${Container({
+        title: "Single Player",
+        className: "vsai-container",
+        children : `
+        ${Container({
+          title: "Player 01",
+          className: "vsai-container-p1",
+          children : `<div id="player1"></div>`
+        })},
+        ${Container({
+          title: "IA",
+          className: "vsai-container-p2",
+          children : `<div id="playerAI"></div>`
+        })}`
+      })}
+      </div>`;
+
   }
 
-  mount() {
-      const soundControl = new SoundControl('#sound-control-container', 'assets/sounds/music.m4a');
-      soundControl.reRender();
+  async mount() {
+      const topBar = new TopBar('#top_bar', false);
+      topBar.reRender();
 
-      const loginForm = new LoginForm('#login-form-container');
-      loginForm.reRender();
+      const {_, token} = authProvider.get()
+
+
+      const {apperance, user} = userProvider.get();
+      const player1 = new MainVsAI('#player1', apperance, true)
+      player1.reRender();
+      const playerAI = new MainVsAI('#playerAI', apperance, false)
+      playerAI.reRender();
   }
 }
 
-export default Login;
+export default VsAI;
