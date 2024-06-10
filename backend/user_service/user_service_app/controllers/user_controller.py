@@ -3,6 +3,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from user_service_app.services.user_service import UserService
+from ..models.user import User
 from ..utils.jwt import get_payload
 class UserController:
     @staticmethod
@@ -46,5 +47,35 @@ class UserController:
     def delete_user(request, id):
         if request.method == 'DELETE':
             return UserService().delete_user(id)
+        else:
+            return JsonResponse({'message': 'Method not allowed'}, status=405)
+
+    @staticmethod
+    @csrf_exempt
+    def online(request):
+        if request.method == 'PUT':
+            id = get_payload(request, 'user')
+            try :
+                user = User.objects.get(user_id=id)
+                user.status = 'online'
+                user.save()
+                return JsonResponse({'message': 'User is now online'}, status=200)
+            except User.DoesNotExist:
+                return JsonResponse({'message': 'User not found'}, status=404) 
+        else:
+            return JsonResponse({'message': 'Method not allowed'}, status=405)
+        
+    @staticmethod
+    @csrf_exempt
+    def offline(request):
+        if request.method == 'PUT':
+            id = get_payload(request, 'user')
+            try :
+                user = User.objects.get(user_id=id)
+                user.status = 'offline'
+                user.save()
+                return JsonResponse({'message': 'User is now offline '}, status=200)
+            except User.DoesNotExist:
+                return JsonResponse({'message': 'User not found'}, status=404) 
         else:
             return JsonResponse({'message': 'Method not allowed'}, status=405)

@@ -95,15 +95,14 @@ class UserProviders {
     }
 
     async acceptfriend(token, friend_id, id) {
-        const res = await fetch(`http://localhost:8000/protected/user/accept_friend/${id}/`, {
+        const res = await fetch(`http://localhost:8000/protected/user/accept_friend/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    friend_id: friend_id,
-                    id: id
+                    friend_id: friend_id
                 })
             })
             const data = res.json();
@@ -111,6 +110,34 @@ class UserProviders {
                 return data;
             } else 
                 throw new Error("Erro ao tentar aceitar um amigo");
+    }
+    async rejectFriend(token, id) {
+        const res = await fetch(`http://localhost:8000/protected/user/remove_friend/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            const data = res.json();
+            if (res.status === 200) {
+                return data;
+            } else 
+                throw new Error("Erro ao tentar rejeitar um amigo");
+    }
+    async findFriend(token, username) {
+        const res = await fetch(`http://localhost:8000/protected/user/search_user/?query=${username}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            const data = res.json();
+            if (res.status === 200) {
+                return data;
+            } else 
+                throw new Error("Erro ao tentar encontrar um amigo");
     }
 }
 

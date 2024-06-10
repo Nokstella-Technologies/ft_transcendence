@@ -26,6 +26,7 @@ class Home extends Component {
     }).catch((err) => {
       console.log(err)
       authProvider.logout();
+      navigateTo('/')
     }); 
     
     const { apperance} = userProvider.get();
