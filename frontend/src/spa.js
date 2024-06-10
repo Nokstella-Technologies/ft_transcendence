@@ -22,7 +22,7 @@ async function route(path) {
 async function securityRoutes(componet) {
     const loading = new Loading("#app");
     loading.reRender();
-    const res = authProvider.isAuthenticated()
+    const res = await authProvider.isAuthenticated()
     if (res) {
         return componet
     } else {
@@ -62,4 +62,11 @@ window.navigateTo = navigateTo;
 document.addEventListener('DOMContentLoaded', () => {
     render();
     window.addEventListener('popstate', render);
+    window.addEventListener('beforeunload', async () => {
+        const token = authProvider.get().token;
+        if (token === undefined) {
+            return
+        }
+       authProvider.changeStatus("offline")
+    });
 });

@@ -18,5 +18,7 @@ urlpatterns = [
     path('search_user/', FriendController().search_user, name='search_user'),
     path('update_appearance/<uuid:id>/', GameAppearanceController.update_appearance, name='update_appearance'),
     path('get_appearance/<uuid:id>/', GameAppearanceController.get_appearance, name='get_appearance'),
+    path('online/', UserController().online, name='online'),
+    path('offline/', UserController().offline, name='offline'),
 ]
 

@@ -38,6 +38,20 @@ class AuthProvider {
 
     }
 
+    async changeStatus(status) {
+        const res = await fetch(`http://localhost:8000/protected/user/${status}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
+            }})
+        if (res.status === 200) {
+            return res;
+        }
+        else 
+            throw new Error("Erro ao atualizar status online");
+    }
+
     async login(username, password) {
             const res = await fetch('http://localhost:8000/public/auth/login/', {
                 method: 'POST',
@@ -99,12 +113,21 @@ class AuthProvider {
         throw new Error("Erro ao criar conta");
     }
 
-    isAuthenticated(token) {
+    async isAuthenticated(token) {
         if (token === undefined) {
             this.token = sessionStorage.getItem("token");
         }
         if (this.token === null) {
             return false;
+        }
+        if (this.authenticated === false) {
+            try {
+                await this.changeStatus("online");
+                this.authenticated = true;     
+            } catch (err) {
+                console.log(err);
+                return false;
+            }
         }
         return true;
     }
