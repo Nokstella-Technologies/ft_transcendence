@@ -37,6 +37,7 @@
     margin-left: 20px;
 }
 .dropdown-menu {
+    min-width: 300px;
     background-color: #000;
     border: 1px solid #0ff;
 }
@@ -59,4 +60,34 @@
 }
 .status-offline {
     background-color: #f00; /* Red for offline */
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-online {
+    background-color: green;
+}
+
+.status-offline {
+    background-color: red;
+}
+
+.friend-username {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.accept-btn, .reject-btn {
+    padding: 2px 5px;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

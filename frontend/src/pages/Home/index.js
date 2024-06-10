@@ -15,7 +15,7 @@ class Home extends Component {
 
   render () {
     return `
-      <nav id="top_bar" class="navbar navbar-expand-lg navbar-custom"> </nav>
+      <nav id="top_bar" class="navbar navbar-expand navbar-custom"> </nav>
       <div id="Content_home"></div> 
     `
   }
@@ -26,6 +26,7 @@ class Home extends Component {
     }).catch((err) => {
       console.log(err)
       authProvider.logout();
+      navigateTo('/')
     }); 
     
     const { apperance} = userProvider.get();
