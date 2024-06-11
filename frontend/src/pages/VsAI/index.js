@@ -1,11 +1,11 @@
 
 import Component from '../../../react/Component.js';
-import BackgroundAnimation from '../../components/backgroundAnimation/backgroundAnimation.js';
 import Container from '../../components/containers/index.js';
 import TopBar from "../../components/topBar/topBar.js"
 import authProvider from "../../provider/authProvider.js";
 import userProvider from "../../provider/userProvider.js";
-import MainVsAI from "../../components/mainVsAI/index.js"
+import MainVsAI from "../../components/mainVsAI/index.js";
+import Footer from "../../components/footer/index.js";
 
 class VsAI extends Component {
     constructor(to) {
@@ -21,36 +21,44 @@ class VsAI extends Component {
       <nav id="top_bar" class="navbar navbar-expand-lg navbar-custom"> </nav>
       <div id="content_home">
       ${Container({
-        title: "Single Player",
+        title: "",
         className: "vsai-container",
         children : `
         ${Container({
-          title: "Player 01",
+          title: "",
           className: "vsai-container-p1",
           children : `<div id="player1"></div>`
         })},
         ${Container({
-          title: "IA",
+          title: "",
           className: "vsai-container-p2",
           children : `<div id="playerAI"></div>`
         })}`
       })}
-      </div>`;
-
+      <button id="start-game" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Start Game</button>
+      </div>
+      ${Footer()}`;
   }
 
   async mount() {
-      const topBar = new TopBar('#top_bar', false);
-      topBar.reRender();
 
-      const {_, token} = authProvider.get()
+    const {_, token} = authProvider.get()
 
+    await userProvider.getUser(token).then((res) => {
+    }).catch((err) => {
+      console.log(err)
+      authProvider.logout();
+      navigateTo('/')
+    });
 
-      const {apperance, user} = userProvider.get();
-      const player1 = new MainVsAI('#player1', apperance, true)
-      player1.reRender();
-      const playerAI = new MainVsAI('#playerAI', apperance, false)
-      playerAI.reRender();
+    const topBar = new TopBar('#top_bar', false);
+    topBar.reRender();
+
+    const {apperance, user} = userProvider.get();
+    const player1 = new MainVsAI('#player1', apperance, true)
+    player1.reRender();
+    const playerAI = new MainVsAI('#playerAI', apperance, false)
+    playerAI.reRender();
   }
 }
 

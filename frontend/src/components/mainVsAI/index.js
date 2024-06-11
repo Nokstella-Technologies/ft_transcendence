@@ -1,7 +1,6 @@
 import Component from "../../../react/Component.js"
 import authProvider from "../../provider/authProvider.js"
 import userProvider from "../../provider/userProvider.js"
-import Footer from "../footer/index.js"
 import ThemeSelector from "../themeSelector/index.js"
 
 class MainVsAI extends Component{
@@ -19,6 +18,7 @@ class MainVsAI extends Component{
         this.isplayer = isplayer;
         const {user} = userProvider.get();
         this.user = user;
+        //console.log(user);
     }
 
     init(){
@@ -26,19 +26,18 @@ class MainVsAI extends Component{
     }
 
     render(){
-        return `<div class="player-selection">
-                 ${this.isplayer ? `<div class="player-card">
-                                    <img src="path/to/player-icon.png" alt="Player Icon" width="80" height="80">
-                                    <p>${this.user.username}</p>
-                                    <button>Trocar Lado</button>
+        return `<div>
+                 ${this.isplayer ? `<div>
+                                    <img src="${this.user.profile_picture}" alt="Player Icon" class="player-picture">
+                                    <p>${this.user.username}<br>
+                                        (Você)</p>
+                                    <button class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Trocar Lado</button>
                                     </div>` :
-                                    `<div class="ai-card">
-                                    <img src="path/to/ai-icon.png" alt="AI Icon" width="80" height="80">
+                                    `<div>
+                                    <i class="fa fa-solid fa-brain" alt="AI Icon" class="player-picture"></i>
                                     <p>IA</p>
                                 </div>`}
             </div>
-            <button id="start-game">Start Game</button>
-            ${Footer()}
         `
     }
 
