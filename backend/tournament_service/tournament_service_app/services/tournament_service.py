@@ -79,7 +79,7 @@ def find_next_match(tournament_id):
     return { "game": res }
 
 
-def find_tournament(id):
+def find_tournament_by_id(id):
     tournament = Tournament.objects.get(id=id)
     if (tournament is None):
         return None

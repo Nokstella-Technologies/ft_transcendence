@@ -1,0 +1,52 @@
+.page {
+    height: 100%;
+    display: flex;
+    width: 100%;
+}
+.grid-container {
+    padding: 20px;
+    border: 2px solid #0ff;
+    border-radius: 10px;
+    gap: 8px;
+    margin: auto;
+    box-shadow: 0 0 20px #0ff;
+}
+.grid-item {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        align-items: center;
+        min-width: 200px;
+    }
+
+.card-title {
+    color: #0ff;
+    font-size: 1rem;
+    margin: 15px auto;
+}
+
+.grid-item img {
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    margin-top: 10px;
+}
+.grid-item i {
+    margin-top: 10px;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #0ff;
+    color: #0ff;
+    border-radius: 50%;
+    font-size: 2rem;
+}
+.btn-primary {
+    background-color: #0ff;
+    border: none;
+    word-wrap: break-word;
+    color : #000;
+    font-size: 1.2rem;
+}
+.btn-primary:hover {
+    background-color: #0aa;
+}

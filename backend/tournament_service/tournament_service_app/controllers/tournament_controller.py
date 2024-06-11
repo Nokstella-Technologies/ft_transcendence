@@ -1,6 +1,6 @@
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from ..services.tournament_service import create_next_match, find_next_match
+from ..services.tournament_service import create_next_match, find_next_match, find_tournament_by_id
 from django.http import JsonResponse
 from ..models.tournament import Tournament, TournamentParticipant, TournamentGame
 from ..utils.jwt import get_payload
@@ -68,7 +68,7 @@ def find_tournament(request, id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
-        res = find_tournament(id)
+        res = find_tournament_by_id(id)
         if res is None:
             return JsonResponse({'error': 'Tournament not found'}, status=404)
         return JsonResponse(res, status=200)

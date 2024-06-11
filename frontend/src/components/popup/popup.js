@@ -1,8 +1,9 @@
 import Component from '../../../react/Component.js';
 
 class Popup extends Component {
-    constructor(to, title, content, show, onClose) {
+    constructor(to, title, content, show, onClose, isTour = undefined) {
         super(to);
+        this.isTour = isTour;
         this.title = title;
         this.content = content;
         this.show = show;
@@ -11,7 +12,7 @@ class Popup extends Component {
 
     render() {
         return this.show ? `
-            <div class="popup-overlay">
+            <div class="popup-overlay ${this.isTour !== undefined ? "greater_zindex": ""}">
                 <div class="popup-content" onclick="event.stopPropagation()">
                     <div class="popup-header">
                         <h4>${this.title}</h4>

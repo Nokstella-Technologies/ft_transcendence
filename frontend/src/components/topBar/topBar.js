@@ -26,10 +26,12 @@ class TopBar extends Component {
 
     render() {
         return `
-        <a class="nav-link" href="/profile">
+        ${this.isHome ? ` <a class="nav-link" href="/profile">
             <img src="${this.user.profile_picture}" alt="Profile Picture" class="profile-pic">
             ${this.user.username}
-        </a>
+        </a>` : `<a class="nav-link" href="/home">
+            <i class="fas fa-home"></i>&nbspHome
+        </a>`}
         <div class="navbar-nav ml-auto">
             <div class="nav-item dropdown">
                 <i class="fas fa-user-friends friends-icon dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>

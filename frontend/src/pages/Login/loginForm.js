@@ -1,11 +1,12 @@
 import Component from '../../../react/Component.js';
 import Popup from '../../components/popup/popup.js';
 import authProvider from '../../provider/authProvider.js';
+import tournamentProvider from '../../provider/tournamentProvider.js';
 
 class LoginForm extends Component {
-    constructor(to) {
+    constructor(to, isTournament = undefined) {
         super(to);
-
+        this.isTournament = isTournament;
         const urlParams = new URLSearchParams(window.location.search);
         this.code = urlParams.get("code");
         this.init();
@@ -26,7 +27,7 @@ class LoginForm extends Component {
 
     render() {
         return `
-            ${this.showEdit() ? `<div class="popup"> </div>` : ''}
+            ${this.showEdit() ? `<div class="popup" id="login_popup"> </div>` : ''}
             <form id="login-form">
                 <div id="error-message" class="text-danger"></div>
                 <div class="form-group">
@@ -41,23 +42,26 @@ class LoginForm extends Component {
         `;
     }
 
-    
-
-    
-
     async mount() {
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const errorMessage = document.getElementById('error-message');
         if (this.code !== null) {
             try {
-                const res = await authProvider.login42(this.code)
+                const res = await authProvider.login42(this.code, this.isTournament)
+                this.code = null;
+                const url = new URL(window.location);
+                url.searchParams.delete("code");
+                window.history.replaceState({}, document.title, url.toString());
                 if (res.email !== undefined) {
                     this.email2fa = res.email
                     this.setShowEdit(true);
                 }
                 else {
-                    navigateTo('/home')
+                    if (!this.isTournament) {
+                        return navigateTo('/home')
+                    }
+                    this.isTournament(res.jwt_token)
                 }
             } catch (err) {
                 errorMessage.textContent = 'Erro tente novamente!';
@@ -73,7 +77,7 @@ class LoginForm extends Component {
                 <button type="submit" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Login</button>
             </form>
             `
-            const popUp = new Popup(".popup", "Digite o Codigo de Segurança:", content, this.showEdit(), this.setShowEdit);
+            const popUp = new Popup("#login_popup", "Digite o Codigo de Segurança:", content, this.showEdit(), this.setShowEdit, this.isTournament);
             popUp.reRender();
             const errorMessage2fa = document.getElementById('error-message-2fa');
             document.getElementById('2fa-form').addEventListener('submit', async (event) => {
@@ -82,7 +86,10 @@ class LoginForm extends Component {
                     const code = document.getElementById('2fa-code').value;
                     const res = await authProvider.validate2fa(code, this.email2fa);
                     if (res.jwt_token !== undefined) {
-                        navigateTo('/home')
+                        if (this.isTournament === undefined) {
+                            return navigateTo('/home')
+                        }
+                        this.isTournament(res.jwt_token)
                     }
                 }catch (err) {
                     errorMessage2fa.textContent = 'Código de segurança inválido';
@@ -98,14 +105,15 @@ class LoginForm extends Component {
             }
             try {
                 const res = await authProvider.login(this.email(), this.password())
-
                 if (res.email !== undefined) {
                     this.email2fa = res.email
                     this.setShowEdit(true);
                 }
                 else {
-                    navigateTo('/home')
-                    
+                    if (!this.isTournament) {
+                        return navigateTo('/home')
+                    }
+                    this.isTournament(res.jwt_token)
                 }
             } catch(err) {
                 errorMessage.textContent = 'Usuário ou senha inválidos';
@@ -123,7 +131,10 @@ class LoginForm extends Component {
 
         const login42 = async () => {
             const clientID = "u-s4t2ud-02969ded8f525ab740688ae88c19e30b6f5f25582c0fa571d8db9c20e27ccfe3"
-            const redirect = "https://localhost/"
+            var redirect = "https://localhost/"
+            if (this.isTournament !== undefined) {
+                redirect = "https://localhost/tournament"
+            }
             const authUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirect)}&response_type=code`;
             window.location.href = authUrl;
         }
