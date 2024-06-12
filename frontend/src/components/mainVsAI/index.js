@@ -28,12 +28,14 @@ class MainVsAI extends Component{
     render(){
         return `<div>
                  ${this.isplayer ? `<div>
-                                    <img src="${this.user.profile_picture}" alt="Player Icon" class="player-picture">
-                                    <p>${this.user.username}<br>
-                                        (Você)</p>
-                                    <button class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Trocar Lado</button>
-                                    </div>` :
+                                    <div style="float: right;"><img src="https://www.vhv.rs/dpng/d/84-845553_orange-information-icon-png-transparent-png.png" width="50"></div>
+                                            <img src="${this.user.profile_picture}" alt="Player Icon" class="player-picture">
+                                            <p>${this.user.username}<br>
+                                                (Você)</p>
+                                            <button class="btn btn-primary btn-block btn-trocar-lado" style="background-color: #00e5ff; border: none;">Trocar Lado</button>
+                                            </div>` :
                                     `<div>
+                                    <div style="float: right;"></div>
                                     <i class="fa fa-solid fa-brain" alt="AI Icon" class="player-picture"></i>
                                     <p>IA</p>
                                 </div>`}
@@ -45,6 +47,9 @@ class MainVsAI extends Component{
     
     
     mount(){
+        document.querySelector(".btn-trocar-lado").addEventListener("click", () => {
+            // Lógica de troca de lado estará no componente pai (VsAI)
+        });
         /* document.querySelector(".btn").addEventListener("click", () => navigateTo("/vsai"))
         const changeTheme = (new_apperance) =>{
             const {token} = authProvider.get()

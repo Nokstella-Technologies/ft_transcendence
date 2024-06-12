@@ -59,6 +59,19 @@ class VsAI extends Component {
     player1.reRender();
     const playerAI = new MainVsAI('#playerAI', apperance, false)
     playerAI.reRender();
+
+    document.querySelector(".btn-trocar-lado").addEventListener("click", this.trocarLado);
+  }
+
+  trocarLado() {
+    const player1 = document.getElementById("player1");
+    const playerAI = document.getElementById("playerAI");
+
+    const player1Parent = player1.parentNode;
+    const playerAIParent = playerAI.parentNode;
+
+    player1Parent.insertBefore(playerAI, player1Parent.firstChild);
+    playerAIParent.insertBefore(player1, playerAIParent.firstChild);
   }
 }
 
