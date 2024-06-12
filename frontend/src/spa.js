@@ -4,6 +4,7 @@ import Login from './pages/Login/index.js';
 import PageGame from './pages/PongGame/index.js';
 import SingUp from './pages/SingUp/index.js';
 import authProvider from './provider/authProvider.js';
+import VsAI from './pages/VsAI/index.js';
 
 async function route(path) {
     const routes = {
@@ -12,6 +13,7 @@ async function route(path) {
         "/game": new PageGame("#app"),
         "/register": new SingUp('#app'),
         "/home": new Home("#app"),
+        "/vsai": new VsAI("#app"),
     }
     if (path === "" || path === "/" || path === "/register")  {
         return routes[path]

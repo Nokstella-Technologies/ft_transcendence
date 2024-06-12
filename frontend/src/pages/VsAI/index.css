@@ -1,0 +1,84 @@
+@import "../../components/backgroundAnimation/backgroundAnimation.css";
+@import "../../components/soundControl/index.css";
+@import "../../components/containers/index.css";
+
+.player-picture {
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  border: #00e5ff;
+}
+
+.container-my-vsai {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+.container-my-vsai-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.card {
+  background-color: transparent;
+  border: 2px solid #00ffff;
+  border-radius: 10px;
+  margin: 20px;
+  width: 300px;
+  text-align: center;
+  position: relative;
+}
+.card-header {
+  background-color: transparent;
+  border-bottom: 2px solid #00ffff;
+  font-size: 1.2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  
+}
+
+#login-form-container {
+  margin-bottom: 30px;
+}
+
+.login-container {
+  align-items: center;
+  margin:  20px auto;
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+
+.register-link {
+  margin-top: 15px;
+}
+.register-link {
+  font-size: 0.9rem;
+}
+
+.register-link a {
+  color: #00ffea;
+  text-decoration: none;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #00ffea;
+  transition: all 0.3s ease;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+  color: #00e5ff;
+  border-bottom: 2px solid #00e5ff;
+}
