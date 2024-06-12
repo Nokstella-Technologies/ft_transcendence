@@ -26,7 +26,7 @@ class MainPage extends Component{
         return `
             <h1 class="mt-5">Pong</h1>
             <div class="game-modes d-flex flex-column align-items-center mt-5">
-                <button class="btn btn-lg">Modo Solo</button>
+                <button class="btn btn-lg modo-solo">Modo Solo</button>
                 <button class="btn btn-lg mt-3">Modo Desafio</button>
                 <button class="btn btn-lg mt-3">Modo Torneio</button>
             </div>
@@ -40,7 +40,7 @@ class MainPage extends Component{
     
     
     mount(){
-        document.querySelector(".btn").addEventListener("click", () => navigateTo("/vsai"))
+        document.querySelector(".modo-solo").addEventListener("click", () => navigateTo("/vsai"))
         const changeTheme = (new_apperance) =>{
             const {token} = authProvider.get()
             userProvider.setNewApperence(token, new_apperance)

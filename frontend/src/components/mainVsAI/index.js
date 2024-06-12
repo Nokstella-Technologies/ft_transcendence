@@ -26,16 +26,17 @@ class MainVsAI extends Component{
     }
 
     render(){
+        const infoIconId = this.isplayer ? "info-icon-player" : "info-icon-ai";
         return `<div>
                  ${this.isplayer ? `<div>
-                                    <div style="float: right;"><img src="https://www.vhv.rs/dpng/d/84-845553_orange-information-icon-png-transparent-png.png" width="50"></div>
+                                    <div style="float: right;"><img id="${infoIconId}" src="https://www.vhv.rs/dpng/d/84-845553_orange-information-icon-png-transparent-png.png" width="50"></div>
                                             <img src="${this.user.profile_picture}" alt="Player Icon" class="player-picture">
                                             <p>${this.user.username}<br>
                                                 (Você)</p>
                                             <button class="btn btn-primary btn-block btn-trocar-lado" style="background-color: #00e5ff; border: none;">Trocar Lado</button>
                                             </div>` :
                                     `<div>
-                                    <div style="float: right;"></div>
+                                    <div style="float: right;"><img id="${infoIconId}" src="https://www.vhv.rs/dpng/d/84-845553_orange-information-icon-png-transparent-png.png" width="50"></div>
                                     <i class="fa fa-solid fa-brain" alt="AI Icon" class="player-picture"></i>
                                     <p>IA</p>
                                 </div>`}
@@ -50,19 +51,31 @@ class MainVsAI extends Component{
         document.querySelector(".btn-trocar-lado").addEventListener("click", () => {
             // Lógica de troca de lado estará no componente pai (VsAI)
         });
-        /* document.querySelector(".btn").addEventListener("click", () => navigateTo("/vsai"))
-        const changeTheme = (new_apperance) =>{
-            const {token} = authProvider.get()
-            userProvider.setNewApperence(token, new_apperance)
-            this.setCustomizeSchema({
-                theme: new_apperance.theme,
-                paddleColor: new_apperance.paddleColor,
-                ballColor: new_apperance.ballColor,
-                backgroundColor: new_apperance.backgroundColor
-            })
-        }
-        const themes =  new ThemeSelector('.themes', changeTheme, this.customizeSchema().theme, this.customizeSchema())
-        themes.reRender() */
+        const infoIconId = this.isplayer ? "#info-icon-player" : "#info-icon-ai";
+        document.querySelector(infoIconId).addEventListener("click", () => {
+            this.showInstructions();
+        });
+    }
+
+    showInstructions() {
+        const instructions = document.createElement('div');
+        instructions.id = 'instructions-card';
+        instructions.innerHTML = `
+            <div class="instructions-overlay">
+                <div class="instructions-content">
+                    <span id="close-instructions" class="close">&times;</span>
+                    <h2>Instruções</h2>
+                    <p>Para jogar, use as teclas:</p>
+                    <p>W - Subir</p>
+                    <p>S - Descer</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(instructions);
+
+        document.querySelector("#close-instructions").addEventListener("click", () => {
+            document.body.removeChild(instructions);
+        });
     }
 
 }

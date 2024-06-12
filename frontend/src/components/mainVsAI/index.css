@@ -30,6 +30,38 @@
     background-color: #00cccc;
 }
 
+.instructions-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.instructions-content {
+    background: #000;
+    border: 1px solid #00e5ff;
+    border-radius: 10px;
+    padding: 20px;
+    color: #00e5ff;
+    text-align: center;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #00e5ff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
