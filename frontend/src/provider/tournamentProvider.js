@@ -53,7 +53,7 @@ class TournamentProvider {
 
     async addPlayer(id, token, idx) {
         const res = await fetch(`http://localhost:8000/protected/tournament/participants/${id}`, {
-            method: 'GET',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
@@ -75,6 +75,44 @@ class TournamentProvider {
             return data;
         }else 
             throw new Error("Erro ao adicionar jogador");
+    }
+
+    async startTournament(token) {
+        const res = await fetch(`http://localhost:8000/protected/tournament/start_tournament/${this.tournament_id}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        if (res.status === 200) {
+            const data = await res.json();
+            return data;
+        } else 
+            throw new Error("Erro ao iniciar torneio");
+    }
+
+    async getNextMatch(token) {
+        const res = await fetch(`http://localhost:8000/protected/tournament/next_match/${this.tournament_id}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        if (res.status === 200) {
+            const data = await res.json();
+            return data;
+        } else 
+            throw new Error("Erro ao buscar proxima partida");
+    }
+
+    getPlayers(game) {
+        console.log(this.tournament_player)
+        console.log(game)
+        const player1 = this.tournament_player.find((player) => player.token !== null && player.user.user_id === game.game.player1.user_id);
+        const player2 = this.tournament_player.find((player) => player.token !== null && player.user.user_id === game.game.player2.user_id);
+        return {player1, player2};
     }
 }
 

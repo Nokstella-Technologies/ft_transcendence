@@ -23,7 +23,7 @@ def create_tournament(request):
 
 @csrf_exempt
 def add_participants(request, id):
-    if request.method != 'GET':
+    if request.method != 'PUT':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     user_id = get_payload(request, 'user')
     if user_id is None:
@@ -50,12 +50,14 @@ def add_participants(request, id):
 
 @csrf_exempt
 def start_tournament(request, id):
-    if request.method != 'GET':
+    if request.method != 'PUT':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
         tournament = Tournament.objects.get(id=id)
-        if tournament.status != 'Created' or tournament is None :
+        if tournament is None or (tournament.status != 'Created' and tournament.status != 'Started'):
             return JsonResponse({'error': 'Tournament is not ongoing'}, status=400)
+        if tournament.status == 'Started':
+            return JsonResponse({'error': 'Tournament already started'}, status=200)
         response = create_next_match(tournament)
         if (response.get('error')):
             return JsonResponse(response, status=400, safe=False)
@@ -77,7 +79,7 @@ def find_tournament(request, id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-
+@csrf_exempt
 def next_match(request, id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)

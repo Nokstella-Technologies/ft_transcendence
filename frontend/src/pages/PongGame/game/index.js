@@ -14,12 +14,13 @@ export const vr = {
 };
 
 class Game extends Component {
-    constructor(to, type, score, gameOver) {
+    constructor(to, type, score, gameOver, apperance) {
         super(to);
         this.startGame = false;
         this.type = type;
         this.score = score;
         this.gameOver = gameOver;
+        this.apperance = apperance;
         this.canvasRef = null;
         this.timeouts = [];
         this.ball = null;
@@ -58,7 +59,7 @@ class Game extends Component {
     }
 
     drawCenterLineAndCircle(ctx, canvasWidth, canvasHeight) {
-        ctx.strokeStyle = 'white';
+        ctx.strokeStyle = this.apperance.ball_color;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(canvasWidth / 2, 0);
@@ -74,11 +75,11 @@ class Game extends Component {
     }
 
     initGameObjects() {
-        this.ball = Ball(this.canvasRef, "#fff");
-        this.paddle1 = Padlle(this.canvasRef, 'w', 's', 0, "#fff");
+        this.ball = Ball(this.canvasRef, this.apperance.ball_color);
+        this.paddle1 = Padlle(this.canvasRef, 'w', 's', 0, this.apperance.paddle_color);
         this.paddle2 = this.type === undefined ? 
-            Padlle(this.canvasRef, 'iaUp', 'iaDown', this.canvasRef.width - vr.PADDLE_WIDTH, "#fff") :
-            Padlle(this.canvasRef, 'ArrowUp', 'ArrowDown', this.canvasRef.width - vr.PADDLE_WIDTH, "#fff");
+            Padlle(this.canvasRef, 'iaUp', 'iaDown', this.canvasRef.width - vr.PADDLE_WIDTH,this.apperance.paddle_color) :
+            Padlle(this.canvasRef, 'ArrowUp', 'ArrowDown', this.canvasRef.width - vr.PADDLE_WIDTH,this.apperance.paddle_color);
         this.ia = IA(this.canvasRef, this.ball, this.paddle2, this.paddle1);
     }
 
@@ -154,7 +155,7 @@ class Game extends Component {
 
     render() {
         return `
-            <canvas class="canvas_container"></canvas>
+            <canvas class="canvas_container" style="border-color: ${this.apperance.ball_color};background: ${this.apperance.background_color} "></canvas>
         `;
     }
 

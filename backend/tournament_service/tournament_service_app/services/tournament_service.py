@@ -21,8 +21,8 @@ def create_next_match(tournamet):
                     "type": "tournament",
                     "tournament_id": str(tournamet.id)
 		        }
+                round_number += 1
                 publish("TOURNAMENT_GAME", message, str(tournamet.id))
-            round_number += 1
         tournamet.status = 'Started'
         tournamet.round_now = 1
         tournamet.save()
@@ -74,8 +74,8 @@ def find_next_match(tournament_id):
         return {'error': 'Error on match status'}
     res['id'] = str(matches.id)
     res['game_id'] = str(matches.game_id)
-    res['player1_id'] = str(matches.player1_id)
-    res['player2_id'] = str(matches.player2_id)
+    res['player1'] = model_to_dict(TournamentParticipant.objects.filter(id=str(matches.player1_id)).first())
+    res['player2'] = model_to_dict(TournamentParticipant.objects.filter(id=str(matches.player2_id)).first())
     return { "game": res }
 
 

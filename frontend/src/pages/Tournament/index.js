@@ -7,11 +7,14 @@ import tournamentProvider from "../../provider/tournamentProvider.js";
 import Footer from "../../components/footer/index.js";
 import LoginForm from "../Login/loginForm.js";
 import Popup from "../../components/popup/popup.js";
+import gameProvider from "../../provider/gameProvider.js";
 
 class Tournament extends Component {
     constructor(to) {
-      super(to);
-      this.init();
+        super(to);
+        this.init();
+        const urlParams = new URLSearchParams(window.location.search);
+        this.code = urlParams.get("code");
     }
     init() { 
         const [showLogin, setShowLogin] = this.useState(false);
@@ -84,9 +87,9 @@ class Tournament extends Component {
   
     async mount () {
       const {_, token} = authProvider.get()
-      if (sessionStorage.getItem('idx') !== null) {
+      if (this.code) {
           this.idx = sessionStorage.getItem('idx');
-          sessionStorage.removeItem('idx');
+          this.code = null;
           this.setShowLogin(true);
       }
       await userProvider.getUser(token).then((res) => {
@@ -101,9 +104,23 @@ class Tournament extends Component {
         await tournamentProvider.createTournament(token, user).then(() => {
           this.reRender();
         }).catch((err) => {
-            console.log(err);
+            return navigateTo('/home')
         })
       }
+      document.querySelector("#start_tournament").addEventListener('click', async (event) => {
+            event.preventDefault();
+            try {
+                await tournamentProvider.startTournament(token)
+                const game = await tournamentProvider.getNextMatch(token)
+                const {player1, player2}  = tournamentProvider.getPlayers(game)
+                await gameProvider.setGame(token, game.game.game_id, player1, player2)
+                return navigateTo('/game')
+            }
+            catch (err) {
+                document.getElementById('error-message-tournament').innerHTML = "Minimo de 3 jogadores para o torneio!";
+            
+            }
+        })
       document.querySelectorAll('.logar_container').forEach((container) =>
         container.addEventListener('click', async (event) => {
             event.preventDefault();

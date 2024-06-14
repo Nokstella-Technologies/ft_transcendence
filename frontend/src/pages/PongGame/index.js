@@ -1,5 +1,6 @@
     import Component from "../../../react/Component.js";
     import SoundControl from "../../components/soundControl/index.js";
+import gameProvider from "../../provider/gameProvider.js";
     import Game from './game/index.js';
 
     class PageGame extends Component {
@@ -33,20 +34,30 @@
         }
         
         render() {
+            const { player1, player2} = gameProvider.get();
             return `
             <div id="sound-control-container"></div>
             <div class="container-pageGame">
-                <h1>Player1 VS Player2</h1>
+                <h1>${player1.username} VS ${player2.username}</h1>
                 <h1>${this.scoreP1()} - ${this.scoreP2()}</h1>
                 ${this.gameOver() ? this.GameOver() : this.renderGame()}
             </div>
             `;
         }
         
+
         mount() {
+            const {game, player1} = gameProvider.get();
+            if (game === undefined) { 
+                return navigateTo('/home')
+            } else {
+                this.setScoreP1(game.score_player1);
+                this.setScoreP2(game.score_player2);
+                this.setGameOver(game.status === "active" ? false : true)
+            }
             const soundControl = new SoundControl('#sound-control-container', 'assets/sounds/music.m4a');
             soundControl.reRender();
-            
+
             const score = (player) => {
                 if (player === "player1") {
                     this.setScoreP1(this.scoreP1() + 1);
@@ -57,7 +68,7 @@
             };
 
             if (!this.gameOver() && this.game == null) {
-                this.game = new Game('#game-container', "player2", score, this.gameOver);
+                this.game = new Game('#game-container', "player2", score, this.gameOver, player1.appearance[0])
                 this.game.reRender();
             } else if (this.gameOver()){
                 document.querySelector('.btn').addEventListener('click', () => { 
