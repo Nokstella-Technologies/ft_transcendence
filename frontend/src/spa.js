@@ -6,6 +6,7 @@ import SingUp from './pages/SingUp/index.js';
 import authProvider from './provider/authProvider.js';
 import PvPage from './pages/Pvp/index.js';
 import Tournament from './pages/Tournament/index.js';
+import VsAI from './pages/VsAI/index.js';
 
 async function route(path) {
     const routes = {
@@ -16,6 +17,7 @@ async function route(path) {
         "/home": new Home("#app"),
         "/pvp": new PvPage("#app"),
         "/tournament": new Tournament("#app"),
+        "/vsai": new VsAI("#app"),
     }
     if (path === "" || path === "/" || path === "/register")  {
         return routes[path]

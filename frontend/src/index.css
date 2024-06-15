@@ -3,9 +3,12 @@
 @import "./pages/PongGame/index.css";
 @import "./pages/SingUp/index.css";
 @import "./pages/Home/index.css";
+@import "./pages/VsAI/index.css";
 @import "./pages/ProfilePage/index.css";
 @import "./pages/Loading/index.css";
 @import "./pages/Tournament/index.css";
+@import "./pages/VsAI/index.css";
+
 * {
   font-family: "Press Start 2P", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   border: 0;
