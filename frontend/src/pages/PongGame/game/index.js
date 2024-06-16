@@ -14,13 +14,10 @@ export const vr = {
 };
 
 class Game extends Component {
-    constructor(to, type, score, gameOver, apperance) {
+    constructor(to) {
         super(to);
         this.startGame = false;
-        this.type = type;
-        this.score = score;
-        this.gameOver = gameOver;
-        this.apperance = apperance;
+        
         this.canvasRef = null;
         this.timeouts = [];
         this.ball = null;
@@ -31,14 +28,22 @@ class Game extends Component {
         this.animationFrameId = null;
     }
 
-    verifyScore(player) {
+    async newRender(type, score, gameOver, apperance) {
+        this.type = type;
+        this.score = score;
+        this.gameOver = gameOver;
+        this.apperance = apperance;
+        await this.reRender()
+    }
+
+    async verifyScore(player) {
         this.powerUpsRef = [];
         cancelAnimationFrame(this.animationFrameId);
         this.timeouts.forEach(clearTimeout);
         this.timeouts = [];
         this.removeEventListeners()
         this.startGame  = false;
-        this.score(player);
+        await this.score(player);
     }
 
     handleKeyDown(e) {
@@ -93,6 +98,7 @@ class Game extends Component {
     }
 
     removeEventListeners() {
+
         window.removeEventListener('keydown', this.handleKeyDown.bind(this));
         window.removeEventListener('keyup', this.handleKeyUp.bind(this));
         window.removeEventListener('keydown', this.start.bind(this));
@@ -161,8 +167,11 @@ class Game extends Component {
 
     destroy() {
         super.destroy();
+        
+        this.timeouts.forEach(clearTimeout);
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
+            
         }
         this.removeEventListeners();
     }

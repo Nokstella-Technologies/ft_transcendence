@@ -1,6 +1,10 @@
 .page {
+    
     height: 100%;
     display: flex;
+    
+    height: 100%;
+    vertical-align: middle;
     width: 100%;
 }
 .grid-container {
@@ -16,7 +20,12 @@
         flex-direction: column;
         padding: 10px;
         align-items: center;
-        min-width: 200px;
+        justify-content: center;
+        
+        max-width: 200px;
+        width: 100%;
+        max-height: 140px;
+        height: 100%;
     }
 
 .card-title {

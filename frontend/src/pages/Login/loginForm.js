@@ -27,7 +27,7 @@ class LoginForm extends Component {
 
     render() {
         return `
-            ${this.showEdit() ? `<div class="popup" id="login_popup"> </div>` : ''}
+            <div class="popup_form_login" id="login_popup"> </div>
             <form id="login-form">
                 <div id="error-message" class="text-danger"></div>
                 <div class="form-group">
@@ -77,7 +77,7 @@ class LoginForm extends Component {
                 <button type="submit" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Login</button>
             </form>
             `
-            const popUp = new Popup("#login_popup", "Digite o Codigo de Segurança:", content, this.showEdit(), this.setShowEdit, this.isTournament);
+            const popUp = new Popup(".popup_form_login", "Digite o Codigo de Segurança:", content, this.showEdit(), this.setShowEdit, this.isTournament);
             popUp.reRender();
             const errorMessage2fa = document.getElementById('error-message-2fa');
             document.getElementById('2fa-form').addEventListener('submit', async (event) => {

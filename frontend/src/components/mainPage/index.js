@@ -27,8 +27,8 @@ class MainPage extends Component{
             <h1 class="mt-5">Pong</h1>
             <div class="game-modes d-flex flex-column align-items-center mt-5">
                 <button class="btn btn-lg modo-solo">Modo Solo</button>
-                <button class="btn btn-lg mt-3">Modo Desafio</button>
-                <button class="btn btn-lg mt-3">Modo Torneio</button>
+                <button class="btn btn-lg mt-3 pvp">Modo Desafio</button>
+                <button class="btn btn-lg mt-3 pvt">Modo Torneio</button>
             </div>
             <p class="mt-3">Escolha um dos temas abaixo:</p>
             <div class="themes d-flex justify-content-center mt-3"> </div>

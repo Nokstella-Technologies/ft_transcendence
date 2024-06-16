@@ -53,7 +53,7 @@ class ThemeSelector extends Component {
                     <img src="https://img.icons8.com/ios-filled/50/00ffea/settings.png" alt="Customizar">
                 </div>
             </div>
-            ${this.showPopup ? `<div class="popup"> </div>` : ''}
+            <div class="popup thema"> </div>
         `;
     }
     mount() {
@@ -75,7 +75,7 @@ class ThemeSelector extends Component {
           <button id="save_custom" class="btn save-button" >Salvar</button>
         </div>
         `;
-        const popUp = new Popup(".popup", "Escolha a cor da raquete:", customContent, this.showPopup(), this.setShowPopup);
+        const popUp = new Popup(".thema", "Escolha a cor da raquete:", customContent, this.showPopup(), this.setShowPopup);
         popUp.reRender();
         themes.forEach(theme => {
           const canvas = document.getElementById(`${theme.name}Canvas`);

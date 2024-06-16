@@ -34,6 +34,34 @@ class GameProvider {
             throw new Error("Erro ao buscar jogo");
     }
 
+    async setScore(token, player) {
+        const data = {
+            score_player1: this.game.score_player1,
+            score_player2: this.game.score_player2,
+        }
+        if (this.game.score_player1 === 5 || this.game.score_player2 === 5) {
+            data.end = true;
+            this.game.status = "ended";
+            data.winner = this.game.score_player1 === 5 ? this.game.player1_id : this.game.score_player2;
+        }
+        const score = await fetch(`http://localhost:8000/protected/game/update_game/${this.game.game_id}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        })
+        if (score.status === 200) {
+            const res = await score.json();
+            if (data.end) {
+                this.game = res.game
+            }
+            sessionStorage.setItem("game", JSON.stringify(res.game));
+            return res;
+        } else 
+            throw new Error("Erro ao setar score");
+    }
 }
 
 

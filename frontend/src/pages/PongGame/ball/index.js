@@ -24,7 +24,7 @@
     };
 
 
-    const checkCollisions = (paddle1, paddle2, updateScore) => {
+    const checkCollisions = async (paddle1, paddle2, updateScore) => {
       const canvas = canvasRef;
 
       // Colisão com as paredes superior e inferior
@@ -37,7 +37,7 @@
         resetBall();
         paddle1.resetPaddle();
         paddle2.resetPaddle();
-        updateScore('player2');
+        await updateScore('player2');
       }
 
       // Colisão com a parede direita
@@ -45,7 +45,7 @@
         resetBall();
         paddle1.resetPaddle();
         paddle2.resetPaddle();
-        updateScore('player1');
+        await updateScore('player1');
       }
     
         // Colisão com o paddle1

@@ -29,7 +29,11 @@ class Popup extends Component {
             document.querySelector(".popup-overlay").addEventListener("click", () => {
                 this.onClose(!this.show);
             });
-    
+        }
+        if (this.isTour !== undefined) {
+            document.querySelector(".greater_zindex").addEventListener("click", (event) => {
+                this.onClose(!this.show);
+            })
         }
     }
 }
