@@ -61,7 +61,7 @@ class LoginForm extends Component {
                     if (!this.isTournament) {
                         return navigateTo('/home')
                     }
-                    this.isTournament(res.jwt_token)
+                    await this.isTournament(res.jwt_token)
                 }
             } catch (err) {
                 errorMessage.textContent = 'Erro tente novamente!';
@@ -89,7 +89,7 @@ class LoginForm extends Component {
                         if (this.isTournament === undefined) {
                             return navigateTo('/home')
                         }
-                        this.isTournament(res.jwt_token)
+                        await this.isTournament(res.jwt_token)
                     }
                 }catch (err) {
                     errorMessage2fa.textContent = 'Código de segurança inválido';
@@ -113,7 +113,7 @@ class LoginForm extends Component {
                     if (!this.isTournament) {
                         return navigateTo('/home')
                     }
-                    this.isTournament(res.jwt_token)
+                    await this.isTournament(res.jwt_token)
                 }
             } catch(err) {
                 errorMessage.textContent = 'Usuário ou senha inválidos';

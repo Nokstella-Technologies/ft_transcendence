@@ -15,6 +15,8 @@ class TournamentParticipant(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="participants")
     user_id = models.UUIDField()
     score = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
+    losses = models.IntegerField(default=0)
     registered_at = models.DateTimeField(auto_now_add=True)
 
     __str__ = lambda self: f"{self.id}"

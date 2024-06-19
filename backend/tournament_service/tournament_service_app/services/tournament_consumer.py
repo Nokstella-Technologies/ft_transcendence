@@ -52,8 +52,12 @@ def end_game(data):
         p1.score += 1
         p2.score += 1
     elif (winner == p1.user_id):
+        p1.wins += 1
+        p2.losses += 1
         p1.score += 3
     else:
+        p2.wins += 1
+        p1.losses += 1
         p2.score += 3
     tournGame.status = 'finished'
     tournGame.save()

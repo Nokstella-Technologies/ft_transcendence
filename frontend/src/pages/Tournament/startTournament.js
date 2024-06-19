@@ -79,23 +79,11 @@ export default class StartTournament extends Component {
             this.code = null;
             this.setShowLogin(true);
         }
-        const {user} = userProvider.get();
-        const {tournament_id} = tournamentProvider.get();
-        if (tournament_id === null) {
-            await tournamentProvider.createTournament(token, user).then(() => {
-                this.reRender();
-            }).catch((err) => {
-                return navigateTo('/home')
-            })
-        }
         document.querySelector("#start_tournament").addEventListener('click', async (event) => {
             event.preventDefault();
             try {
                 await tournamentProvider.startTournament(token)
-                const game = await tournamentProvider.getNextMatch(token)
-                const {player1, player2}  = tournamentProvider.getPlayers(game)
-                await gameProvider.setGame(token, game.game.game_id, player1, player2)
-                return navigateTo('/game')
+                return navigateTo('/tournament')
             }
             catch (err) {
                 document.getElementById('error-message-tournament').innerHTML = "Minimo de 3 jogadores para o torneio!";
@@ -116,6 +104,7 @@ export default class StartTournament extends Component {
         popUp.reRender();
         if (this.showLogin()) {
             const setNewUser = async (token) => {
+            const {tournament_id} = tournamentProvider.get();
             try {
                 await tournamentProvider.addPlayer(tournament_id, token, this.idx)
                 sessionStorage.removeItem('idx');

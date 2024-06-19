@@ -6,6 +6,7 @@ class TournamentProvider {
         this.tournament_id = sessionStorage.getItem("tournament_id");
         if (this.tournament_id !== null) {
             this.tournament_player = JSON.parse(sessionStorage.getItem("tournament_player"));
+            this.tournament =JSON.parse(sessionStorage.getItem("tournament"));
         } else {
             this.tournament_player = [{token: null}, {token: null}, {token: null}, {token: null},
                 {token: null}, {token: null}, {token: null}, {token: null}];
@@ -23,14 +24,22 @@ class TournamentProvider {
         })
         if (res.status === 200) {
             const data = await res.json();
-            data.tournament.players.forEach((player, index) => {});
+            this.tournament_player.filter((pl)=> pl.token !== null).forEach((player, index) => {
+                const pl = data.participants.find((pl) => player.user.user_id === pl.user_id)
+                this.tournament_player[index].user.wins = pl.wins;
+                this.tournament_player[index].user.score = pl.score;
+                this.tournament_player[index].user.losses = pl.losses;
+            });
+            this.tournament = data;
+            sessionStorage.setItem("tournament_player", JSON.stringify(this.tournament_player));
+            sessionStorage.setItem("tournament", JSON.stringify(data));
             return data;
         } else 
             throw new Error("Erro ao buscar torneio");
     }
 
     get() {
-        return {tournament_player: this.tournament_player, tournament_id: this.tournament_id};
+        return {tournament_player: this.tournament_player, tournament_id: this.tournament_id, tournament: this.tournament};
     }
 
     async createTournament(token, user) {
@@ -44,8 +53,10 @@ class TournamentProvider {
             const data = await res.json();
             this.tournament_player[0] = {token: token, user: user};
             this.tournament_id = data.tournament.id;
+            this.tournament = data.tournament;
             sessionStorage.setItem("tournament_id", data.tournament.id);
             sessionStorage.setItem("tournament_player", JSON.stringify(this.tournament_player));
+            sessionStorage.setItem("tournament", JSON.stringify(this.tournament));
             return data;
         }else 
             throw new Error("Erro ao criar torneio");
@@ -87,6 +98,8 @@ class TournamentProvider {
         })
         if (res.status === 200) {
             const data = await res.json();
+            this.tournament.status = "Started";
+            sessionStorage.setItem("tournament", JSON.stringify(this.tournament));
             return data;
         } else 
             throw new Error("Erro ao iniciar torneio");
