@@ -4,6 +4,8 @@ import Login from './pages/Login/index.js';
 import PageGame from './pages/PongGame/index.js';
 import SingUp from './pages/SingUp/index.js';
 import authProvider from './provider/authProvider.js';
+import PvPage from './pages/Pvp/index.js';
+import Tournament from './pages/Tournament/index.js';
 import VsAI from './pages/VsAI/index.js';
 
 async function route(path) {
@@ -13,6 +15,8 @@ async function route(path) {
         "/game": new PageGame("#app"),
         "/register": new SingUp('#app'),
         "/home": new Home("#app"),
+        "/pvp": new PvPage("#app"),
+        "/tournament": new Tournament("#app"),
         "/vsai": new VsAI("#app"),
     }
     if (path === "" || path === "/" || path === "/register")  {

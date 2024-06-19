@@ -7,7 +7,6 @@ import LoginForm from './loginForm.js';
 
 class Login extends Component {
     constructor(to) {
-
         super(to);
     }
 
@@ -33,6 +32,7 @@ class Login extends Component {
   }
 
   mount() {
+      
       const soundControl = new SoundControl('#sound-control-container', 'assets/sounds/music.m4a');
       soundControl.reRender();
 

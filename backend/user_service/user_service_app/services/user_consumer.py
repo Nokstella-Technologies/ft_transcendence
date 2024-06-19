@@ -7,6 +7,8 @@ from ..utils.qr_code_otp import verify_otp
 from django.forms.models import model_to_dict
 from ..rabbitmq import create_connection
 from ..models.user import User
+from ..models.game_appearance import GameAppearance
+from ..models.player_stats import PlayerStats
 
 
 
@@ -42,6 +44,8 @@ def handle_authenticate_or_register(user_info):
                 email=email,
                 password=make_password(str(uuid.uuid4())),
                 status='online')
+            GameAppearance.objects.create(user_id=user)
+            PlayerStats.objects.create(user_id=user)
             res = model_to_dict(user, exclude={"otp_secret", "password"})
             res["user_id"] = str(user.user_id)
             response = {'valid': True, 'user': res}

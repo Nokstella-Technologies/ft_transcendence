@@ -1,6 +1,6 @@
 from django.forms import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
-from ..services.tournament_service import create_next_match, find_next_match
+from ..services.tournament_service import create_next_match, find_next_match, find_tournament_by_id
 from django.http import JsonResponse
 from ..models.tournament import Tournament, TournamentParticipant, TournamentGame
 from ..utils.jwt import get_payload
@@ -23,7 +23,7 @@ def create_tournament(request):
 
 @csrf_exempt
 def add_participants(request, id):
-    if request.method != 'GET':
+    if request.method != 'PUT':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     user_id = get_payload(request, 'user')
     if user_id is None:
@@ -50,12 +50,14 @@ def add_participants(request, id):
 
 @csrf_exempt
 def start_tournament(request, id):
-    if request.method != 'GET':
+    if request.method != 'PUT':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
         tournament = Tournament.objects.get(id=id)
-        if tournament.status != 'Created' or tournament is None :
+        if tournament is None or (tournament.status != 'Created' and tournament.status != 'Started'):
             return JsonResponse({'error': 'Tournament is not ongoing'}, status=400)
+        if tournament.status == 'Started':
+            return JsonResponse({'error': 'Tournament already started'}, status=200)
         response = create_next_match(tournament)
         if (response.get('error')):
             return JsonResponse(response, status=400, safe=False)
@@ -68,7 +70,7 @@ def find_tournament(request, id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
-        res = find_tournament(id)
+        res = find_tournament_by_id(id)
         if res is None:
             return JsonResponse({'error': 'Tournament not found'}, status=404)
         return JsonResponse(res, status=200)
@@ -77,12 +79,13 @@ def find_tournament(request, id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-
+@csrf_exempt
 def next_match(request, id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
         response = find_next_match(id)
+        print(response)
         if (response.get('error')):
             return JsonResponse(response, status=400, safe=False)
         return JsonResponse(response, status=200, safe=False)

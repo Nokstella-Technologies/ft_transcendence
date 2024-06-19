@@ -15,7 +15,7 @@ class AuthProvider {
         return {auth: this.authenticated, token: this.token};
     }
 
-    async validate2fa(code, email) {
+    async validate2fa(code, email, isTour = undefined) {
         const res = await fetch('http://localhost:8000/public/auth/login/code/', {
                 method: 'POST',
                 headers: {
@@ -28,7 +28,7 @@ class AuthProvider {
             })
             if (res.status === 200) {
                 const data = await res.json();
-                if (data["jwt_token"] !== undefined) {
+                if (data["jwt_token"] !== undefined && isTour === undefined) {
                     sessionStorage.setItem("token", data["jwt_token"]);
                 }
                 return data;
@@ -52,7 +52,7 @@ class AuthProvider {
             throw new Error("Erro ao atualizar status online");
     }
 
-    async login(username, password) {
+    async login(username, password, isTour = undefined) {
             const res = await fetch('http://localhost:8000/public/auth/login/', {
                 method: 'POST',
                 headers: {
@@ -65,7 +65,7 @@ class AuthProvider {
             })
             if (res.status === 200) {
                 const data = await res.json();
-                if (data["jwt_token"] !== undefined) {
+                if (data["jwt_token"] !== undefined && isTour === undefined) {
                     sessionStorage.setItem("token", data["jwt_token"]);
                 }
                 return data;
@@ -74,7 +74,7 @@ class AuthProvider {
             }
     }
 
-    async login42(code) {
+    async login42(code, isTour = undefined) {
         const res = await fetch('http://localhost:8000/public/auth/oauth2/authorize/', {
             method: 'POST',
             headers: {
@@ -82,11 +82,12 @@ class AuthProvider {
             },
             body: JSON.stringify({
                 code: code,
+                redirect_uri: isTour === undefined ? "https://localhost/" : "https://localhost/tournament"
             })
         })
         if (res.status === 200) {
             const data = await res.json();
-            if (data["jwt_token"] !== undefined) {
+            if (data["jwt_token"] !== undefined && isTour === undefined) {
                 sessionStorage.setItem("token", data["jwt_token"]);
             }
             return data;
@@ -117,13 +118,13 @@ class AuthProvider {
         if (token === undefined) {
             this.token = sessionStorage.getItem("token");
         }
-        if (this.token === null) {
+        if (this.token === undefined) {
             return false;
         }
         if (this.authenticated === false) {
             try {
                 await this.changeStatus("online");
-                this.authenticated = true;     
+                this.authenticated = true;    
             } catch (err) {
                 console.log(err);
                 return false;

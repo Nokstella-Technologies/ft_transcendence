@@ -14,12 +14,10 @@ export const vr = {
 };
 
 class Game extends Component {
-    constructor(to, type, score, gameOver) {
+    constructor(to) {
         super(to);
         this.startGame = false;
-        this.type = type;
-        this.score = score;
-        this.gameOver = gameOver;
+        
         this.canvasRef = null;
         this.timeouts = [];
         this.ball = null;
@@ -30,14 +28,22 @@ class Game extends Component {
         this.animationFrameId = null;
     }
 
-    verifyScore(player) {
+    async newRender(type, score, gameOver, apperance) {
+        this.type = type;
+        this.score = score;
+        this.gameOver = gameOver;
+        this.apperance = apperance;
+        await this.reRender()
+    }
+
+    async verifyScore(player) {
         this.powerUpsRef = [];
         cancelAnimationFrame(this.animationFrameId);
         this.timeouts.forEach(clearTimeout);
         this.timeouts = [];
         this.removeEventListeners()
         this.startGame  = false;
-        this.score(player);
+        await this.score(player);
     }
 
     handleKeyDown(e) {
@@ -58,7 +64,7 @@ class Game extends Component {
     }
 
     drawCenterLineAndCircle(ctx, canvasWidth, canvasHeight) {
-        ctx.strokeStyle = 'white';
+        ctx.strokeStyle = this.apperance.ball_color;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(canvasWidth / 2, 0);
@@ -74,11 +80,11 @@ class Game extends Component {
     }
 
     initGameObjects() {
-        this.ball = Ball(this.canvasRef, "#fff");
-        this.paddle1 = Padlle(this.canvasRef, 'w', 's', 0, "#fff");
+        this.ball = Ball(this.canvasRef, this.apperance.ball_color);
+        this.paddle1 = Padlle(this.canvasRef, 'w', 's', 0, this.apperance.paddle_color);
         this.paddle2 = this.type === undefined ? 
-            Padlle(this.canvasRef, 'iaUp', 'iaDown', this.canvasRef.width - vr.PADDLE_WIDTH, "#fff") :
-            Padlle(this.canvasRef, 'ArrowUp', 'ArrowDown', this.canvasRef.width - vr.PADDLE_WIDTH, "#fff");
+            Padlle(this.canvasRef, 'iaUp', 'iaDown', this.canvasRef.width - vr.PADDLE_WIDTH,this.apperance.paddle_color) :
+            Padlle(this.canvasRef, 'ArrowUp', 'ArrowDown', this.canvasRef.width - vr.PADDLE_WIDTH,this.apperance.paddle_color);
         this.ia = IA(this.canvasRef, this.ball, this.paddle2, this.paddle1);
     }
 
@@ -92,6 +98,7 @@ class Game extends Component {
     }
 
     removeEventListeners() {
+
         window.removeEventListener('keydown', this.handleKeyDown.bind(this));
         window.removeEventListener('keyup', this.handleKeyUp.bind(this));
         window.removeEventListener('keydown', this.start.bind(this));
@@ -154,14 +161,17 @@ class Game extends Component {
 
     render() {
         return `
-            <canvas class="canvas_container"></canvas>
+            <canvas class="canvas_container" style="border-color: ${this.apperance.ball_color};background: ${this.apperance.background_color} "></canvas>
         `;
     }
 
     destroy() {
         super.destroy();
+        
+        this.timeouts.forEach(clearTimeout);
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
+            
         }
         this.removeEventListeners();
     }
