@@ -5,19 +5,6 @@ import pika
 import uuid
 import time
 
-def send_to_stats_queue(ch, props, queue_name, message, action):
-    ch.queue_declare(queue=queue_name, durable=True)
-    message['action'] = action
-    ch.basic_publish(
-        exchange='',
-        routing_key=queue_name,
-        properties=pika.BasicProperties(
-            reply_to=props.reply_to,
-            correlation_id=props.correlation_id
-        ),
-        body=json.dumps(message),
-    )
-
 
 def send_to_queue(queue_name, message):
     connection, channel = create_connection()

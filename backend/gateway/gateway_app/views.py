@@ -13,6 +13,7 @@ class ProxyView(View):
         '/protected/user/': 'http://user-service:8000',
         '/protected/game/': 'http://game-service:8000',
         '/protected/tournament/': 'http://tournament-service:8000',
+        '/protected/stats/': 'http://stats-service:8000',
     }
 
     def get_service_url(self, path):
@@ -27,7 +28,7 @@ class ProxyView(View):
         service_url = self.get_service_url(request.path)
         if not service_url:
             return JsonResponse({'error': 'Service not found'}, status=404)
-        
+
         parsed_url = urlparse(service_url)
         conn = http.client.HTTPConnection(parsed_url.hostname, parsed_url.port)
 

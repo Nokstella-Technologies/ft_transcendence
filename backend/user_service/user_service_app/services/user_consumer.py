@@ -7,8 +7,7 @@ from ..utils.qr_code_otp import verify_otp
 from django.forms.models import model_to_dict
 from ..rabbitmq import create_connection
 from ..models.user import User
-
-
+from ..models.player_stats import PlayerStats
 
 def handle_authenticate(credentials):
     username = credentials.get('username')
@@ -25,11 +24,10 @@ def handle_authenticate(credentials):
         response = {'valid': False, 'user': {}, 'error': str(e)}
     return response
 
-# Função para autenticar ou registrar usuário pela API 42
 def handle_authenticate_or_register(user_info):
     email = user_info.get('email')
     username = user_info.get('login')
-    print( "email: ", email, "username: ", username)
+    print("email: ", email, "username: ", username)
     try:
         user = User.objects.filter(email=email).first()
         if user:
@@ -47,7 +45,7 @@ def handle_authenticate_or_register(user_info):
             response = {'valid': True, 'user': res}
     except Exception as e:
         response = {'valid': False, 'user': {}, 'error': str(e)}
-    
+
     return response
 
 def handle_authenticate_2fa(data, isID):
@@ -55,13 +53,12 @@ def handle_authenticate_2fa(data, isID):
     token = data.get('token')
 
     try:
-        if (isID):
+        if isID:
             user = User.objects.get(user_id=user_id)
         else:
             user = User.objects.get(email=user_id)
-        
+
         if user.otp_secret and user.is_auth == False and isID:
-            # Verifica o token 2FA
             if verify_otp(user.otp_secret, token):
                 user.is_auth = True
                 user.save()
@@ -75,10 +72,24 @@ def handle_authenticate_2fa(data, isID):
                 return {'valid': True, 'user': res}
         return {'valid': False, 'user': {}}
     except Exception as e:
-        return{'valid': False, 'user': {}, 'error': str(e)}
+        return {'valid': False, 'user': {}, 'error': str(e)}
 
+def process_user_stats(ch, method, properties, body):
+    data = json.loads(body)
+    try:
+        user = User.objects.get(user_id=data['user_id'])
+        player_stats, created = PlayerStats.objects.get_or_create(user_id=user)
+        player_stats.games_played += data.get('games_played', 0)
+        player_stats.games_won += data.get('games_won', 0)
+        player_stats.games_lost += data.get('games_lost', 0)
+        player_stats.total_score += data.get('total_score', 0)
+        player_stats.save()
+    except User.DoesNotExist:
+        print(f"User with id {data['user_id']} does not exist.")
+    except Exception as e:
+        print(f"Error updating stats for user_id {data['user_id']}: {e}")
 
-def start_consumer():
+def start_auth_consumer():
     _, channel = create_connection()
     def on_request(ch, method, props, body):
         data = json.loads(body)
@@ -86,7 +97,6 @@ def start_consumer():
         response = {}
 
         print("action: ", action)
-         # Diferencia entre os tipos de ação
         if action == 'authenticate':
             response = handle_authenticate(data)
         elif action == 'authenticate_or_register':
@@ -98,8 +108,6 @@ def start_consumer():
         else:
             response = {'valid': False, 'user': {}}
 
-
-        # Envia a resposta de volta para o `auth_service`
         ch.basic_publish(
             exchange='',
             routing_key=props.reply_to,
@@ -115,10 +123,14 @@ def start_consumer():
         print(" [x] Awaiting RPC requests")
         channel.start_consuming()
     except pika.exceptions.ConnectionClosedByBroker as e:
-        print("lost connection reset",str(e))
-        _, channel = create_connection()
-        start_consumer()
-        
+        print("lost connection reset", str(e))
+        start_auth_consumer()
 
-if __name__ == '__main__':
-    start_consumer()
+def start_stats_consumer():
+    connection, channel = create_connection()
+    channel.queue_declare(queue='user_stats_queue', durable=True)
+
+    channel.basic_consume(queue='user_stats_queue', on_message_callback=process_user_stats, auto_ack=True)
+
+    print('Waiting for user stats messages. To exit press CTRL+C')
+    channel.start_consuming()

@@ -4,9 +4,11 @@ import pika.exceptions
 from ..rabbitmq import create_connection
 from ..models.tournament import TournamentGame, Tournament, TournamentParticipant
 from django.forms.models import model_to_dict
+from .tournament_producer import send_to_queue
 
 UPDATE_QUEUE = 'UPDATE_GAME_TOURNAMENT'
 FINISHED_QUEUE = 'FINISHED_GAME_TOURNAMENT'
+TOURNAMENT_STATS_QUEUE = 'TOURNAMENT_DATA_QUEUE'
 
 def create_game_local(data, tournament_id):
 
@@ -30,6 +32,18 @@ def create_game_local(data, tournament_id):
         round_number=round_number,
         status='pending'
     )
+
+    stats_message = {
+        'action': 'create_game',
+        'game_id': str(game.game_id),
+        'player1_id': str(game.player1_id.user_id),
+        'player2_id': str(game.player2_id.user_id),
+        'tournament_id': str(tournament.id),
+        'round_number': round_number,
+        'status': game.status
+    }
+    send_to_queue(TOURNAMENT_STATS_QUEUE, stats_message)
+
     return { 'game': game }
 
 def start_game(data):
@@ -40,7 +54,7 @@ def start_game(data):
     tournGame.save()
     return { 'game': model_to_dict(tournGame) }
 
-def end_game(data):
+def end_game(ch, props, data):
     game = data.get('game')
     print("game: ", data)
     tournGame = TournamentGame.objects.filter(game_id=game['game_id']).first()
@@ -61,6 +75,18 @@ def end_game(data):
     p1.save()
     p2.save()
 
+    tournament = tournGame.tournament
+    if all(game.status == 'finished' for game in TournamentGame.objects.filter(tournament=tournament)):
+        tournament.status = 'Finished'
+        tournament.save()
+
+        stats_message = {
+            'action': 'end_tournament',
+            'tournament_id': str(tournament.id),
+            'winner_id': str(winner)
+        }
+        send_to_queue(ch, props, TOURNAMENT_STATS_QUEUE, stats_message, 'end_tournament')
+
 def start_consumer():
     _, channel = create_connection()
     def on_request(ch, method, props, body):
@@ -70,7 +96,7 @@ def start_consumer():
         elif data.get('action') == 'start_game':
             res = start_game(data)
         elif data.get('action') == 'end_game':
-            res = end_game(data)
+            res = end_game(ch, props, data)
         print("response: ", res)
         ch.basic_ack(delivery_tag=method.delivery_tag)
 

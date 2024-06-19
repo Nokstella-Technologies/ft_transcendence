@@ -5,12 +5,13 @@ import pika.exceptions
 from ..rabbitmq import create_connection
 from ..models import Game
 from django.forms.models import model_to_dict
+from .game_producer import send_to_stats_queue
 
 UPDATE_QUEUE = 'UPDATE_GAME_TOURNAMENT'
 FINISHED_QUEUE = 'FINISHED_GAME_TOURNAMENT'
+STATS_QUEUE = 'GAME_DATA_QUEUE'
 
 def start_game_local(data, status='active'):
-
     player1_id = data.get('player1_id')
     player2_id = data.get('player2_id')
     type = data.get('type')
@@ -55,10 +56,12 @@ def update_game(data):
     response['game_id'] = str(game.game_id)
     response['player1_id'] = str(game.player1_id)
     response['player2_id'] = str(game.player2_id)
+
     return { 'game': response }, is_end_now
 
 def start_consumer():
     _, channel = create_connection()
+
     def on_request(ch, method, props, body):
         data = json.loads(body)
         action = data.get('action')
@@ -71,16 +74,23 @@ def start_consumer():
             print(f"Game ended: {ended}")
             if (response.get('game').get('status') == 'Finished' and data.get('end') == True):
                 if (response.get('game').get('type') == 'tournament'):
-                    response['action'] = 'end_game'
                     print(f"Sending end game request")
-                    ch.basic_publish(
-                        exchange = '',
-                        routing_key = FINISHED_QUEUE,
-                        properties = pika.BasicProperties(correlation_id=props.correlation_id),
-                        body = json.dumps(response)
-                    )
+                    send_to_stats_queue(ch, props,  FINISHED_QUEUE, response, 'end_game')
+
+                stats_message = {
+                    'action': 'update_stats',
+                    'game_id': str(response['game']['game_id']),
+                    'player1_id': str(response['game']['player1_id']),
+                    'player2_id': str(response['game']['player2_id']),
+                    'score_player1': response['game']['score_player1'],
+                    'score_player2': response['game']['score_player2'],
+                    'status': response['game']['status'],
+                    'end_time': str(response['game']['end_time'])
+                }
+                send_to_stats_queue(ch, props, STATS_QUEUE, stats_message, 'update_stats')
         else:
            response = {'status': 'error', 'message': 'Unknown action'}
+
         ch.basic_publish(
             exchange = '',
             routing_key = props.reply_to,
