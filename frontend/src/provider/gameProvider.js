@@ -27,7 +27,7 @@ class GameProvider {
     }
 
     async createGame(token, player1, player2) {
-        const res = await fetch('http://localhost:8000/protected/game/start_game/', {
+        const res = await fetch(window.env["API_URL"] + 'protected/game/start_game/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ class GameProvider {
     }
 
     async setGame(token, game_id, player1, player2) {
-        const game = await fetch(`http://localhost:8000/protected/game/get_game/${game_id}/`, {
+        const game = await fetch(window.env["API_URL"] + `protected/game/get_game/${game_id}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ class GameProvider {
             this.game.status = "ended";
             data.winner = this.game.score_player1 === 5 ? this.game.player1_id : this.game.score_player2;
         }
-        const score = await fetch(`http://localhost:8000/protected/game/update_game/${this.game.game_id}/`, {
+        const score = await fetch(window.env["API_URL"] + `protected/game/update_game/${this.game.game_id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

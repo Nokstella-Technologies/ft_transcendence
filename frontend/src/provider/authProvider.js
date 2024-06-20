@@ -16,7 +16,7 @@ class AuthProvider {
     }
 
     async validate2fa(code, email, isTour = undefined) {
-        const res = await fetch('http://localhost:8000/public/auth/login/code/', {
+        const res = await fetch(window.env["API_URL"] + 'public/auth/login/code/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -39,7 +39,7 @@ class AuthProvider {
     }
 
     async changeStatus(status) {
-        const res = await fetch(`http://localhost:8000/protected/user/${status}/`, {
+        const res = await fetch(window.env["API_URL"] + `protected/user/${status}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ class AuthProvider {
     }
 
     async login(username, password, isTour = undefined) {
-            const res = await fetch('http://localhost:8000/public/auth/login/', {
+            const res = await fetch(window.env["API_URL"] + 'public/auth/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -75,14 +75,14 @@ class AuthProvider {
     }
 
     async login42(code, isTour = undefined) {
-        const res = await fetch('http://localhost:8000/public/auth/oauth2/authorize/', {
+        const res = await fetch(window.env["API_URL"] + 'public/auth/oauth2/authorize/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 code: code,
-                redirect_uri: isTour === undefined ? "https://localhost/" : "https://localhost/tournament"
+                redirect_uri: isTour === undefined ? window.env["REDIRECT_URL"] : window.env["REDIRECT_URL_TOURNAMENT"]
             })
         })
         if (res.status === 200) {
@@ -97,7 +97,7 @@ class AuthProvider {
 }
 
     async createAccount(username, email, password) {
-        const res = await fetch('http://localhost:8000/public/user/create/', {
+        const res = await fetch(window.env["API_URL"] + 'public/user/create/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -130,7 +130,7 @@ class LoginForm extends Component {
         }); 
 
         const login42 = async () => {
-            const clientID = "u-s4t2ud-02969ded8f525ab740688ae88c19e30b6f5f25582c0fa571d8db9c20e27ccfe3"
+            const clientID = window.env["CLIENT_ID_42"]
             var redirect = "https://localhost/"
             if (this.isTournament !== undefined) {
                 redirect = "https://localhost/tournament"

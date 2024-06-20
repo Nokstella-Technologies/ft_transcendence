@@ -75,3 +75,15 @@ document.addEventListener('DOMContentLoaded', () => {
        authProvider.changeStatus("offline")
     });
 });
+
+await fetch('../.env').then((response) => response.text())
+.then((text) => {
+    window.env = text.split('\n').reduce((acc, line) => {
+        const [key, value] = line.split('=')
+        acc[key] = value
+        return acc
+    }, {})
+}).catch((err) => { 
+    console.log("Error on try to read env")
+})
+
