@@ -40,15 +40,15 @@ class GameProvider {
                 "type": "friendly",
             })
         })
-        if (res.status === 201) {
+        if (res.status === 200) {
             const data = await res.json();
-            this.game = data;
-            sessionStorage.setItem("game", JSON.stringify(data));
-            sessionStorage.setItem("player1", JSON.stringify(player1.user));
-            sessionStorage.setItem("player2", JSON.stringify(player2.user));
-            this.player1 = player1.user;
-            this.player2 = player2.user;
-            return data;
+            this.game = data.game;
+            sessionStorage.setItem("game", JSON.stringify(data.game));
+            sessionStorage.setItem("player1", JSON.stringify(player1));
+            sessionStorage.setItem("player2", JSON.stringify(player2));
+            this.player1 = player1;
+            this.player2 = player2;
+            return data.game;
         } else 
             throw new Error("Erro ao criar jogo");
 

@@ -60,24 +60,24 @@ class VsAI extends Component {
     const playerAI = new MainVsAI('#playerAI', apperance, false)
     playerAI.reRender();
 
-    document.querySelector(".btn-trocar-lado").addEventListener("click", this.trocarLado);
+    document.querySelector(".btn-trocar-lado").addEventListener("click", (e) => {
+      e.preventDefault();
+      this.side = this.side === "left" ? "right" : "left";
+      const player1 = document.getElementById("player1");
+      const playerAI = document.getElementById("playerAI");
+  
+      const player1Parent = player1.parentNode;
+      const playerAIParent = playerAI.parentNode;
+  
+      player1Parent.insertBefore(playerAI, player1Parent.firstChild);
+      playerAIParent.insertBefore(player1, playerAIParent.firstChild);
+    });
     document.querySelector("#start-game").addEventListener("click", () => {
       gameProvider.setGameAi(this.side)
       return navigateTo('/game')
     });
   }
 
-  trocarLado() {
-    this.side = this.side === "left" ? "right" : "left";
-    const player1 = document.getElementById("player1");
-    const playerAI = document.getElementById("playerAI");
-
-    const player1Parent = player1.parentNode;
-    const playerAIParent = playerAI.parentNode;
-
-    player1Parent.insertBefore(playerAI, player1Parent.firstChild);
-    playerAIParent.insertBefore(player1, playerAIParent.firstChild);
-  }
 }
 
 export default VsAI;

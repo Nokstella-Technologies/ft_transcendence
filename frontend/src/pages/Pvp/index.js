@@ -85,11 +85,12 @@ export default class PvPage extends Component {
                 return document.getElementById('error-message-tournament').innerHTML = "Minimo de 2 jogadores para o torneio!";
             }   
             try {
+                document.querySelector("#start-game").disabled = true;
                 await gameProvider.createGame(token, userProvider.get().user, this.player)
                 return navigateTo('/game')
             }
             catch (err) {
-                console.log(err)
+                document.querySelector("#start-game").disabled = false;
                 document.getElementById('error-message-tournament').innerHTML = "Erro tente novamente mais tarde!";
             
             }
