@@ -118,6 +118,7 @@ services:
       - transcendence
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
 
   grafana:
     image: grafana/grafana:10.2.2
@@ -126,6 +127,8 @@ services:
       - "3000:3000"
     networks:
       - transcendence
+    volumes:
+      - grafana-data:/var/lib/grafana
 
   # elasticsearch:
   #   image: elasticsearch:7.16.2
@@ -205,6 +208,8 @@ services:
 
 volumes:
   postgres-data:
+  prometheus-data:
+  grafana-data:
   elastic_data: {}
 
 networks:
