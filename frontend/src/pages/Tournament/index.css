@@ -22,16 +22,9 @@
 }
 
 .pvp-item {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    align-items: center;
-    justify-content: space-between;
-        
-    max-width: 300px;
-    width: 100%;
-    max-height: 300px;
-    height: 100%;
+    gap: 20px;
+    width: 300px;
+    height: 300px;
 }
 
 .grid-item {

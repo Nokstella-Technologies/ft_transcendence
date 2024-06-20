@@ -16,7 +16,7 @@ class UserProviders {
         return {user: this.user, apperance: this.apperance, stats: this.stats, friends: this.friends};
     }
 
-    async getUser(token) {
+    async getUser(token, save = true) {
         const res = await fetch('http://localhost:8000/protected/user/findById/', {
                 method: 'GET',
                 headers: {
@@ -26,11 +26,12 @@ class UserProviders {
             })
             if (res.status === 200) {
                 const data = await res.json();
-                this.user = data;
-                sessionStorage.setItem("user", JSON.stringify(data));
-                this.apperance = data.appearance[0];
-                this.stats = data.stats[0];
-                
+                if (save) {
+                    this.user = data;
+                    sessionStorage.setItem("user", JSON.stringify(data));
+                    this.apperance = data.appearance[0];
+                    this.stats = data.stats[0];
+                }
                 return data;
             } else {
                 throw new Error("Erro ao tentar pegar o usuario");
