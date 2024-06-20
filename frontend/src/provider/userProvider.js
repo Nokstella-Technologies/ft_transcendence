@@ -17,7 +17,7 @@ class UserProviders {
     }
 
     async getUser(token, save = true) {
-        const res = await fetch('http://localhost:8000/protected/user/findById/', {
+        const res = await fetch(window.env["API_URL"] + 'protected/user/findById/', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ class UserProviders {
             }
     }
     async setNewApperence(token, apperance) {
-        const res = await fetch(`http://localhost:8000/protected/user/update_appearance/${this.user.user_id}`, {
+        const res = await fetch(window.env["API_URL"] + `protected/user/update_appearance/${this.user.user_id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ class UserProviders {
     }
 
     async getFriends(token) {
-        const res = await fetch(`http://localhost:8000/protected/user/list_friends/${this.user.user_id}`, {
+        const res = await fetch(window.env["API_URL"] + `protected/user/list_friends/${this.user.user_id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ class UserProviders {
     }
 
     async addFriend(token, friend_id) {
-        const res = await fetch(`http://localhost:8000/protected/user/add_friend/${this.user.user_id}/`, {
+        const res = await fetch(window.env["API_URL"] + `protected/user/add_friend/${this.user.user_id}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ class UserProviders {
     }
 
     async acceptfriend(token, friend_id, id) {
-        const res = await fetch(`http://localhost:8000/protected/user/accept_friend/${id}`, {
+        const res = await fetch(window.env["API_URL"] + `protected/user/accept_friend/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ class UserProviders {
                 throw new Error("Erro ao tentar aceitar um amigo");
     }
     async rejectFriend(token, id) {
-        const res = await fetch(`http://localhost:8000/protected/user/remove_friend/${id}`, {
+        const res = await fetch(window.env["API_URL"] + `protected/user/remove_friend/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ class UserProviders {
                 throw new Error("Erro ao tentar rejeitar um amigo");
     }
     async findFriend(token, username) {
-        const res = await fetch(`http://localhost:8000/protected/user/search_user/?query=${username}`,{
+        const res = await fetch(window.env["API_URL"] + `protected/user/search_user/?query=${username}`,{
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
