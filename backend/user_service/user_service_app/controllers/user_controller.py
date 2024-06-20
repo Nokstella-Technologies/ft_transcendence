@@ -5,7 +5,34 @@ from django.http import JsonResponse
 from user_service_app.services.user_service import UserService
 from ..models.user import User
 from ..utils.jwt import get_payload
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import os
+import uuid
 class UserController:
+    @staticmethod
+    @csrf_exempt
+    def upload(request):
+        if request.method != 'POST':
+            return JsonResponse({'message': 'Method not allowed'}, status=405)
+        try:
+            profile_picture = request.FILES['profile_picture']
+            name = str(uuid.uuid4()) + "_" + profile_picture.name
+            file_name = os.path.join("imgs",  name)
+            file_path = default_storage.save(file_name, ContentFile(profile_picture.read()))
+            user_id = get_payload(request, 'user')
+            user = User.objects.get(user_id=user_id)
+            if user.profile_picture != None and user.profile_picture.startswith(os.getenv("URL_UPLOAD")):
+                default_storage.delete(user.profile_picture.replace(os.getenv("URL_UPLOAD"), ''))
+            user.profile_picture = os.getenv("URL_UPLOAD") + name
+            user.save()
+            return JsonResponse({'profile_picture': user.profile_picture}, status=200)
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'User not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=500)
+
+
     @staticmethod
     @csrf_exempt
     def register_user( request):
@@ -35,10 +62,12 @@ class UserController:
 
     @staticmethod
     @csrf_exempt
-    def update_user(request, id):
+    def update_user(request):
         if request.method == 'PUT':
             data = json.loads(request.body.decode('utf-8'))
-            return UserService().update_user(id, data)
+            user_id = get_payload(request, 'user')
+
+            return UserService().update_user(user_id, data)
         else:
             return JsonResponse({'message': 'Method not allowed'}, status=405)
 
