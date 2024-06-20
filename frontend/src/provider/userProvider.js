@@ -16,6 +16,32 @@ class UserProviders {
         return {user: this.user, apperance: this.apperance, stats: this.stats, friends: this.friends};
     }
 
+
+    async updateUser(token, username, password, newPassword) {
+        
+        const res = await fetch(window.env["API_URL"] + `protected/user/update_user/${this.user.user_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    new_password: newPassword
+                })
+            })
+            if (res.status === 200) {
+                const data = await res.json();
+                this.user = data;
+                sessionStorage.setItem("user", JSON.stringify(data));
+                return data;
+            } else {
+                throw new Error("Erro ao tentar atualizar o usuario");
+            }
+
+    }
+
     async getUser(token, save = true) {
         const res = await fetch(window.env["API_URL"] + 'protected/user/findById/', {
                 method: 'GET',
@@ -141,6 +167,26 @@ class UserProviders {
                 return data;
             } else 
                 throw new Error("Erro ao tentar encontrar um amigo");
+    }
+
+    async updateProfilePicture(token, formData) { 
+        const res = await fetch(window.env["API_URL"] + `protected/user/upload/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': `multipart/form-data`,
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData
+            })
+        if (res.status === 200) {
+            const data = await res.json();
+            this.user.profile_picture = data.profile_picture;
+            sessionStorage.setItem("user", JSON.stringify(this.user));
+            return data;
+        }
+        else {
+            throw new Error("Erro ao tentar atualizar a foto de perfil");
+        }
     }
 }
 
