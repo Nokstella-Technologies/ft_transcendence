@@ -209,7 +209,15 @@ services:
 volumes:
   postgres-data:
   prometheus-data:
+    driver: local
+    driver_opts:
+      o: bind
+      device: ./data/prometheus
   grafana-data:
+    driver: local
+    driver_opts:
+      o: bind
+      device: ./data/grafana
   elastic_data: {}
 
 networks:
