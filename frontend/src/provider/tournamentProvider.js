@@ -121,8 +121,6 @@ class TournamentProvider {
     }
 
     getPlayers(game) {
-        console.log(this.tournament_player)
-        console.log(game)
         const player1 = this.tournament_player.find((player) => player.token !== null && player.user.user_id === game.game.player1.user_id);
         const player2 = this.tournament_player.find((player) => player.token !== null && player.user.user_id === game.game.player2.user_id);
         return {player1, player2};

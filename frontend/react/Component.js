@@ -83,16 +83,13 @@ export default class Component {
     useEffect(effect, deps) {
         const { effects, cleanups } = componentState.get(this.componentId);
         const effectIndex = this.effectCursor;
-
         if (effects[effectIndex] === undefined) {
             effects[effectIndex] = { effect, deps: deps };
         }
-
         const hasChangedDeps = deps
             ? !effects[effectIndex].deps ||
               deps.some((dep, i) => dep !== effects[effectIndex].deps[i])
             : true;
-
         if (hasChangedDeps) {
             if (cleanups[effectIndex]) {
                 cleanups[effectIndex]();
@@ -100,17 +97,11 @@ export default class Component {
             cleanups[effectIndex] = effect();
             effects[effectIndex].deps = deps;
         }
-
         this.effectCursor++;
     }
 
     destroy() {
-        const { cleanups } = componentState.get(this.componentId);
-        cleanups.forEach((cleanup) => {
-            if (cleanup) cleanup();
-        });
-        componentState.delete(this.componentId);
-        delete this;
+        
     }
 
     render() {

@@ -4,10 +4,10 @@ class UserProviders {
         if (UserProviders.instance) {
             return UserProviders.instance;
         }
-        this.user = {};
-        this.apperance = {};
-        this.stats = {};
-        this.friends = [];
+        this.user = sessionStorage.getItem("user") ? JSON.parse(sessionStorage.getItem("user")) : undefined;
+        this.apperance = this.user ? this.user.appearance[0] : {};
+        this.stats = this.user ? this.user.stats[0] : {};
+        this.friends = sessionStorage.getItem("friends") ? JSON.parse(sessionStorage.getItem("friends")) : [];
         UserProviders.instance = this;
     }
 
@@ -27,6 +27,7 @@ class UserProviders {
             if (res.status === 200) {
                 const data = await res.json();
                 this.user = data;
+                sessionStorage.setItem("user", JSON.stringify(data));
                 this.apperance = data.appearance[0];
                 this.stats = data.stats[0];
                 
@@ -71,6 +72,7 @@ class UserProviders {
             const data = await res.json();
             this.friends = data.accepted;
             this.friends = this.friends.concat(data.pending);
+            sessionStorage.setItem("friends", JSON.stringify(this.friends));
             return data;
         } else 
             throw new Error("Erro ao tentar pegar os amigos");

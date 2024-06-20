@@ -7,10 +7,23 @@ class GameProvider {
         this.player1 = sessionStorage.getItem("player1") ? JSON.parse(sessionStorage.getItem("player1")) : undefined;
         this.player2 = sessionStorage.getItem("player2") ? JSON.parse(sessionStorage.getItem("player2")) : undefined;
         GameProvider.instance = this;
+        this.playerSide = sessionStorage.getItem("playerSide") ? JSON.parse(sessionStorage.getItem("playerSide")) : undefined;
     }
 
     get() {
-        return {game: this.game, player1: this.player1, player2: this.player2};
+        return {game: this.game, player1: this.player1, player2: this.player2, side: this.playerSide};
+    }
+
+    setGameAi(side) {
+        this.game = {
+            score_player1: 0,
+            score_player2: 0,
+            status: "active",
+            type: "ai"
+        }
+        this.playerSide = side;
+        sessionStorage.setItem("playerSide", JSON.stringify(side));
+        sessionStorage.setItem("game", JSON.stringify(this.game));
     }
 
     async setGame(token, game_id, player1, player2) {
