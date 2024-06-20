@@ -38,6 +38,7 @@
         paddle1.resetPaddle();
         paddle2.resetPaddle();
         await updateScore('player2');
+        return true
       }
 
       // Colisão com a parede direita
@@ -46,6 +47,7 @@
         paddle1.resetPaddle();
         paddle2.resetPaddle();
         await updateScore('player1');
+        return true
       }
     
         // Colisão com o paddle1
@@ -70,6 +72,7 @@
           ball.dx = -ball.dx;
           ball.x = canvas.width - paddle2.paddle.width - ball.radius; /// Ajuste a posição da bola para evitar múltiplas colisões
         }
+        return false
       };
 
     const render =  () => {

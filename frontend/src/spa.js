@@ -39,7 +39,6 @@ async function securityRoutes(componet) {
 
  const render = async () => {
     const path = window.location.pathname;
-    console.log("changing page", path)
     let component = await route(path)
     if (component === undefined) {
         window.history.pushState({}, '', '/'); 

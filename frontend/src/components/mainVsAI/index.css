@@ -43,6 +43,20 @@
     z-index: 1000;
 }
 
+.custom-icon-info{    
+    font-size: 50px;
+    color: #00e5ff;
+}
+
+.info-div {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    color: #00e5ff;
+    border: 2px solid #00e5ff;
+    border-radius: 50%;
+}
+
 .instructions-content {
     background: #000;
     border: 1px solid #00e5ff;
@@ -53,21 +67,25 @@
     position: relative;
 }
 
-.close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: #00e5ff;
-    font-size: 24px;
-    cursor: pointer;
+
+.custom-icon {
+    font-size: 24px; /* Tamanho do ícone */
+    color: #007bff; /* Cor do ícone */
 }
 
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    padding: 15px;
-    border-top: 2px solid #00ffff;
-    font-size: 14px;
+
+.intruc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+
+}
+
+.intruc > div {
+    padding-left: 20px;
+    padding-right: 20px;
+    border: #00e5ff 2px solid;
+    border-top: 0px;
+    border-bottom: 0px;
 }
