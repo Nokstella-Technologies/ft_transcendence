@@ -48,7 +48,7 @@ services:
       - postgres
     networks:
       - transcendence
-  
+
   tournament_service:
     container_name: tournament-service
     build:
@@ -109,15 +109,23 @@ services:
     networks:
       - transcendence
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   ports:
-  #     - "3001:3000"
-  #   environment:
-  #     - GF_SECURITY_ADMIN_PASSWORD=admin
-  #   networks:
-  #     - monitoring
+  prometheus:
+    image: prom/prometheus:v2.47.2
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - transcendence
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - transcendence
 
   # elasticsearch:
   #   image: elasticsearch:7.16.2
@@ -188,7 +196,7 @@ services:
     env_file:
       - rabbitmq/.env
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      test: [ "CMD", "rabbitmq-diagnostics", "status" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -206,4 +214,3 @@ networks:
     driver: bridge
   monitoring:
     driver: bridge
-

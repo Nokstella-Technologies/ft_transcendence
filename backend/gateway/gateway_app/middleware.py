@@ -19,13 +19,13 @@ class AuthMiddleware:
             '/public/user/create',
             '/public/auth/login/code',
             '/public/auth/login',
-            '/public/auth/oauth2/authorize'  # Example: all routes starting with /public/
+            '/public/auth/oauth2/authorize',
+            '/metrics' # Example: all routes starting with /public/
         ]
 
 
     def __call__(self, request):
         path = request.path_info
-
         # Check if the path matches any public prefixes
         if any(path.startswith(prefix) for prefix in self.public_prefixes):
             # Skip authentication for public routes
@@ -37,15 +37,15 @@ class AuthMiddleware:
             if bearer:
                 try:
                     token = bearer.split(' ')[1]
-                    if (token == ''): 
+                    if (token == ''):
                         return JsonResponse({'error': 'Invalid token'}, status=401)
-                     
+
                     # Prepare connection and request
                     parsed_url = urlparse('http://auth-service:8000/auth/authorized/')
                     conn = http.client.HTTPConnection(parsed_url.hostname, parsed_url.port)
                     headers = {'X-Auth-Token': token}
                     conn.request("GET", parsed_url.path, headers=headers)
-                    
+
                     # Get response
                     response = conn.getresponse()
                     if response.status != 200:
@@ -58,4 +58,4 @@ class AuthMiddleware:
                 finally:
                     conn.close()
         return JsonResponse({'error': 'No token provided'}, status=401)
-        
+
