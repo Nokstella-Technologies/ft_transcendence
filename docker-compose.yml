@@ -76,6 +76,7 @@ services:
     container_name: frontend
     volumes:
       - ./frontend:/usr/share/nginx/html
+      - ./elk_stack/logs/nginx_logs:/var/log/nginx
     ports:
       - 443:443
     env_file:
@@ -98,6 +99,58 @@ services:
       - ./.env
     networks:
       - backend
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTIC_PASSWORD=changeme
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+      - ./elk_stack/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml 
+    networks:
+      - transcendence
+      - backend
+
+  logstash:
+    container_name: logstash
+    image: docker.elastic.co/logstash/logstash:7.10.0
+    volumes:
+      - ./elk_stack/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./elk_stack/logs/nginx_logs:/var/log/nginx
+    ports:
+      - "5000:5000"
+    depends_on:
+      - elasticsearch
+    networks:
+      - transcendence
+      - backend
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.10.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme
+      - SERVER_BASEPATH=/kibana
+      - SERVER_REWRITEBASEPATH=true
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./elk_stack/kibana/kibana_index_pattern.ndjson:/usr/share/kibana/config/kibana_index_pattern.ndjson
+      - ./elk_stack/kibana/kibana-setup.sh:/usr/local/bin/kibana-setup.sh
+      - ./elk_stack/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - transcendence
+      - backend
+    entrypoint: ["/bin/bash", "-c", "/usr/local/bin/kibana-docker && /usr/local/bin/kibana-setup.sh"]
 
   # grafana:
   #   image: grafana/grafana:latest
@@ -188,7 +241,7 @@ services:
 
 volumes:
   postgres-data:
-  elastic_data: {}
+  es_data: {}
 
 networks:
   transcendence:

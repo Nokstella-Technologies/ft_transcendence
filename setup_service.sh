@@ -51,3 +51,10 @@ EOL
 
 echo "Django service '$SERVICE_NAME' created with app '${SERVICE_NAME}_app'."
 echo "Service '$SERVICE_NAME' added to docker-compose.yml with port $PORT."
+
+
+
+
+
+###### Create index in Kibana
+# curl -X POST "http://localhost:5601/api/saved_objects/_import?overwrite=true"   -H "kbn-xsrf: true"   --form file=@kibana_index_pattern.ndjson -u "elastic:changeme"
