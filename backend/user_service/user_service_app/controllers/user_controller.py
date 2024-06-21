@@ -26,7 +26,7 @@ class UserController:
             user_id = get_payload(request, 'user')
             user = User.objects.get(user_id=user_id)
             if user.profile_picture != None and user.profile_picture.startswith(os.getenv("URL_UPLOAD")):
-                default_storage.delete(user.profile_picture.replace(os.getenv("URL_UPLOAD"), ''))
+                default_storage.delete(os.path.join("imgs", user.profile_picture.replace(os.getenv("URL_UPLOAD"), '')))
             user.profile_picture = os.getenv("URL_UPLOAD") + name
             user.save()
             return JsonResponse({'profile_picture': user.profile_picture}, status=200)
