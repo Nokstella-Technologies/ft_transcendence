@@ -24,7 +24,6 @@ class Home extends Component {
     const {_, token} = authProvider.get()
     await userProvider.getUser(token).then((res) => {
     }).catch((err) => {
-      console.log(err)
       authProvider.logout();
       navigateTo('/')
     }); 

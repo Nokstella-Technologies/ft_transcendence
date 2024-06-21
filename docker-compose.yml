@@ -5,8 +5,6 @@ services:
       context: ./backend/user_service
     volumes:
       - ./backend/user_service:/usr/src/app/
-    expose:
-      - "8000"
     env_file:
       - ./backend/.env
     depends_on:
@@ -14,7 +12,7 @@ services:
       - gateway
       - postgres
     networks:
-      - transcendence
+      - backend
 
   auth_service:
     container_name: auth-service
@@ -22,8 +20,6 @@ services:
       context: ./backend/auth_service
     volumes:
       - ./backend/auth_service:/usr/src/app/
-    expose:
-      - "8000"
     env_file:
       - ./backend/.env
     depends_on:
@@ -31,7 +27,7 @@ services:
       - gateway
       - postgres
     networks:
-      - transcendence
+      - backend
 
   game_service:
     container_name: game-service
@@ -39,31 +35,27 @@ services:
       context: ./backend/game_service
     volumes:
       - ./backend/game_service:/usr/src/app/
-    expose:
-      - "8000"
     env_file:
       - ./backend/.env
     depends_on:
       - rabbitmq
       - postgres
     networks:
-      - transcendence
-
+      - backend
+  
   tournament_service:
     container_name: tournament-service
     build:
       context: ./backend/tournament_service
     volumes:
       - ./backend/tournament_service:/usr/src/app/
-    expose:
-      - "8000"
     env_file:
       - ./backend/.env
     depends_on:
       - rabbitmq
       - postgres
     networks:
-      - transcendence
+      - backend
 
   stats_service:
     container_name: stats-service
@@ -79,7 +71,7 @@ services:
       - rabbitmq
       - postgres
     networks:
-      - transcendence
+      - backend
 
   gateway:
     container_name: gateway
@@ -87,12 +79,11 @@ services:
       context: ./backend/gateway
     volumes:
       - ./backend/gateway:/usr/src/app/
-    ports:
-      - "8000:8000"
     env_file:
       - ./backend/.env
     networks:
       - transcendence
+      - backend
 
   frontend:
     build:
@@ -103,7 +94,6 @@ services:
       - ./frontend:/usr/share/nginx/html
     ports:
       - 443:443
-      - 80:80
     env_file:
       - ./frontend/.env
     depends_on:
@@ -123,7 +113,7 @@ services:
     env_file:
       - ./.env
     networks:
-      - transcendence
+      - backend
 
   # grafana:
   #   image: grafana/grafana:latest
@@ -210,6 +200,7 @@ services:
       retries: 3
     networks:
       - transcendence
+      - backend
 
 volumes:
   postgres-data:
@@ -217,6 +208,8 @@ volumes:
 
 networks:
   transcendence:
+    driver: bridge
+  backend:
     driver: bridge
   elk:
     driver: bridge

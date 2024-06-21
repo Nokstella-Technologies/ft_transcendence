@@ -12,6 +12,7 @@ class ProxyView(View):
         '/protected/auth/': 'http://auth-service:8000',
         '/protected/user/': 'http://user-service:8000',
         '/protected/game/': 'http://game-service:8000',
+        '/public/static/': 'http://user-service:8000',
         '/protected/tournament/': 'http://tournament-service:8000',
         '/protected/stats/': 'http://stats-service:8000',
     }
@@ -19,13 +20,14 @@ class ProxyView(View):
     def get_service_url(self, path):
         for key in self.service_mapping.keys():
             if path.startswith(key):
-                if not path.endswith('/'):
+                if not path.endswith('/') and key != '/public/static/':
                     path += '/'
                 return self.service_mapping[key] + path[len(key.split('/', 2)[1]) + 1:]
         return None
 
     def forward_request(self, request):
         service_url = self.get_service_url(request.path)
+        print(service_url)
         if not service_url:
             return JsonResponse({'error': 'Service not found'}, status=404)
 

@@ -6,7 +6,7 @@ from .controllers.two_fa_controller import qr_generator
 
 urlpatterns = [
     path('create/', UserController().register_user, name='get_user'),
-    path('update/<uuid:id>/', UserController().update_user, name='update_user'),
+    path('update/', UserController().update_user, name='update_user'),
     path('delete/<uuid:id>/', UserController().delete_user, name='delete_user'),
     path('findById/', UserController().get_user, name='get_user'),
     path('get_all_users/', UserController().get_all_user, name='get_all_users'),
@@ -19,6 +19,7 @@ urlpatterns = [
     path('update_appearance/<uuid:id>/', GameAppearanceController.update_appearance, name='update_appearance'),
     path('get_appearance/<uuid:id>/', GameAppearanceController.get_appearance, name='get_appearance'),
     path('online/', UserController().online, name='online'),
+    path('upload/', UserController.upload, name='upload_profile_picture'),
     path('offline/', UserController().offline, name='offline'),
 ]
 

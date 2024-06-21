@@ -7,7 +7,10 @@ from ..utils.qr_code_otp import verify_otp
 from django.forms.models import model_to_dict
 from ..rabbitmq import create_connection
 from ..models.user import User
+from ..models.game_appearance import GameAppearance
 from ..models.player_stats import PlayerStats
+
+
 
 def handle_authenticate(credentials):
     username = credentials.get('username')
@@ -40,6 +43,8 @@ def handle_authenticate_or_register(user_info):
                 email=email,
                 password=make_password(str(uuid.uuid4())),
                 status='online')
+            GameAppearance.objects.create(user_id=user)
+            PlayerStats.objects.create(user_id=user)
             res = model_to_dict(user, exclude={"otp_secret", "password"})
             res["user_id"] = str(user.user_id)
             response = {'valid': True, 'user': res}
@@ -57,10 +62,11 @@ def handle_authenticate_2fa(data, isID):
             user = User.objects.get(user_id=user_id)
         else:
             user = User.objects.get(email=user_id)
-
-        if user.otp_secret and user.is_auth == False and isID:
+        
+        if user.otp_secret and isID:
+            # Verifica o token 2FA
             if verify_otp(user.otp_secret, token):
-                user.is_auth = True
+                user.is_auth = not user.is_auth 
                 user.save()
                 res = model_to_dict(user, exclude={"otp_secret", "password"})
                 res["user_id"] = str(user.user_id)

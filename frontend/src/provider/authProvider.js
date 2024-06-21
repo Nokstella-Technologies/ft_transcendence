@@ -15,8 +15,8 @@ class AuthProvider {
         return {auth: this.authenticated, token: this.token};
     }
 
-    async validate2fa(code, email) {
-        const res = await fetch('http://localhost:8000/public/auth/login/code/', {
+    async validate2fa(code, email, isTour = undefined) {
+        const res = await fetch(window.env["API_URL"] + 'public/auth/login/code/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ class AuthProvider {
             })
             if (res.status === 200) {
                 const data = await res.json();
-                if (data["jwt_token"] !== undefined) {
+                if (data["jwt_token"] !== undefined && isTour === undefined) {
                     sessionStorage.setItem("token", data["jwt_token"]);
                 }
                 return data;
@@ -39,7 +39,7 @@ class AuthProvider {
     }
 
     async changeStatus(status) {
-        const res = await fetch(`http://localhost:8000/protected/user/${status}/`, {
+        const res = await fetch(window.env["API_URL"] + `protected/user/${status}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -52,8 +52,8 @@ class AuthProvider {
             throw new Error("Erro ao atualizar status online");
     }
 
-    async login(username, password) {
-            const res = await fetch('http://localhost:8000/public/auth/login/', {
+    async login(username, password, isTour = undefined) {
+            const res = await fetch(window.env["API_URL"] + 'public/auth/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ class AuthProvider {
             })
             if (res.status === 200) {
                 const data = await res.json();
-                if (data["jwt_token"] !== undefined) {
+                if (data["jwt_token"] !== undefined && isTour === undefined) {
                     sessionStorage.setItem("token", data["jwt_token"]);
                 }
                 return data;
@@ -74,19 +74,20 @@ class AuthProvider {
             }
     }
 
-    async login42(code) {
-        const res = await fetch('http://localhost:8000/public/auth/oauth2/authorize/', {
+    async login42(code, isTour = undefined) {
+        const res = await fetch(window.env["API_URL"] + 'public/auth/oauth2/authorize/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 code: code,
+                redirect_uri: isTour === undefined ? window.env["REDIRECT_URL"] : window.env["REDIRECT_URL_TOURNAMENT"]
             })
         })
         if (res.status === 200) {
             const data = await res.json();
-            if (data["jwt_token"] !== undefined) {
+            if (data["jwt_token"] !== undefined && isTour === undefined) {
                 sessionStorage.setItem("token", data["jwt_token"]);
             }
             return data;
@@ -96,7 +97,7 @@ class AuthProvider {
 }
 
     async createAccount(username, email, password) {
-        const res = await fetch('http://localhost:8000/public/user/create/', {
+        const res = await fetch(window.env["API_URL"] + 'public/user/create/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -117,13 +118,13 @@ class AuthProvider {
         if (token === undefined) {
             this.token = sessionStorage.getItem("token");
         }
-        if (this.token === null) {
+        if (this.token === undefined) {
             return false;
         }
         if (this.authenticated === false) {
             try {
                 await this.changeStatus("online");
-                this.authenticated = true;     
+                this.authenticated = true;    
             } catch (err) {
                 console.log(err);
                 return false;

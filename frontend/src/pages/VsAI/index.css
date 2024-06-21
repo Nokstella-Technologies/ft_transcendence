@@ -1,6 +1,14 @@
-@import "../../components/backgroundAnimation/backgroundAnimation.css";
-@import "../../components/soundControl/index.css";
-@import "../../components/containers/index.css";
+@import "../../components/mainVsAI/index.css";
+.page_final {
+  height: 100%;
+  display: flex; 
+  flex-direction: column;
+  vertical-align: middle;
+  width: 100%;
+}
+.container-player {
+  padding: 30px;
+}
 
 .player-picture {
   width: 30%;
@@ -11,11 +19,12 @@
 
 .container-my-vsai {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  flex-direction: column;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
 }
+
+
 .container-my-vsai-card {
   display: flex;
   justify-content: center;
@@ -39,46 +48,4 @@
   justify-content: center;
   align-items: center;
   position: relative;
-}
-
-.login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  
-}
-
-#login-form-container {
-  margin-bottom: 30px;
-}
-
-.login-container {
-  align-items: center;
-  margin:  20px auto;
-  width: 100%;
-  max-width: 500px;
-  padding: 20px;
-}
-
-
-.register-link {
-  margin-top: 15px;
-}
-.register-link {
-  font-size: 0.9rem;
-}
-
-.register-link a {
-  color: #00ffea;
-  text-decoration: none;
-  font-size: 1.1rem;
-  border-bottom: 2px solid #00ffea;
-  transition: all 0.3s ease;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
-  color: #00e5ff;
-  border-bottom: 2px solid #00e5ff;
 }

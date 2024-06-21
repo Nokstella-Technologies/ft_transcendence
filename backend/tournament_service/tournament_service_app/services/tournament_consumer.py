@@ -11,7 +11,6 @@ FINISHED_QUEUE = 'FINISHED_GAME_TOURNAMENT'
 TOURNAMENT_STATS_QUEUE = 'TOURNAMENT_DATA_QUEUE'
 
 def create_game_local(data, tournament_id):
-
     tournament = Tournament.objects.filter(id=tournament_id).first()
     if tournament is None or tournament.status != 'Started':
         return {'status': 'error', 'message': 'Tournament not found or not created'}
@@ -67,8 +66,12 @@ def end_game(ch, props, data):
         p1.score += 1
         p2.score += 1
     elif (winner == p1.user_id):
+        p1.wins += 1
+        p2.losses += 1
         p1.score += 3
     else:
+        p2.wins += 1
+        p1.losses += 1
         p2.score += 3
     tournGame.status = 'finished'
     tournGame.save()
@@ -92,7 +95,9 @@ def start_consumer():
     def on_request(ch, method, props, body):
         data = json.loads(body)
         if data.get('action') == 'create_game':
+            print("creating game in tournament:", data.get('tournament_id'))
             res = create_game_local(data, data.get('tournament_id'))
+            print("response: ", res)
         elif data.get('action') == 'start_game':
             res = start_game(data)
         elif data.get('action') == 'end_game':

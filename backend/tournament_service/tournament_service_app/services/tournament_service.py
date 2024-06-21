@@ -1,6 +1,7 @@
 from ..models.tournament import Tournament, TournamentParticipant, TournamentGame
 from .tournament_producer import publish
 from django.forms.models import model_to_dict
+import random
 
 def create_next_match(tournamet):
     if (tournamet.status == 'Created'):
@@ -11,39 +12,34 @@ def create_next_match(tournamet):
         if len(matches) > 0:
             return {'error': 'Round already started'}
         round_number = 1
-        for round_combinations in get_round_combinations(participants):
-            for player1, player2 in round_combinations:
-                message={
-                    "action": "create_game",
-                    "player1_id": str(player1.user_id),
-                    "player2_id": str(player2.user_id),
-                    "round_number": round_number,
-                    "type": "tournament",
-                    "tournament_id": str(tournamet.id)
-		        }
-                publish("TOURNAMENT_GAME", message, str(tournamet.id))
-            round_number += 1
+        round_combinations = get_round_combinations(participants)   
         tournamet.status = 'Started'
         tournamet.round_now = 1
-        tournamet.save()
+        tournamet.save()     
+        for player1, player2 in round_combinations:
+            print(player1, player2, round_number, "\n")
+            message={
+                "action": "create_game",
+                "player1_id": str(player1.user_id),
+                "player2_id": str(player2.user_id),
+                "round_number": round_number,
+                "type": "tournament",
+                "tournament_id": str(tournamet.id)
+            }
+            publish("TOURNAMENT_GAME", message, str(tournamet.id))
+            round_number += 1
+        
         return { "tournament": model_to_dict(tournamet)}
     else:
         return {'error': 'Error on tournament status is not created'}
         
 def get_round_combinations(participants):
-    num_participants = len(participants)
-    tmp_participants = [tp for tp in participants]
     combinations_per_round = []
     
-    for i in range(num_participants - 1):
-        round_combinations = []
-        for j in range(num_participants // 2):
-            player1 = tmp_participants[j]
-            player2 = tmp_participants[num_participants - j - 1]
-            round_combinations.append((player1, player2))
-        tmp_participants.insert(1, tmp_participants.pop())
-        combinations_per_round.append(round_combinations)
-    
+    for i in range(len(participants)):
+        for j in range(i+1, len(participants)):
+            combinations_per_round.append((participants[i], participants[j]))
+    random.shuffle(combinations_per_round)
     return combinations_per_round
 
 
@@ -52,7 +48,7 @@ def find_next_match(tournament_id):
     if tournament.status != 'Started' and tournament.status != 'ongoing':
         return {'error': 'Tournament is not ongoing'}
     matches = TournamentGame.objects.filter(tournament=tournament, round_number=tournament.round_now).first()
-    if matches is None and tournament.round_now > 2:
+    if matches is None: 
         tournament.status = 'finished'
         tournament.save()
         return {"status": "finished"}
@@ -74,12 +70,12 @@ def find_next_match(tournament_id):
         return {'error': 'Error on match status'}
     res['id'] = str(matches.id)
     res['game_id'] = str(matches.game_id)
-    res['player1_id'] = str(matches.player1_id)
-    res['player2_id'] = str(matches.player2_id)
+    res['player1'] = model_to_dict(TournamentParticipant.objects.filter(id=str(matches.player1_id)).first())
+    res['player2'] = model_to_dict(TournamentParticipant.objects.filter(id=str(matches.player2_id)).first())
     return { "game": res }
 
 
-def find_tournament(id):
+def find_tournament_by_id(id):
     tournament = Tournament.objects.get(id=id)
     if (tournament is None):
         return None

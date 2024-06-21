@@ -4,6 +4,7 @@ import Padlle from '../paddle/index.js';
 import IA from '../IA/index.js';
 import { newPowerUp } from '../powerUp/index.js';
 import { randomBetween } from "../../../utils/random.js";
+import gameProvider from '../../../provider/gameProvider.js';
 
 export const vr = {  
     BALL_RADIUS: 10,
@@ -14,12 +15,10 @@ export const vr = {
 };
 
 class Game extends Component {
-    constructor(to, type, score, gameOver) {
+    constructor(to) {
         super(to);
         this.startGame = false;
-        this.type = type;
-        this.score = score;
-        this.gameOver = gameOver;
+        this.side = gameProvider.playerSide;
         this.canvasRef = null;
         this.timeouts = [];
         this.ball = null;
@@ -30,14 +29,17 @@ class Game extends Component {
         this.animationFrameId = null;
     }
 
-    verifyScore(player) {
-        this.powerUpsRef = [];
-        cancelAnimationFrame(this.animationFrameId);
-        this.timeouts.forEach(clearTimeout);
-        this.timeouts = [];
-        this.removeEventListeners()
-        this.startGame  = false;
-        this.score(player);
+    async newRender(type, score, gameOver, apperance) {
+        this.type = type;
+        this.score = score;
+        this.gameOver = gameOver;
+        this.apperance = apperance;
+        this.reRender()
+    }
+
+    async verifyScore(player) {
+        this.destroy() 
+        return await this.score(player);
     }
 
     handleKeyDown(e) {
@@ -58,7 +60,7 @@ class Game extends Component {
     }
 
     drawCenterLineAndCircle(ctx, canvasWidth, canvasHeight) {
-        ctx.strokeStyle = 'white';
+        ctx.strokeStyle = this.apperance.ball_color;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(canvasWidth / 2, 0);
@@ -68,18 +70,21 @@ class Game extends Component {
     }
 
     initCanvas() {
-        this.canvasRef = document.querySelector('canvas');
-        this.canvasRef.width = this.canvasRef.clientWidth;
-        this.canvasRef.height = this.canvasRef.clientHeight;
+        
+            this.canvasRef = document.querySelector('canvas');
+            this.canvasRef.width = this.canvasRef.clientWidth;
+            this.canvasRef.height = this.canvasRef.clientHeight;
     }
 
     initGameObjects() {
-        this.ball = Ball(this.canvasRef, "#fff");
-        this.paddle1 = Padlle(this.canvasRef, 'w', 's', 0, "#fff");
-        this.paddle2 = this.type === undefined ? 
-            Padlle(this.canvasRef, 'iaUp', 'iaDown', this.canvasRef.width - vr.PADDLE_WIDTH, "#fff") :
-            Padlle(this.canvasRef, 'ArrowUp', 'ArrowDown', this.canvasRef.width - vr.PADDLE_WIDTH, "#fff");
-        this.ia = IA(this.canvasRef, this.ball, this.paddle2, this.paddle1);
+        this.ball = Ball(this.canvasRef, this.apperance.ball_color);
+        this.type === "right" ?
+            this.paddle1 = Padlle(this.canvasRef, 'iaUp', 'iaDown', 0, this.apperance.paddle_color) :
+            this.paddle1 = Padlle(this.canvasRef, 'w', 's', 0, this.apperance.paddle_color);
+        this.paddle2 = this.type === "left" ? 
+            Padlle(this.canvasRef, 'iaUp', 'iaDown', this.canvasRef.width - vr.PADDLE_WIDTH,this.apperance.paddle_color) :
+            Padlle(this.canvasRef, 'ArrowUp', 'ArrowDown', this.canvasRef.width - vr.PADDLE_WIDTH,this.apperance.paddle_color);
+        this.ia = IA(this.canvasRef, this.ball, this.type === "left" ? this.paddle2 : this.paddle1, this.paddle1);
     }
 
     initEventListeners() {
@@ -98,13 +103,14 @@ class Game extends Component {
     }
 
     renderObjects(ctx) {
+      
         this.drawCenterLineAndCircle(ctx, this.canvasRef.width, this.canvasRef.height);
         this.paddle1.render(0, this.canvasRef.height - vr.PADDLE_HEIGHT);
         this.paddle2.render(this.canvasRef.width - vr.PADDLE_WIDTH, this.canvasRef.height - vr.PADDLE_HEIGHT);
         this.ball.render();
         if (this.startGame && !this.gameOver()) {
             const spawnPowerUp = () => {
-                console.log("Spawning new PowerUp");
+                
                 const powerup = newPowerUp(this.canvasRef);
                 this.powerUpsRef.push(powerup);
                 const timeoutId = setTimeout(spawnPowerUp, randomBetween(5000, 10000)); // Spawn a cada 5-10 segundos
@@ -124,51 +130,52 @@ class Game extends Component {
             this.powerUpsRef.forEach((powerUp, index) => {
                 powerUp.render();
                 if (powerUp.checkCollision(this.paddle1, this.ball, this.paddle2)) {
-                    console.log("take power up");
+                    
                     this.powerUpsRef.splice(index, 1);
                 }
                 if (powerUp.move()) {
                     this.powerUpsRef.splice(index, 1);
                 }
             });
-            this.ball.checkCollisions(this.paddle1, this.paddle2, this.verifyScore.bind(this));
             this.paddle1.movePaddle();
             this.paddle2.movePaddle();
-            if (this.type === undefined) {
+            if (this.type !== "player2") {
                 this.ia.move(this.powerUpsRef);
+            }  
+            if (this.ball.checkCollisions(this.paddle1, this.paddle2, this.verifyScore.bind(this)) == true) {
+                return
             }
-            
-        }
-        this.removeEventListeners();    
+        } 
         this.animationFrameId = requestAnimationFrame(this.renderFrame.bind(this));
+        
     }
 
-    init() {
-        this.initCanvas();
-        this.initGameObjects();
-        this.initEventListeners();
-        this.renderFrame();
-
-            
-    }
 
     render() {
         return `
-            <canvas class="canvas_container"></canvas>
+            <canvas class="canvas_container" style="border-color: ${this.apperance.ball_color};background: ${this.apperance.background_color};opacity:0.4; "></canvas>
         `;
+    }
+
+    async mount() {
+        this.initCanvas()
+        this.initGameObjects();
+        if (this.animationFrameId === null) {
+            this.renderFrame();
+        }
     }
 
     destroy() {
         super.destroy();
-        if (this.animationFrameId) {
-            cancelAnimationFrame(this.animationFrameId);
-        }
-        this.removeEventListeners();
+        this.removeEventListeners()
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
+        this.timeouts.forEach(clearTimeout);
+        this.powerUpsRef = [];
+        this.timeouts = [];
+        this.startGame  = false;
     }
 
-    mount() {
-        this.init();
-    }
 }
 
 export default Game;

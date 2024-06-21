@@ -6,36 +6,36 @@ import authProvider from "../../provider/authProvider.js";
 import userProvider from "../../provider/userProvider.js";
 import MainVsAI from "../../components/mainVsAI/index.js";
 import Footer from "../../components/footer/index.js";
-
+import gameProvider from "../../provider/gameProvider.js";
 class VsAI extends Component {
     constructor(to) {
         super(to);
-    }
-
-    init() {
-      
-    }
+        this.side = "left";
+      }
 
     render() {
       return `
       <nav id="top_bar" class="navbar navbar-expand-lg navbar-custom"> </nav>
-      <div id="content_home">
+      <div class="page_final">
       ${Container({
-        title: "",
-        className: "vsai-container",
+        title: "Trainig Mode",
+        className: "container grid-container ",
         children : `
+        <div class="container-my-vsai">
         ${Container({
           title: "",
           className: "vsai-container-p1",
-          children : `<div id="player1"></div>`
-        })},
+          children : `<div class="container-player" id="player1"></div>`
+        })}
         ${Container({
           title: "",
           className: "vsai-container-p2",
-          children : `<div id="playerAI"></div>`
-        })}`
-      })}
-      <button id="start-game" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none;">Start Game</button>
+          children : `<div class="container-player" id="playerAI"></div>`
+        })}
+          </div>
+        <button id="start-game" class="btn btn-primary btn-block" style="background-color: #00e5ff; border: none; margin-top:20px;">Start Game</button>
+        `
+        })}
       </div>
       ${Footer()}`;
   }
@@ -48,7 +48,7 @@ class VsAI extends Component {
     }).catch((err) => {
       console.log(err)
       authProvider.logout();
-      navigateTo('/')
+     return navigateTo('/')
     });
 
     const topBar = new TopBar('#top_bar', false);
@@ -60,19 +60,24 @@ class VsAI extends Component {
     const playerAI = new MainVsAI('#playerAI', apperance, false)
     playerAI.reRender();
 
-    document.querySelector(".btn-trocar-lado").addEventListener("click", this.trocarLado);
+    document.querySelector(".btn-trocar-lado").addEventListener("click", (e) => {
+      e.preventDefault();
+      this.side = this.side === "left" ? "right" : "left";
+      const player1 = document.getElementById("player1");
+      const playerAI = document.getElementById("playerAI");
+  
+      const player1Parent = player1.parentNode;
+      const playerAIParent = playerAI.parentNode;
+  
+      player1Parent.insertBefore(playerAI, player1Parent.firstChild);
+      playerAIParent.insertBefore(player1, playerAIParent.firstChild);
+    });
+    document.querySelector("#start-game").addEventListener("click", () => {
+      gameProvider.setGameAi(this.side)
+      return navigateTo('/game')
+    });
   }
 
-  trocarLado() {
-    const player1 = document.getElementById("player1");
-    const playerAI = document.getElementById("playerAI");
-
-    const player1Parent = player1.parentNode;
-    const playerAIParent = playerAI.parentNode;
-
-    player1Parent.insertBefore(playerAI, player1Parent.firstChild);
-    playerAIParent.insertBefore(player1, playerAIParent.firstChild);
-  }
 }
 
 export default VsAI;
