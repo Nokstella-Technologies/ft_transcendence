@@ -139,6 +139,8 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=changeme
+      - SERVER_BASEPATH=/kibana
+      - SERVER_REWRITEBASEPATH=true
     depends_on:
       - elasticsearch
     volumes:
@@ -148,7 +150,7 @@ services:
     networks:
       - transcendence
       - backend
-    entrypoint: ["/bin/bash", "-c", " /usr/local/bin/kibana-docker && /usr/local/bin/kibana-setup.sh"]
+    entrypoint: ["/bin/bash", "-c", "/usr/local/bin/kibana-docker && /usr/local/bin/kibana-setup.sh"]
 
   # grafana:
   #   image: grafana/grafana:latest
