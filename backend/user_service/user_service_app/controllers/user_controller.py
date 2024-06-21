@@ -8,6 +8,7 @@ from ..utils.jwt import get_payload
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
+import traceback
 import uuid
 class UserController:
     @staticmethod
@@ -16,7 +17,9 @@ class UserController:
         if request.method != 'POST':
             return JsonResponse({'message': 'Method not allowed'}, status=405)
         try:
-            profile_picture = request.FILES['profile_picture']
+            if request.FILES.get('profile_picture') is None:
+                return JsonResponse({'message': 'No file found'}, status=404)
+            profile_picture = request.FILES.get('profile_picture')
             name = str(uuid.uuid4()) + "_" + profile_picture.name
             file_name = os.path.join("imgs",  name)
             file_path = default_storage.save(file_name, ContentFile(profile_picture.read()))
@@ -30,6 +33,7 @@ class UserController:
         except User.DoesNotExist:
             return JsonResponse({'message': 'User not found'}, status=404)
         except Exception as e:
+            traceback.print_exc()
             return JsonResponse({'message': str(e)}, status=500)
 
 

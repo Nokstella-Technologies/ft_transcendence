@@ -46,6 +46,9 @@ class UserService:
     def update_user(self, user_id, user_data):
         try:
             user = User.objects.get(user_id=user_id)
+            if 'username' in user_data:
+                if User.objects.filter(username=user_data.get('username')).first() != None:
+                    return JsonResponse({'message': 'Username already exists'}, status=409)
             user.username = user_data.get('username', user.username)
             user.profile_picture = user_data.get('profile_picture', user.profile_picture)
             password = user_data.get('password') 
