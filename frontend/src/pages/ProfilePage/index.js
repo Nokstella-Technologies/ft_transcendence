@@ -25,7 +25,7 @@ class Profile extends Component {
   mount () {
     const topBar = new TopBar('#top_bar', true);
     topBar.reRender();
-    const profile = new ProfileContainer('#content_profile');
+    const profile = new ProfileContainer('#content_profile', true, this.reRender.bind(this));
     profile.reRender();
   }
 }

@@ -64,10 +64,10 @@ def handle_authenticate_2fa(data, isID):
         else:
             user = User.objects.get(email=user_id)
         
-        if user.otp_secret and user.is_auth == False and isID:
+        if user.otp_secret and isID:
             # Verifica o token 2FA
             if verify_otp(user.otp_secret, token):
-                user.is_auth = True
+                user.is_auth = not user.is_auth 
                 user.save()
                 res = model_to_dict(user, exclude={"otp_secret", "password"})
                 res["user_id"] = str(user.user_id)
