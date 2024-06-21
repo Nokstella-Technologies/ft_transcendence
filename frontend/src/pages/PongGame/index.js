@@ -57,11 +57,10 @@ import userProvider from "../../provider/userProvider.js";
                     <div class="container-pageGame">
                     ${side === "left" ? `
                         <h1>${user.username} VS AI</h1>
-                        <h1>${this.scoreP1()} - ${this.scoreP2()}</h1>
-                    `: `
-                        <h1>AI VS ${user.username}</h1>
-                        <h1>${this.scoreP2()} - ${this.scoreP1()}</h1>
-                    `}
+                        `: `
+                        <h1>AI VS ${user.username}</h1>   
+                        `}
+                    <h1>${this.scoreP1()} - ${this.scoreP2()}</h1>
                     ${this.gameOver() ? this.GameOver() : this.renderGame()}
                 </div>
                 `

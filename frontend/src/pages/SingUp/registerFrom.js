@@ -1,5 +1,6 @@
 import Component from '../../../react/Component.js';
 import authProvider from '../../provider/authProvider.js';
+import { validateEmail, validatePassword, validateUsername } from '../../utils/Validation.js';
 
 class RegisterForm extends Component {
     constructor(to) {
@@ -21,6 +22,8 @@ class RegisterForm extends Component {
         this.confirmPassword = confirmPassword;
         this.setConfirmPassword = setConfirmPassword;
     }
+
+    
 
     render() {
         return `
@@ -57,6 +60,24 @@ class RegisterForm extends Component {
             // Validação dos campos
             if (!this.email() || !this.username() || !this.password() || !this.confirmPassword()) {
                 errorMessage.textContent = 'Por favor, preencha todos os campos.';
+                return;
+            }
+
+            // Verificar se o email é válido
+            if (!validateEmail(this.email())) {
+                errorMessage.textContent = 'Por favor, insira um email válido.';
+                return;
+            }
+
+            // Verificar se o nome de usuário é válido
+            if (!validateUsername(this.username())) {
+                errorMessage.textContent = 'O nome de usuário deve ter mais de 3 caracteres.';
+                return;
+            }
+
+            // Verificar se a senha é válida
+            if (!validatePassword(this.password())) {
+                errorMessage.textContent = 'A senha deve ter pelo menos 6 caracteres, incluindo números e letras.';
                 return;
             }
 

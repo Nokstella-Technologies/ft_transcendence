@@ -16,6 +16,27 @@ class UserProviders {
         return {user: this.user, apperance: this.apperance, stats: this.stats, friends: this.friends};
     }
 
+
+    async updateUser(token, data) {
+        const res = await fetch(window.env["API_URL"] + `protected/user/update/`,{
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            })
+            if (res.status === 200) {
+                const data = await res.json();
+                this.user.username = data.username;
+                sessionStorage.setItem("user", JSON.stringify(this.user));
+                return data;
+            } else {
+                throw new Error("Erro ao tentar atualizar o usuario");
+            }
+
+    }
+
     async getUser(token, save = true) {
         const res = await fetch(window.env["API_URL"] + 'protected/user/findById/', {
                 method: 'GET',
@@ -141,6 +162,64 @@ class UserProviders {
                 return data;
             } else 
                 throw new Error("Erro ao tentar encontrar um amigo");
+    }
+
+    async updateProfilePicture(token, formData) { 
+        const res = await fetch(window.env["API_URL"] + `protected/user/upload/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData
+            })
+        if (res.status === 200) {
+            const data = await res.json();
+            this.user.profile_picture = data.profile_picture;
+            sessionStorage.setItem("user", JSON.stringify(this.user));
+            return data;
+        }
+        else {
+            throw new Error("Erro ao tentar atualizar a foto de perfil");
+        }
+    }
+
+    async enable2FA(token) {
+        const res = await fetch(window.env["API_URL"] + `protected/user/2fa_qrcode/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }})
+        if (res.status === 200) {
+            const data = await res.json();
+            return data;
+        }
+        else {
+            throw new Error("Erro ao tentar ativar o 2FA");
+        }
+    }
+
+    async confirm2FA(token, code) {
+        const res = await fetch(window.env["API_URL"] + `protected/auth/verify_2fa/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    token: code
+                })
+            })
+        if (res.status === 200) {
+            const data = await res.json();
+            this.user.is_auth = data.user.user.is_auth;
+            sessionStorage.setItem("user", JSON.stringify(this.user));
+            return data;
+        }
+        else {
+            throw new Error("Erro ao tentar confirmar o 2FA");
+        }
+    
     }
 }
 

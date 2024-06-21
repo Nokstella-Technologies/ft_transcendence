@@ -19,7 +19,8 @@ class AuthMiddleware:
             '/public/user/create',
             '/public/auth/login/code',
             '/public/auth/login',
-            '/public/auth/oauth2/authorize'  # Example: all routes starting with /public/
+            '/public/auth/oauth2/authorize',
+              # Example: all routes starting with /public/
         ]
 
 
@@ -30,7 +31,8 @@ class AuthMiddleware:
         if any(path.startswith(prefix) for prefix in self.public_prefixes):
             # Skip authentication for public routes
             return self.get_response(request)
-
+        if path.startswith('/public/static/'):
+            return self.get_response(request)
         # Check if the path matches any auth-required prefixes
         if any(path.startswith(prefix) for prefix in self.auth_required_prefixes):
             bearer = request.headers.get('Authorization', None)
