@@ -208,12 +208,7 @@ services:
 
 volumes:
   postgres-data:
-  prometheus-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./data/prometheus
+  prometheus-data: {}
   grafana-data:
     driver: local
     driver_opts:
