@@ -50,7 +50,6 @@ class UserService:
                 if User.objects.filter(username=user_data.get('username')).first() != None:
                     return JsonResponse({'message': 'Username already exists'}, status=409)
             user.username = user_data.get('username', user.username)
-            user.profile_picture = user_data.get('profile_picture', user.profile_picture)
             password = user_data.get('password') 
             newPass = user_data.get('new_password')
             if password != None and newPass != None and check_password(password, user.password):

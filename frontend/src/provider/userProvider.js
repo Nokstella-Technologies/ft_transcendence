@@ -17,19 +17,14 @@ class UserProviders {
     }
 
 
-    async updateUser(token, username, password, newPassword) {
-        
+    async updateUser(token, data) {
         const res = await fetch(window.env["API_URL"] + `protected/user/update/`,{
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                    new_password: newPassword
-                })
+                body: JSON.stringify(data)
             })
             if (res.status === 200) {
                 const data = await res.json();

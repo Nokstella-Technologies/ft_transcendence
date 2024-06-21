@@ -1,6 +1,7 @@
 import Component from "../../../react/Component.js";
 import authProvider from "../../provider/authProvider.js";
 import userProvider from "../../provider/userProvider.js";
+import { validatePassword, validateUsername } from "../../utils/Validation.js";
 import Container from "../containers/index.js";
 import Popup from "../popup/popup.js";
 
@@ -97,19 +98,36 @@ export default class ProfileContainer extends Component {
             document.querySelector('.profile-update-form').addEventListener('submit', async (event) => {
                 event.preventDefault();
                 try {
+                    data = {}
                     const username = document.querySelector('#username').value;
                     const password = document.querySelector('#password').value;
                     const newPassword = document.querySelector('#newPassword').value;
                     const confiNewPassword = document.querySelector('#confiNewPassword').value;
-                    if (newPassword !== undefined && newPassword !== confiNewPassword) {
+                    if (username === "" && password === "" && newPassword === "") {
+                        throw new Error("Preencha pelo menos um campo");
+                    }
+                    if (validateUsername(username)) {
+                        throw new Error("O nome de usuário deve ter mais de 3 caracteres");
+                    } else {
+                        data.username = username;
+                    }
+                    if (newPassword !== "" && newPassword !== confiNewPassword) {
+                        if (password !== "") {
+                            throw new Error("Prencha a senha atual");
+                        }
                         throw new Error("As senhas não coincidem");
                     }
-                    await userProvider.updateUser(token, username, password, newPassword);
+                    if (newPassword !== "" && validatePassword(newPassword)) {
+                        throw new Error("A senha deve ter pelo menos 6 caracteres, incluindo números e letras");
+                    } else {
+                        data.password = password;
+                        data.newPassword = newPassword;
+                    }
+                    await userProvider.updateUser(token, data);
                     this.setShowEdit(false);
                     this.re()
                 } catch (err) { 
-                    console.log(err);
-                     responseMessage.innerHTML = `<div class="alert alert-danger">Erro ao enviar: nome ja em uso</div>`
+                    responseMessage.innerHTML = `<div class="alert alert-danger">${err.message}</div>`
                 }
             })
         }
