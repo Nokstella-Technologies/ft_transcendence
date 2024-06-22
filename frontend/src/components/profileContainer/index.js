@@ -50,7 +50,7 @@ export default class ProfileContainer extends Component {
                         <p>Partidas Jogadas: ${this.stats.games_played}</p>
                         <p>Vitórias: ${this.stats.games_won}</p>
                         <p>Derrotas: ${this.stats.games_lost}</p>
-                        <p>Vitórias em Torneios: ${this.stats.games_lost}</p>
+                        <p>Torneios: ${this.stats.tournament_won} - ${this.stats.tournament_played}</p>
                     </div>
                     <button class="btn btn-primary my-2" >Ver historico de partidas</button>
                 `
@@ -192,7 +192,7 @@ export default class ProfileContainer extends Component {
                 let qr_code_element = document.querySelector(".qr-code");
                 const generate = async (user_input) => {
                     qr_code_element.style = "";
-                    var qrcode = new QRCode(qr_code_element, {
+                    new QRCode(qr_code_element, {
                         text: user_input,
                         width: 300, //128
                         height: 300,
@@ -200,11 +200,7 @@ export default class ProfileContainer extends Component {
                         colorLight: "#00e5ff",
                         correctLevel: QRCode.CorrectLevel.H
                     });
-                
-                    let qr_code_img = document.querySelector(".qr-code img");
-                    let qr_code_canvas = document.querySelector("canvas");
                 }
-                
                 try {
                     const res = await userProvider.enable2FA(token);
                     generate(res.otp_uri);

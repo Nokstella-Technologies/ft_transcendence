@@ -43,11 +43,11 @@ class GameProvider {
         if (res.status === 200) {
             const data = await res.json();
             this.game = data.game;
+            this.player1 = player1;
+            this.player2 = player2;
             sessionStorage.setItem("game", JSON.stringify(data.game));
             sessionStorage.setItem("player1", JSON.stringify(player1));
             sessionStorage.setItem("player2", JSON.stringify(player2));
-            this.player1 = player1;
-            this.player2 = player2;
             return data.game;
         } else 
             throw new Error("Erro ao criar jogo");
@@ -65,11 +65,11 @@ class GameProvider {
         if (game.status === 200) { 
             const data = await game.json();
             this.game = data;
+            this.player1 = player1.user;
+            this.player2 = player2.user;
             sessionStorage.setItem("game", JSON.stringify(data));
             sessionStorage.setItem("player1", JSON.stringify(player1.user));
             sessionStorage.setItem("player2", JSON.stringify(player2.user));
-            this.player1 = player1.user;
-            this.player2 = player2.user;
             return data;
         } else 
             throw new Error("Erro ao buscar jogo");
@@ -96,12 +96,23 @@ class GameProvider {
         if (score.status === 200) {
             const res = await score.json();
             if (data.end) {
-                this.game = res.game
+                return res;
             }
             sessionStorage.setItem("game", JSON.stringify(res.game));
             return res;
         } else 
             throw new Error("Erro ao setar score");
+    }
+    reset() {
+        this.game = undefined;
+        this.player1 = undefined;
+        this.player2 = undefined;
+        this.playerSide = undefined;
+        sessionStorage.removeItem("game");
+        sessionStorage.removeItem("player1");
+        sessionStorage.removeItem("player2");
+        sessionStorage.removeItem("playerSide");
+    
     }
 }
 

@@ -125,6 +125,15 @@ class TournamentProvider {
         const player2 = this.tournament_player.find((player) => player.token !== null && player.user.user_id === game.game.player2.user_id);
         return {player1, player2};
     }
+    reset() {
+        sessionStorage.removeItem("tournament_id");
+        sessionStorage.removeItem("tournament_player");
+        sessionStorage.removeItem("tournament");
+        this.tournament_id = null;
+        this.tournament_player = [{token: null}, {token: null}, {token: null}, {token: null},
+            {token: null}, {token: null}, {token: null}, {token: null}];
+        this.tournament = undefined;
+    }
 }
 
 
