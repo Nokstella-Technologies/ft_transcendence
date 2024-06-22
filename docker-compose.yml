@@ -57,7 +57,7 @@ services:
       - postgres
     networks:
       - backend
-  
+
   tournament_service:
     container_name: tournament-service
     build:
@@ -167,15 +167,29 @@ services:
       - backend
     entrypoint: ["/bin/bash", "-c", "/usr/local/bin/kibana-docker && /usr/local/bin/kibana-setup.sh"]
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   ports:
-  #     - "3001:3000"
-  #   environment:
-  #     - GF_SECURITY_ADMIN_PASSWORD=admin
-  #   networks:
-  #     - monitoring
+  prometheus:
+    image: prom/prometheus:v2.47.2
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - transcendence
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - transcendence
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./data/grafana/provisioning/dashboards:/var/lib/grafana/dashboards
+      - ./data/grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./data/grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+
 
   # elasticsearch:
   #   image: elasticsearch:7.16.2
@@ -241,12 +255,12 @@ services:
       context: ./rabbitmq
     container_name: rabbitmq
     expose:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672"
+      - "15672"
     env_file:
       - rabbitmq/.env
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      test: [ "CMD", "rabbitmq-diagnostics", "status" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -256,15 +270,12 @@ services:
 
 volumes:
   postgres-data:
-  es_data: {}
+  prometheus-data: {}
+  grafana-storage: {}
+  elastic_data: {}
 
 networks:
   transcendence:
     driver: bridge
   backend:
     driver: bridge
-  elk:
-    driver: bridge
-  monitoring:
-    driver: bridge
-

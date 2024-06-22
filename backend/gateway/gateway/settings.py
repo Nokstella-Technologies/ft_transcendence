@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-u86f-fyjt!p#4a5*i3gy*&iu5c2!ourxl&t^z^uh9x*y(pdv#b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["gateway", "localhost"]
+ALLOWED_HOSTS = ["gateway", 'localhost']
 
 SECURE_SSL_REDIRECT = True
 
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'gateway_app',
+	'django_prometheus',
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -65,6 +66,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 MIDDLEWARE = [
+	'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -75,6 +77,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'gateway_app.middleware.AuthMiddleware',
     'gateway_app.middleware.DisableCSRF',
+	'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ROOT_URLCONF = 'gateway.urls'
