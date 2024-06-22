@@ -125,7 +125,7 @@ services:
     ports:
       - "9200:9200"
     volumes:
-      - es_data:/usr/share/elasticsearch/data
+      - elastic_data:/usr/share/elasticsearch/data
       - ./elk_stack/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml 
     networks:
       - transcendence
@@ -173,7 +173,13 @@ services:
     ports:
       - "9090:9090"
     networks:
+      - backend
       - transcendence
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.external-url=http://prometheus:9090/prometheus'
+      - '--web.route-prefix=/prometheus'
+
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
 
@@ -182,73 +188,16 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
+    environment:
+      - GF_SERVER_ROOT_URL=http://grafana:3000/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     networks:
       - transcendence
     volumes:
       - grafana-storage:/var/lib/grafana
-      - ./data/grafana/provisioning/dashboards:/var/lib/grafana/dashboards
-      - ./data/grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-      - ./data/grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
-
-
-  # elasticsearch:
-  #   image: elasticsearch:7.16.2
-  #   container_name: elasticsearch
-  #   restart: always
-  #   volumes:
-  #     - elastic_data:/usr/share/elasticsearch/data/
-  #   environment:
-  #     ES_JAVA_OPTS: "-Xmx1g -Xms1g"
-  #     discovery.type: single-node
-  #   ports:
-  #     - '9200:9200'
-  #     - '9300:9300'
-  #   networks:
-  #     - elk
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '1.0'
-  #         memory: 2g
-
-  # logstash:
-  #   image: logstash:7.16.2
-  #   container_name: logstash
-  #   restart: always
-  #   volumes:
-  #     - ./logstash/:/logstash_dir
-  #   command: logstash -f /logstash_dir/logstash.conf
-  #   depends_on:
-  #     - elasticsearch
-  #   ports:
-  #     - '9600:9600'
-  #   environment:
-  #     LS_JAVA_OPTS: "-Xmx1g -Xms1g"
-  #   networks:
-  #     - elk
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '1.0'
-  #         memory: 2g
-
-  # kibana:
-  #   image: kibana:7.16.2
-  #   container_name: kibana
-  #   restart: always
-  #   ports:
-  #     - '5601:5601'
-  #   environment:
-  #     - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #   depends_on:
-  #     - elasticsearch
-  #   networks:
-  #     - elk
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '1.0'
-  #         memory: 2g
+      - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
 
   rabbitmq:
     build:
