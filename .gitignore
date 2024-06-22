@@ -1,2 +1,5 @@
 .env
 .DS_Store
+elk_stack/logs/nginx_logs/access.log
+elk_stack/logs/nginx_logs/error.log
+elk_stack/logstash/temp/inlog.log
