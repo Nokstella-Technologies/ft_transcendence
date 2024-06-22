@@ -160,7 +160,6 @@
 
             document.querySelectorAll(".player").forEach(player => {
                 player.addEventListener('click', async (event) => {
-                    console.log(event.currentTarget.id)
                     navigateTo(`/profile?user=${event.currentTarget.id}`)
                 })});
             document.querySelector('.popup_friend_add_button').addEventListener('click', () => {

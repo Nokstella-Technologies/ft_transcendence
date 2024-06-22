@@ -8,9 +8,10 @@ import LoginForm from "../Login/loginForm.js";
 
 
 export default class StartTournament extends Component {
-    constructor(to) {
+    constructor(to, re) {
         super(to);
         this.init();
+        this.re = re;
         const urlParams = new URLSearchParams(window.location.search);
         this.code = urlParams.get("code");
     }
@@ -79,17 +80,18 @@ export default class StartTournament extends Component {
             this.code = null;
             this.setShowLogin(true);
         }
-        document.querySelector("#start_tournament").addEventListener('click', async (event) => {
-            event.preventDefault();
+        document.querySelector("#start_tournament").addEventListener('click', async function () {
             try {
+                document.getElementById('start_tournament').disabled = true;                
                 await tournamentProvider.startTournament(token)
-                return navigateTo('/tournament')
+                return this.re()
             }
             catch (err) {
+                document.getElementById('start_tournament').disabled = false;
                 document.getElementById('error-message-tournament').innerHTML = "Minimo de 3 jogadores para o torneio!";
             
             }
-        })
+        }.bind(this))
         document.querySelectorAll('.logar_container').forEach((container) =>
             container.addEventListener('click', async (event) => {
                 event.preventDefault();

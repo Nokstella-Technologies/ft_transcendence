@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from user_service_app.models.user import User
+from django.contrib.auth.hashers import check_password
 from user_service_app.models.player_stats import PlayerStats
 from user_service_app.models.game_appearance import GameAppearance
 from django.forms.models import model_to_dict
@@ -45,8 +46,14 @@ class UserService:
     def update_user(self, user_id, user_data):
         try:
             user = User.objects.get(user_id=user_id)
+            if 'username' in user_data:
+                if User.objects.filter(username=user_data.get('username')).first() != None:
+                    return JsonResponse({'message': 'Username already exists'}, status=409)
             user.username = user_data.get('username', user.username)
-            user.profile_picture = user_data.get('profile_picture', user.profile_picture)
+            password = user_data.get('password') 
+            newPass = user_data.get('new_password')
+            if password != None and newPass != None and check_password(password, user.password):
+                user.password = make_password(newPass)
             user.save()
             return JsonResponse(model_to_dict(user, exclude={"otp_secret", "password"}), status=200)
         except User.DoesNotExist:

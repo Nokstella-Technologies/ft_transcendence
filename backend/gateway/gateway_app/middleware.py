@@ -30,7 +30,8 @@ class AuthMiddleware:
         if any(path.startswith(prefix) for prefix in self.public_prefixes):
             # Skip authentication for public routes
             return self.get_response(request)
-
+        if path.startswith('/public/static/'):
+            return self.get_response(request)
         # Check if the path matches any auth-required prefixes
         if any(path.startswith(prefix) for prefix in self.auth_required_prefixes):
             bearer = request.headers.get('Authorization', None)

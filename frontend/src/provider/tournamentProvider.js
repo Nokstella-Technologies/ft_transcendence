@@ -15,7 +15,7 @@ class TournamentProvider {
     }
 
     async feed_tournament(token) {
-        const res = await fetch(`http://localhost:8000/protected/tournament/${this.tournament_id}/`, {
+        const res = await fetch(window.env["API_URL"] + `protected/tournament/${this.tournament_id}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ class TournamentProvider {
     }
 
     async createTournament(token, user) {
-        const res = await fetch('http://localhost:8000/protected/tournament/create/', {
+        const res = await fetch(window.env["API_URL"] + 'protected/tournament/create/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ class TournamentProvider {
     }
 
     async addPlayer(id, token, idx) {
-        const res = await fetch(`http://localhost:8000/protected/tournament/participants/${id}`, {
+        const res = await fetch(window.env["API_URL"] + `protected/tournament/participants/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ class TournamentProvider {
             }})
         if (res.status === 200) {
             const data = await res.json();
-            const player = await fetch(`http://localhost:8000/protected/user/findById/`, {
+            const player = await fetch(window.env["API_URL"] + `protected/user/findById/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ class TournamentProvider {
     }
 
     async startTournament(token) {
-        const res = await fetch(`http://localhost:8000/protected/tournament/start_tournament/${this.tournament_id}/`, {
+        const res = await fetch(window.env["API_URL"] + `protected/tournament/start_tournament/${this.tournament_id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ class TournamentProvider {
     }
 
     async getNextMatch(token) {
-        const res = await fetch(`http://localhost:8000/protected/tournament/next_match/${this.tournament_id}/`, {
+        const res = await fetch(window.env["API_URL"] + `protected/tournament/next_match/${this.tournament_id}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -121,11 +121,18 @@ class TournamentProvider {
     }
 
     getPlayers(game) {
-        console.log(this.tournament_player)
-        console.log(game)
         const player1 = this.tournament_player.find((player) => player.token !== null && player.user.user_id === game.game.player1.user_id);
         const player2 = this.tournament_player.find((player) => player.token !== null && player.user.user_id === game.game.player2.user_id);
         return {player1, player2};
+    }
+    reset() {
+        sessionStorage.removeItem("tournament_id");
+        sessionStorage.removeItem("tournament_player");
+        sessionStorage.removeItem("tournament");
+        this.tournament_id = null;
+        this.tournament_player = [{token: null}, {token: null}, {token: null}, {token: null},
+            {token: null}, {token: null}, {token: null}, {token: null}];
+        this.tournament = undefined;
     }
 }
 

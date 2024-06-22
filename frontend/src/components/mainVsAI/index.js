@@ -18,7 +18,6 @@ class MainVsAI extends Component{
         this.isplayer = isplayer;
         const {user} = userProvider.get();
         this.user = user;
-        //console.log(user);
     }
 
     init(){
@@ -27,20 +26,22 @@ class MainVsAI extends Component{
 
     render(){
         const infoIconId = this.isplayer ? "info-icon-player" : "info-icon-ai";
-        return `<div>
-                 ${this.isplayer ? `<div>
-                                    <div style="float: right;"><img id="${infoIconId}" src="https://www.vhv.rs/dpng/d/84-845553_orange-information-icon-png-transparent-png.png" width="50"></div>
-                                            <img src="${this.user.profile_picture}" alt="Player Icon" class="player-picture">
-                                            <p>${this.user.username}<br>
-                                                (Você)</p>
-                                            <button class="btn btn-primary btn-block btn-trocar-lado" style="background-color: #00e5ff; border: none;">Trocar Lado</button>
-                                            </div>` :
-                                    `<div>
-                                    <div style="float: right;"><img id="${infoIconId}" src="https://www.vhv.rs/dpng/d/84-845553_orange-information-icon-png-transparent-png.png" width="50"></div>
-                                    <i class="fa fa-solid fa-brain" alt="AI Icon" class="player-picture"></i>
+        return `
+                 ${this.isplayer ? ` 
+                                    <div class="info-div">
+                                        <i id="${infoIconId}" class="fa fa-solid fa-info"></i>
+                                    </div>
+                                    <img src="${this.user.profile_picture}" alt="Player Icon" class="player-picture">
+                                    <p>${this.user.username}<br>
+                                        (Você)</p>
+                                    <button class="btn btn-primary btn-block btn-trocar-lado" style="background-color: #00e5ff; border: none;">Trocar Lado</button>
+                                    ` :
+                                    `
+                                    <div class="custom-icon-info">
+                                        <i id="${infoIconId}" class="fa fa-solid fa-brain""></i>
+                                    </div>
                                     <p>IA</p>
-                                </div>`}
-            </div>
+                                `}
         `
     }
 
@@ -66,14 +67,27 @@ class MainVsAI extends Component{
                     <span id="close-instructions" class="close">&times;</span>
                     <h2>Instruções</h2>
                     <p>Para jogar, use as teclas:</p>
-                    <p>W - Subir</p>
-                    <p>S - Descer</p>
+                    <div class="intruc">
+                        <div>
+                            <p>Lado Esquerdo</p>
+                            <p>W - Subir</p>
+                            <p>S - Descer</p>
+                        </div>
+                        <div>
+                            <p>Lado Direito</p>
+                            <p><i class="fa fa-solid fa-arrow-up"></i> - Subir</p>
+                            <p><i class="fa fa-solid fa-arrow-down"></i> - Descer</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
         document.body.appendChild(instructions);
 
         document.querySelector("#close-instructions").addEventListener("click", () => {
+            document.body.removeChild(instructions);
+        });
+        document.querySelector(".instructions-overlay").addEventListener("click", () => {
             document.body.removeChild(instructions);
         });
     }
