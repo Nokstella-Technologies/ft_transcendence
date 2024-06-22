@@ -120,7 +120,7 @@ services:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
 
   grafana:
-    image: grafana/grafana:10.2.2
+    image: grafana/grafana-enterprise
     container_name: grafana
     ports:
       - "3000:3000"
@@ -128,6 +128,9 @@ services:
       - transcendence
     volumes:
       - grafana-storage:/var/lib/grafana
+      - ./data/grafana/provisioning/dashboards:/var/lib/grafana/dashboards
+      - ./data/grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+
 
   # elasticsearch:
   #   image: elasticsearch:7.16.2
