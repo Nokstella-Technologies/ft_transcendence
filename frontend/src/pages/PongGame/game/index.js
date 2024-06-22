@@ -34,12 +34,13 @@ class Game extends Component {
         this.score = score;
         this.gameOver = gameOver;
         this.apperance = apperance;
-        this.reRender()
+        this.destroy()
+        return this.reRender()
     }
 
     async verifyScore(player) {
         this.destroy() 
-        return await this.score(player);
+        return this.score(player);
     }
 
     handleKeyDown(e) {

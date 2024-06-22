@@ -9,7 +9,8 @@ from ..rabbitmq import create_connection
 from ..models.user import User
 from ..models.game_appearance import GameAppearance
 from ..models.player_stats import PlayerStats
-
+from .stats_service import endGameUpdate, tournnament_won , tournnament_played
+USER_STATS_QUEUE = 'USER_STATS_QUEUE'
 
 
 def handle_authenticate(credentials):
@@ -82,40 +83,58 @@ def handle_authenticate_2fa(data, isID):
         return{'valid': False, 'user': {}, 'error': str(e)}
 
 
+def on_request(ch, method, props, body):
+    data = json.loads(body)
+    action = data.get('action')
+    response = {}
+
+    print("action: ", action)
+        # Diferencia entre os tipos de ação
+    if action == 'authenticate':
+        response = handle_authenticate(data)
+    elif action == 'authenticate_or_register':
+        response = handle_authenticate_or_register(data)
+    elif action == 'verify_2fa_secret':
+        response = handle_authenticate_2fa(data, True)
+    elif action == 'login_2fa':
+        response = handle_authenticate_2fa(data, False)
+    else:
+        response = {'valid': False, 'user': {}}
+
+
+    # Envia a resposta de volta para o `auth_service`
+    ch.basic_publish(
+        exchange='',
+        routing_key=props.reply_to,
+        properties=pika.BasicProperties(correlation_id=props.correlation_id),
+        body=json.dumps(response)
+    )
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
+def on_request_stats(ch, method, props, body):
+    data = json.loads(body)
+
+    print(f"[Received message from {USER_STATS_QUEUE}][action: {data.get('action')}][data: {data}]")
+    if data.get('action') == 'update_game_played':
+        endGameUpdate(data)
+    elif data.get('action') == 'update_tournament_played':
+        tournnament_played(data)
+    elif data.get('action') == 'update_tournament_winner':
+        tournnament_won(data)
+    else :
+        print("Invalid message received, for update game played")
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
+
 def start_consumer():
     _, channel = create_connection()
-    def on_request(ch, method, props, body):
-        data = json.loads(body)
-        action = data.get('action')
-        response = {}
-
-        print("action: ", action)
-         # Diferencia entre os tipos de ação
-        if action == 'authenticate':
-            response = handle_authenticate(data)
-        elif action == 'authenticate_or_register':
-            response = handle_authenticate_or_register(data)
-        elif action == 'verify_2fa_secret':
-            response = handle_authenticate_2fa(data, True)
-        elif action == 'login_2fa':
-            response = handle_authenticate_2fa(data, False)
-        else:
-            response = {'valid': False, 'user': {}}
-
-
-        # Envia a resposta de volta para o `auth_service`
-        ch.basic_publish(
-            exchange='',
-            routing_key=props.reply_to,
-            properties=pika.BasicProperties(correlation_id=props.correlation_id),
-            body=json.dumps(response)
-        )
-        ch.basic_ack(delivery_tag=method.delivery_tag)
 
     try:
         channel.basic_qos(prefetch_count=1)
         channel.queue_declare(queue='AUTH_USER')
         channel.basic_consume(queue='AUTH_USER', on_message_callback=on_request)
+        channel.queue_declare(queue=USER_STATS_QUEUE)
+        channel.basic_consume(queue=USER_STATS_QUEUE, on_message_callback=on_request_stats)
         print(" [x] Awaiting RPC requests")
         channel.start_consuming()
     except pika.exceptions.ConnectionClosedByBroker as e:

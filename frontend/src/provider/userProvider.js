@@ -47,7 +47,7 @@ class UserProviders {
             })
             if (res.status === 200) {
                 const data = await res.json();
-                if (save) {
+                if (save == true) {
                     this.user = data;
                     sessionStorage.setItem("user", JSON.stringify(data));
                     this.apperance = data.appearance[0];

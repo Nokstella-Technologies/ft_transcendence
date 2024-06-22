@@ -23,6 +23,10 @@ create_service:
 		./setup_service.sh $(name); \
 	fi
 
+migration:
+	docker run -it --rm -v "./backend/$(c)":/app -w /app python:3.9-slim /bin/bash -c "pip install --upgrade pip && pip install -r requirements.txt && python3 manage.py makemigrations ${c}_app && python3 manage.py migrate ${c}_app"
+
+
 re: clean all
 
 .PHONY: all clean create_service log exec

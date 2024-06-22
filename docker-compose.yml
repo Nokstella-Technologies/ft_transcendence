@@ -1,4 +1,19 @@
 services:
+  stats_service:
+    container_name: stats-service
+    build:
+      context: ./backend/stats_service
+    volumes:
+      - ./backend/stats_service:/usr/src/app/
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - rabbitmq
+      - gateway
+      - postgres
+    networks:
+      - backend
+
   user_service:
     container_name: user-service
     build:
@@ -172,7 +187,7 @@ services:
     build:
       context: ./rabbitmq
     container_name: rabbitmq
-    ports:
+    expose:
       - "5672:5672"
       - "15672:15672"
     env_file:

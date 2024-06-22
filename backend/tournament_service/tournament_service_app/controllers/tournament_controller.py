@@ -4,6 +4,7 @@ from ..services.tournament_service import create_next_match, find_next_match, fi
 from django.http import JsonResponse
 from ..models.tournament import Tournament, TournamentParticipant, TournamentGame
 from ..utils.jwt import get_payload
+from ..services.tournament_producer import publish
 
 @csrf_exempt
 def create_tournament(request):
@@ -85,11 +86,11 @@ def next_match(request, id):
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
         response = find_next_match(id)
-        print(response)
         if (response.get('error')):
-            return JsonResponse(response, status=400, safe=False)
+            return JsonResponse(response, status=404, safe=False)
         return JsonResponse(response, status=200, safe=False)
     except Tournament.DoesNotExist:
         return JsonResponse({'error': 'Tournament not found'}, status=404)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        print(e)
+        return JsonResponse({'error': str(e)}, status=500)

@@ -84,7 +84,7 @@ class LoginForm extends Component {
                 event.preventDefault();
                 try {
                     const code = document.getElementById('2fa-code').value;
-                    const res = await authProvider.validate2fa(code, this.email2fa);
+                    const res = await authProvider.validate2fa(code, this.email2fa, this.isTournament);
                     if (res.jwt_token !== undefined) {
                         if (this.isTournament === undefined) {
                             return navigateTo('/home')
@@ -104,15 +104,15 @@ class LoginForm extends Component {
                 this.errorMessage = 'Por favor, preencha todos os campos.';
             }
             try {
-                const res = await authProvider.login(this.email(), this.password())
+                const res = await authProvider.login(this.email(), this.password(), this.isTournament)
                 if (res.email !== undefined) {
                     this.email2fa = res.email
                     this.setShowEdit(true);
                 }
                 else {
-                    if (!this.isTournament) {
+                    if (this.isTournament === undefined) {
                         return navigateTo('/home')
-                    }
+                    } 
                     await this.isTournament(res.jwt_token)
                 }
             } catch(err) {

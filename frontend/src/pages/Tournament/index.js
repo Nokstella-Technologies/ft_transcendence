@@ -49,16 +49,19 @@ class Tournament extends Component {
         }
         const topBar = new TopBar('#top_bar', false);
         topBar.reRender();
+        if (tournament === undefined) {
+            return this.reRender()
+        }
         if (tournament.status === "Created") {
-          const startTournament = new StartTournament('.page');
+          const startTournament = new StartTournament('.page', this.reRender.bind(this));
           startTournament.reRender();
         } else if (tournament.status === "Started") {
-          const classificationTournament = new ClassificationTournament('.page');
+          const classificationTournament = new ClassificationTournament('.page', this.reRender.bind(this));
           classificationTournament.reRender();
         } else if (tournament.status === "finished") {
           const podiumTournament = new PodiumTournament('.page');
           podiumTournament.reRender();
-        }else {
+        } else {
           return navigateTo('/home')
         }
     }

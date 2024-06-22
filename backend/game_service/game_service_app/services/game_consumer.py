@@ -5,9 +5,11 @@ import pika.exceptions
 from ..rabbitmq import create_connection
 from ..models import Game
 from django.forms.models import model_to_dict
-
+import logging
 UPDATE_QUEUE = 'UPDATE_GAME_TOURNAMENT'
 FINISHED_QUEUE = 'FINISHED_GAME_TOURNAMENT'
+
+STATS_QUEUE = 'STATS_QUEUE'
 
 def start_game_local(data, status='active'):
 
@@ -62,17 +64,17 @@ def start_consumer():
     def on_request(ch, method, props, body):
         data = json.loads(body)
         action = data.get('action')
+        print(f"[Received message from START_GAME][action: {action}]")
         if action == 'start_game':
-            print(f"Received start game request")
             response = start_game_local(data)
         elif action == 'update_game':
-            print(f"Received update game request")
             response, ended = update_game(data)
-            print(f"Game ended: {ended}")
             if (response.get('game').get('status') == 'Finished' and data.get('end') == True):
+                print(f"Game has ended [posting to stats]")
+                response['action'] = 'end_game'
+                ch.basic_publish(exchange='', routing_key=STATS_QUEUE, body=json.dumps(response))
                 if (response.get('game').get('type') == 'tournament'):
-                    response['action'] = 'end_game'
-                    print(f"Sending end game request")
+                    print(f"Game has ended [posting to tournament]")
                     ch.basic_publish(
                         exchange = '',
                         routing_key = FINISHED_QUEUE,
@@ -80,7 +82,9 @@ def start_consumer():
                         body = json.dumps(response)
                     )
         else:
+           print(f"Invalid message received, for start game or update game[action: {action}]")
            response = {'status': 'error', 'message': 'Unknown action'}
+        print(f"[Publishing message to {UPDATE_QUEUE}][action: {response.get('game').get('status')}]")
         ch.basic_publish(
             exchange = '',
             routing_key = props.reply_to,
@@ -90,16 +94,13 @@ def start_consumer():
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def on_tournament_request(ch, method, props, body):
-        print(f"Received tournament request")
         data = json.loads(body)
-        print(f"Received data:{data}")
+        print(f"[Received message from TOURNAMENT_GAME][action: {data.get('action')}]")
         action = data.get('action')
         if action == 'create_game':
-            print(f"Received create game request")
             response = start_game_local(data, status='pending')
             response['round_number'] = data.get('round_number')
         elif action == 'start_game':
-            print(f"Received start game request")
             id = data.get('id')
             game = Game.objects.filter(game_id=id).first()
             if game is None:
@@ -111,10 +112,11 @@ def start_consumer():
             response['player1_id'] = str(game.player1_id)
             response['player2_id'] = str(game.player2_id)
         else :
+            print("error on action")
             response = {'status': 'error', 'message': 'Unknown action'}
         response['action'] = action
         response['tournament_id'] = data.get('tournament_id')
-        print(response)
+        print(f"[Publishing message to {UPDATE_QUEUE}][action: {response.get('action')}]")
         ch.basic_publish(
             exchange = '',
             routing_key = UPDATE_QUEUE,

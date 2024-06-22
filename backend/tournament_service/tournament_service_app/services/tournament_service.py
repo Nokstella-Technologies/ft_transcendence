@@ -1,7 +1,11 @@
 from ..models.tournament import Tournament, TournamentParticipant, TournamentGame
 from .tournament_producer import publish
 from django.forms.models import model_to_dict
+from django.db.models import Max
+import json
 import random
+
+USER_STATS_QUEUE = 'STATS_QUEUE'
 
 def create_next_match(tournamet):
     if (tournamet.status == 'Created'):
@@ -46,10 +50,20 @@ def get_round_combinations(participants):
 def find_next_match(tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     if tournament.status != 'Started' and tournament.status != 'ongoing':
-        return {'error': 'Tournament is not ongoing'}
+        return {'status': 'finished'}
     matches = TournamentGame.objects.filter(tournament=tournament, round_number=tournament.round_now).first()
     if matches is None: 
-        tournament.status = 'finished'
+        if tournament.status != 'finished':
+            tournament.status = 'finished'
+            data =  find_tournament_by_id(tournament_id)
+            max_score = TournamentParticipant.objects.all().aggregate(Max('score'))['score__max']
+            winners = TournamentParticipant.objects.filter(score=max_score)
+            data['winner'] = [str(winner.user_id) for winner in winners]
+            print("publish to user stats")
+            publish(USER_STATS_QUEUE, {
+                'action': 'tournament_finished',
+                'message': data
+            }, tournament_id)
         tournament.save()
         return {"status": "finished"}
     if matches.status == 'pending':

@@ -36,8 +36,7 @@ export default class  PodiumTournament extends Component {
 
     async mount() {
         document.getElementById('back-to-home').addEventListener('click', () => {
-            sessionStorage.removeItem('tournament_id');
-            sessionStorage.removeItem('tournament');
+            tournamentProvider.reset();
             return navigateTo('/home');
         })
         function createConfettiPiece() {

@@ -9,6 +9,7 @@ import userProvider from "../../provider/userProvider.js";
         constructor(to) {
             super(to);
             this.init();
+            this.frame = 0;
         }
         
         init() {
@@ -77,6 +78,7 @@ import userProvider from "../../provider/userProvider.js";
         
 
         mount() {
+            this.frame = 0;
             const {game, player1} = gameProvider.get();
             const {token} = authProvider.get();
             if (game === undefined) { 
@@ -115,6 +117,7 @@ import userProvider from "../../provider/userProvider.js";
                 this.game.newRender(game.type === "ai" ?  side : "player2" , score, this.gameOver, apperance);
             } else {
                 document.querySelector('.btn').addEventListener('click', () => { 
+                    gameProvider.reset()
                     game.type == 'tournament' ? navigateTo('/tournament') : navigateTo('/home');
                 });
             }
