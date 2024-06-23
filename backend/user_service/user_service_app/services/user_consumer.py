@@ -140,7 +140,7 @@ def start_consumer():
         channel.start_consuming()
     except pika.exceptions.ConnectionClosedByBroker as e:
         print("lost connection reset",str(e))
-        time.sleep(5)
+        time.sleep(20)
         _, channel = create_connection()
         start_consumer()
         

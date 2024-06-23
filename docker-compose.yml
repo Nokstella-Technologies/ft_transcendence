@@ -8,9 +8,10 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - rabbitmq
-      - gateway
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+      gateway:
     networks:
       - microservices
       - transcendence
@@ -24,9 +25,10 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - rabbitmq
-      - gateway
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+      gateway:
     networks:
       - microservices
       - transcendence
@@ -40,9 +42,10 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - rabbitmq
-      - gateway
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+      gateway:
     networks:
       - microservices
       - transcendence
@@ -56,8 +59,10 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - rabbitmq
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+      gateway:
     networks:
       - microservices
       - transcendence
@@ -71,8 +76,9 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - rabbitmq
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres:
     networks:
       - microservices
       - transcendence
@@ -87,6 +93,9 @@ services:
       - ./backend/.env
     networks:
       - transcendence
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   frontend:
     build:
