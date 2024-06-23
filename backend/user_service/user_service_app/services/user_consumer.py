@@ -128,22 +128,26 @@ def on_request_stats(ch, method, props, body):
 
 
 def start_consumer():
-    _, channel = create_connection()
+    while True:
+        try:
+            _, channel = create_connection()
+            channel.basic_qos(prefetch_count=1)
+            channel.queue_declare(queue='AUTH_USER')
+            channel.basic_consume(queue='AUTH_USER', on_message_callback=on_request)
+            channel.queue_declare(queue=USER_STATS_QUEUE)
+            channel.basic_consume(queue=USER_STATS_QUEUE, on_message_callback=on_request_stats)
+            print(" [x] Awaiting RPC requests")
+            channel.start_consuming()
+        except pika.exceptions.ConnectionClosedByBroker as e:
+            print("Lost connection, retrying...", str(e))
+            time.sleep(20)
+        except pika.exceptions.AMQPConnectionError as e:
+            print("AMQP Connection Error, retrying...", str(e))
+            time.sleep(20)
+        except Exception as e:
+            print("Unexpected error, retrying...", str(e))
+            time.sleep(20)
 
-    try:
-        channel.basic_qos(prefetch_count=1)
-        channel.queue_declare(queue='AUTH_USER')
-        channel.basic_consume(queue='AUTH_USER', on_message_callback=on_request)
-        channel.queue_declare(queue=USER_STATS_QUEUE)
-        channel.basic_consume(queue=USER_STATS_QUEUE, on_message_callback=on_request_stats)
-        print(" [x] Awaiting RPC requests")
-        channel.start_consuming()
-    except pika.exceptions.ConnectionClosedByBroker as e:
-        print("lost connection reset",str(e))
-        time.sleep(20)
-        _, channel = create_connection()
-        start_consumer()
-        
 
 if __name__ == '__main__':
     start_consumer()

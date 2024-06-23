@@ -66,7 +66,6 @@ def end_game(data):
     p2.save()
 
 def start_consumer():
-    _, channel = create_connection()
     def on_request(ch, method, props, body):
         data = json.loads(body)
         if data.get('action') == 'create_game':
@@ -78,19 +77,26 @@ def start_consumer():
         elif data.get('action') == 'end_game':
             res = end_game(data)
         ch.basic_ack(delivery_tag=method.delivery_tag)
-
-    try:
-        channel.basic_qos(prefetch_count=1)
-        channel.queue_declare(queue=UPDATE_QUEUE, durable=True)
-        channel.basic_consume(queue=UPDATE_QUEUE, on_message_callback=on_request)
-        channel.queue_declare(queue=FINISHED_QUEUE, durable=True)
-        channel.basic_consume(queue=FINISHED_QUEUE, on_message_callback=on_request)
-        print("[X] Awating RCP request...")
-        channel.start_consuming()
-    except pika.exceptions.ConnectionClosedByBroker as e:
-        print("lost connection reset",str(e))
-        time.sleep(20)
-        start_consumer()
+    while True:
+        try:
+            _, channel = create_connection()
+            channel.basic_qos(prefetch_count=1)
+            channel.queue_declare(queue=UPDATE_QUEUE, durable=True)
+            channel.basic_consume(queue=UPDATE_QUEUE, on_message_callback=on_request)
+            channel.queue_declare(queue=FINISHED_QUEUE, durable=True)
+            channel.basic_consume(queue=FINISHED_QUEUE, on_message_callback=on_request)
+            print("[X] Awating RCP request...")
+            channel.start_consuming()
+        except pika.exceptions.ConnectionClosedByBroker as e:
+            print("Lost connection, retrying...", str(e))
+            time.sleep(20)
+        except pika.exceptions.AMQPConnectionError as e:
+            print("AMQP Connection Error, retrying...", str(e))
+            time.sleep(20)
+        except Exception as e:
+            print("Unexpected error, retrying...", str(e))
+            time.sleep(20)
 
 if __name__ == '__main__':
     start_consumer()
+
