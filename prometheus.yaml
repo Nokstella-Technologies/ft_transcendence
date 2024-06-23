@@ -6,12 +6,12 @@ scrape_configs: # configuracao de coleta de metricas
   - job_name: prometheus
     static_configs:
       - targets:
-          - localhost:9090
+          - prometheus:9090
 
   - job_name: gateway
     static_configs:
       - targets:
-          - gateway:8000
+          - https://localhost/gateway
 
   - job_name: auth-service
     static_configs:

@@ -102,7 +102,9 @@ services:
       - transcendence
 
   postgres:
-    image: postgres:16.3-alpine
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
     container_name: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -111,7 +113,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
     env_file:
-      - ./.env
+      - ./postgres/.env
     networks:
       - backend
 
@@ -218,7 +220,7 @@ services:
       - backend
 
 volumes:
-  postgres-data:
+  postgres-data: {}
   prometheus-data: {}
   grafana-storage: {}
   elastic_data: {}
