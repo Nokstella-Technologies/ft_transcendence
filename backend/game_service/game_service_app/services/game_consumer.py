@@ -6,6 +6,7 @@ from ..rabbitmq import create_connection
 from ..models import Game
 from django.forms.models import model_to_dict
 import logging
+import time
 UPDATE_QUEUE = 'UPDATE_GAME_TOURNAMENT'
 FINISHED_QUEUE = 'FINISHED_GAME_TOURNAMENT'
 
@@ -134,6 +135,7 @@ def start_consumer():
         print("[X] Awating RCP request...")
         channel.start_consuming()
     except pika.exceptions.ConnectionClosedByBroker as e:
+        time.sleep(5)
         print("lost connection reset",str(e))
         _, channel = create_connection()
         start_consumer()

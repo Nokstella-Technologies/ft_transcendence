@@ -3,6 +3,7 @@ import pika
 import pika.exceptions
 import json
 import logging
+import time
 from .tournament_consumer import tournament_consumer
 from .game_consumer import game_consumer
 
@@ -31,4 +32,5 @@ def consumer():
         channel.start_consuming()
     except pika.exceptions.ConnectionClosedByBroker as e:
         print("lost connection reset",str(e))
+        time.sleep(5)
         consumer()

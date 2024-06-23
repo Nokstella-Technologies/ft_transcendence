@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from ..utils.qr_code_otp import verify_otp
 from django.forms.models import model_to_dict
+import time
 from ..rabbitmq import create_connection
 from ..models.user import User
 from ..models.game_appearance import GameAppearance
@@ -139,6 +140,7 @@ def start_consumer():
         channel.start_consuming()
     except pika.exceptions.ConnectionClosedByBroker as e:
         print("lost connection reset",str(e))
+        time.sleep(5)
         _, channel = create_connection()
         start_consumer()
         

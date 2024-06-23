@@ -1,5 +1,6 @@
 import json
 import pika
+import time
 import pika.exceptions
 from ..rabbitmq import create_connection
 from ..models.tournament import TournamentGame, Tournament, TournamentParticipant
@@ -88,6 +89,7 @@ def start_consumer():
         channel.start_consuming()
     except pika.exceptions.ConnectionClosedByBroker as e:
         print("lost connection reset",str(e))
+        time.sleep(5)
         start_consumer()
 
 if __name__ == '__main__':
