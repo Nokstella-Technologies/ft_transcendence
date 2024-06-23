@@ -4,19 +4,20 @@ global: # configuracao global
 
 scrape_configs: # configuracao de coleta de metricas
   - job_name: prometheus
+    metrics_path: /prometheus/metrics
     static_configs:
       - targets:
-          - prometheus:9090
+        - prometheus:9090
 
   - job_name: gateway
     static_configs:
       - targets:
-          - gateway:8000
+        - gateway:8000
 
   - job_name: auth-service
     static_configs:
       - targets:
-          - auth-service:8000
+        - auth-service:8000
 
   - job_name: game-service
     static_configs:
@@ -26,10 +27,15 @@ scrape_configs: # configuracao de coleta de metricas
   - job_name: tournament-service
     static_configs:
       - targets:
-          - tournament-service:8000
+        - tournament-service:8000
 
   - job_name: user-service
     static_configs:
       - targets:
-          - user-service:8000
+        - user-service:8000
+
+  - job_name: stats-service
+    static_configs:
+      - targets:
+        - stats-service:8000
 

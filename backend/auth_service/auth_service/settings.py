@@ -78,13 +78,8 @@ WSGI_APPLICATION = 'auth_service.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'auth',
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': 'postgres',
-        'PORT': '5432',
+    'default': {
+        'ENGINE': 'django.db.backends.dummy',
     }
 }
 SECURE_SSL_REDIRECT = False

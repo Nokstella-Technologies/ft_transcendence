@@ -16,4 +16,4 @@ EXPOSE 8000
 # Copy project
 COPY . /usr/src/app/
 
-ENTRYPOINT python3 manage.py makemigrations && python3 manage.py migrate && sleep 10 && python3 manage.py runserver 0.0.0.0:8000
+ENTRYPOINT sleep 10 && python3 manage.py runserver 0.0.0.0:8000
