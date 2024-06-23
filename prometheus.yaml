@@ -11,7 +11,7 @@ scrape_configs: # configuracao de coleta de metricas
   - job_name: gateway
     static_configs:
       - targets:
-          - https://localhost/gateway
+          - gateway:8000
 
   - job_name: auth-service
     static_configs:
