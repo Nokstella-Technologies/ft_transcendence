@@ -83,7 +83,7 @@ services:
       - microservices
       - transcendence
 
-  gateway: {}
+  gateway:
     container_name: gateway
     build:
       context: ./backend/gateway
@@ -114,7 +114,7 @@ services:
     networks:
       - transcendence
 
-  postgres: {}
+  postgres:
     build:
       context: ./postgres
       dockerfile: Dockerfile
