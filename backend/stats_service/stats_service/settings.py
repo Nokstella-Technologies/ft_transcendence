@@ -76,13 +76,8 @@ WSGI_APPLICATION = 'stats_service.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'stats_db',
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': 'postgres',
-        'PORT': '5432',
+    'default': {
+        'ENGINE': 'django.db.backends.dummy',
     }
 }
 # Password validation
