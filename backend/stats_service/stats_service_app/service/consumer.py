@@ -21,16 +21,20 @@ def on_request(ch, method, props, body):
         print(f"Invalid message received, for end game or tournament[action: {data.get('action')}]")
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
-def consumer(): 
-    _, channel = create_connection()
-
-    try:
-        channel.basic_qos(prefetch_count=1)
-        channel.queue_declare(queue=STATS_QUEUE, durable=True)
-        channel.basic_consume(queue=STATS_QUEUE, on_message_callback=on_request)
-        print("[X] Awating RCP request...")
-        channel.start_consuming()
-    except pika.exceptions.ConnectionClosedByBroker as e:
-        print("lost connection reset",str(e))
-        time.sleep(20)
-        consumer()
+while True:
+        try:
+            _, channel = create_connection()
+            channel.basic_qos(prefetch_count=1)
+            channel.queue_declare(queue=STATS_QUEUE, durable=True)
+            channel.basic_consume(queue=STATS_QUEUE, on_message_callback=on_request)
+            print("[X] Awaiting RPC request...")
+            channel.start_consuming()
+        except pika.exceptions.ConnectionClosedByBroker as e:
+            print("Lost connection, retrying...", str(e))
+            time.sleep(20)
+        except pika.exceptions.AMQPConnectionError as e:
+            print("AMQP Connection Error, retrying...", str(e))
+            time.sleep(20)
+        except Exception as e:
+            print("Unexpected error, retrying...", str(e))
+            time.sleep(20)
