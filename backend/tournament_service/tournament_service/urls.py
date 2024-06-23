@@ -18,6 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('tournament/', include('tournament_service_app.urls')),
 	path('', include('django_prometheus.urls')),
+    path('tournament/', include('tournament_service_app.urls')),
 ]
