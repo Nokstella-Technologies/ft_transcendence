@@ -85,7 +85,10 @@ services:
       - ./backend/gateway:/usr/src/app/
     env_file:
       - ./backend/.env
+    depends_on:
+      - frontend
     networks:
+      - microservices
       - transcendence
 
   frontend:
@@ -103,6 +106,7 @@ services:
     depends_on:
       - postgres
     networks:
+      - microservices
       - transcendence
 
   postgres:

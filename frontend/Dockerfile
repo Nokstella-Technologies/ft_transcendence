@@ -27,4 +27,4 @@ EXPOSE 80 443
 
 # Comando para rodar o Nginx e obter o certificado
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+

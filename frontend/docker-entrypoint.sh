@@ -13,6 +13,8 @@ if [ "$DOMAIN" == "localhost" ]; then
     -keyout /etc/letsencrypt/live/$DOMAIN/privkey.pem \
     -out /etc/letsencrypt/live/$DOMAIN/fullchain.pem \
     -subj "/CN=$DOMAIN"
+  chmod 644 /etc/letsencrypt/live/$DOMAIN/fullchain.pem
+  chmod 600 /etc/letsencrypt/live/$DOMAIN/privkey.pem
 else
   if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then
     /get_certificate.sh
@@ -20,4 +22,4 @@ else
 fi
 
 # Iniciar o Nginx
-exec "$@"
+nginx -g "daemon off;"
