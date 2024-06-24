@@ -21,7 +21,9 @@ def on_request(ch, method, props, body):
         print(f"Invalid message received, for end game or tournament[action: {data.get('action')}]")
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
-while True:
+
+def consumer():
+    while True:
         try:
             _, channel = create_connection()
             channel.basic_qos(prefetch_count=1)

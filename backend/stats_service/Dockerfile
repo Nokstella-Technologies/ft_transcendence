@@ -13,7 +13,8 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Copy project
-EXPOSE 8000
 COPY . /usr/src/app/
+EXPOSE 8000
+CMD python3 manage.py makemigrations && python3 manage.py migrate
 
 ENTRYPOINT sleep 10 && python3 manage.py runserver 0.0.0.0:8000
