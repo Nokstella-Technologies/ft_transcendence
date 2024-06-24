@@ -2,3 +2,4 @@ Django
 djangorestframework
 django-cors-headers
 django-prometheus
+psycopg2-binary==2.9.9

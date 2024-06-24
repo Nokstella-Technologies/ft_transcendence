@@ -2,3 +2,4 @@ djangorestframework
 pika
 Django==4.2.2
 django-prometheus
+psycopg2-binary==2.9.9
