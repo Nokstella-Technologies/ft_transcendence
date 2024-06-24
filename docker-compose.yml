@@ -116,8 +116,8 @@ services:
     container_name: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
+    expose:
+      - "5432"
     environment:
       - CHOKIDAR_USEPOLLING=true
     env_file:
@@ -174,15 +174,14 @@ services:
     container_name: prometheus
     expose:
       - "9090"
-    networks:
-      - transcendence
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.external-url=http://prometheus:9090/prometheus'
       - '--web.route-prefix=/prometheus'
-
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+    networks:
+      - transcendence
 
   grafana:
     image: grafana/grafana-enterprise
