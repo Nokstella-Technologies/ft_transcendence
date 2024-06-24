@@ -14,11 +14,11 @@ curl -X POST "http://elasticsearch:9200/_security/user/kibana_system/_password" 
 until curl -s http://kibana:5601 > /dev/null; do
   echo "Waiting for Kibana..."
   sleep 5
-done
+done 
 
 # Import the saved objects
-curl -X POST "http://kibana:5601/api/saved_objects/_import?overwrite=true" \
-  -H "kbn-xsrf: true" \
-  --form file=@/usr/share/kibana/config/kibana_index_pattern.json
+
 
 echo "Kibana index pattern imported."
+
+exec $@
