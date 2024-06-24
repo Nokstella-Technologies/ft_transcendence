@@ -1,26 +1,19 @@
 #!/bin/bash
 
-# Substituir variáveis de ambiente no site.conf
+# Start Kibana in the background
+/usr/local/bin/kibana-docker &
 
-# Wait for Elasticsearch to be up
-until curl -s http://elasticsearch:9200 > /dev/null; do
-  echo "Waiting for Elasticsearch..."
+# Wait for Kibana to start
+until curl -s -o /dev/null -w "%{http_code}" http://localhost:5601/kibana/api/status | grep -q "200"; do
+  echo "Waiting for Kibana to start..."
   sleep 5
 done
 
-# Set passwords for built-in users
-curl -X POST "http://elasticsearch:9200/_security/user/$ELASTICSEARCH_USERNAME/_password" -H "Content-Type: application/json" -d'{"password":'$ELASTICSEARCH_PASSWORD'}'
-curl -X POST "http://elasticsearch:9200/_security/user/kibana_system/_password" -H "Content-Type: application/json" -d'{"password":'$ELASTICSEARCH_PASSWORD'}'
+# Import saved objects
+curl -X POST "http://localhost:5601/kibana/api/saved_objects/_import?overwrite=true" \
+  -H "kbn-xsrf: true" \
+  -u "${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}" \
+  --form file=@/usr/share/kibana/config/kibana_index_pattern.ndjson
 
-# Wait for Kibana to be up
-until curl -s http://kibana:5601 > /dev/null; do
-  echo "Waiting for Kibana..."
-  sleep 5
-done
-
-# Import the saved objects
-
-
-echo "Kibana index pattern imported."
-
-exec $@ & curl -X POST "http://kibana:5601/api/saved_objects/_import overwrite=true" -H "kbn-xsrf: true"  --form file=@/usr/share/kibana/config/kibana_index_pattern.json
+# Keep Kibana running in the foreground
+wait
