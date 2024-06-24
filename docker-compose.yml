@@ -131,11 +131,13 @@ services:
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    env_file:
+      - ./elk_stack/.env
     expose:
       - "9200"
     volumes:
       - elastic-data:/usr/share/elasticsearch/data
-      - ./elk_stack/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml 
+      - ./elk_stack/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     networks:
       - transcendence
 
@@ -145,6 +147,8 @@ services:
     volumes:
       - ./elk_stack/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./elk_stack/logs/nginx_logs:/var/log/nginx
+    env_file:
+      - ./elk_stack/.env
     expose:
       - "5000"
     depends_on:
@@ -167,7 +171,12 @@ services:
       - ./elk_stack/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     networks:
       - transcendence
-    entrypoint: ["/bin/bash", "-c", "/usr/local/bin/kibana-docker && /usr/local/bin/kibana-setup.sh"]
+    entrypoint:
+      [
+        "/bin/bash",
+        "-c",
+        "/usr/local/bin/kibana-docker && /usr/local/bin/kibana-setup.sh"
+      ]
 
   prometheus:
     image: prom/prometheus:v2.47.2
