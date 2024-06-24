@@ -3,6 +3,7 @@ import authProvider from "../../provider/authProvider.js";
 import userProvider from "../../provider/userProvider.js";
 import { validatePassword, validateUsername } from "../../utils/Validation.js";
 import Container from "../containers/index.js";
+import gameProvider from "../../provider/gameProvider.js";
 import Popup from "../popup/popup.js";
 
 
@@ -13,13 +14,17 @@ export default class ProfileContainer extends Component {
         const [showEdit, setShowEdit] = this.useState(false);
         const [show2FA, setShow2FA] = this.useState(false);
         const [showImageEdit, setShowImageEdit] = this.useState(false);
+        const [showHistory, setShowHistory] = this.useState(false);
         this.showImageEdit = showImageEdit;
         this.setShowImageEdit = setShowImageEdit;
         this.user = userProvider.get().user;
-        this.stats = this.user.stats[0]
+        this.stats = this.user.stats[0];
+        this.showHistory = showHistory;
+        this.setShowHistory = setShowHistory;
         this.showEdit = showEdit;
         this.setShowEdit = setShowEdit;
         this.show2FA = show2FA;
+        this.history = [];
         this.setShow2FA = setShow2FA;
         this.isEditabled = isEditabled;
     }  
@@ -52,7 +57,7 @@ export default class ProfileContainer extends Component {
                         <p>Derrotas: ${this.stats.games_lost}</p>
                         <p>Torneios: ${this.stats.tournament_won} - ${this.stats.tournament_played}</p>
                     </div>
-                    <button class="btn btn-primary my-2" >Ver historico de partidas</button>
+                    <button class="btn btn-primary my-2" id="history-btn" >Ver historico de partidas</button>
                 `
             })}
             
@@ -80,6 +85,9 @@ export default class ProfileContainer extends Component {
         })
         document.querySelector('#toggle-2fa').addEventListener('change', () => {
             this.setShow2FA(true);
+        })
+        document.querySelector('#history-btn').addEventListener('click', () => {
+            this.setShowHistory(true);
         })
         if (this.showEdit()) {
             const customContent = `
@@ -220,6 +228,37 @@ export default class ProfileContainer extends Component {
                 })
             }
 
+        } else if (this.showHistory()) {
+            try {
+                const res = await gameProvider.history(token, this.user);
+                this.history = res;
+                console.log(this.history);
+            } catch (err) {
+                console.log(err);
+                this.setShowHistory(false);
+            } 
+            const customContent = `
+                    <div class="d-flex flex-column">
+                        <div class="mt-2" id="suggested_friends" style="max-height: 200px; overflow-y: auto;">
+                         
+                            <div class="modal-body">
+                                <ul class="list-group">
+                                      ${this.history.slice(0, 4).map((game, idx )=> `    
+                                        <li class="list-group-item ${game.score_player1 > game.score_player2 && game.player1_id === this.user.user_id ? "victory" : "losses" }">
+                                            <p>${game.player1.username} vs ${game.player2.username}</p>
+                                            <p> ${game.score_player1} - ${game.score_player2} </p>
+                                        </li>
+                                        `).join('')}
+                                 
+                               
+                                </ul>
+                            </div>
+                       
+                    </div>
+                </div>
+            `;
+            const popUp = new Popup("#pop_profile", "Historico de Partidas", customContent, this.showHistory(), this.setShowHistory);
+            popUp.reRender();
         }
     }
 }

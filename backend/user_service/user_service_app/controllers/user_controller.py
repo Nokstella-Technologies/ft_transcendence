@@ -58,6 +58,14 @@ class UserController:
 
     @staticmethod
     @csrf_exempt
+    def findByid(request, id):
+        if request.method == 'GET':
+            return UserService().get_user(id)
+        else:
+            return JsonResponse({'message': 'Method not allowed'}, status=405)
+
+    @staticmethod
+    @csrf_exempt
     def get_all_user(request):
         if request.method == 'GET':
             return UserService().get_all_users()

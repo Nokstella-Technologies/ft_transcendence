@@ -114,6 +114,54 @@ class GameProvider {
         sessionStorage.removeItem("playerSide");
     
     }
+
+    async history(token, user) {
+            const res = await fetch(window.env["API_URL"] + 'protected/game/history/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            if (res.status === 200) {
+                const data = await res.json()
+                const result = []
+                for (const game of data) {
+                    if (game.player1_id !== user.user_id) { 
+                        const player1 = await fetch(window.env["API_URL"] + `protected/user/findById/${game.player1_id}/`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            }
+                        })
+                        if (player1.status === 200) {
+                            game.player2 = user
+                            game.player1 = await player1.json();
+                        } else {
+                            throw new Error("Erro ao buscar jogador");
+                        }
+                    } else {
+                        const player1 = await fetch(window.env["API_URL"] + `protected/user/findById/${game.player2_id}/`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            }
+                        })
+                        if (player1.status === 200) {
+                            game.player2 = await player1.json();
+                            game.player1 = user
+                        } else {
+                            throw new Error("Erro ao buscar jogador");
+                        }
+                    }
+                    result.push(game);
+                }
+                return result;
+            } else 
+                throw new Error("Erro ao buscar histórico");
+    }
 }
 
 

@@ -108,7 +108,7 @@ export default class Component {
         // Implementado pelos componentes derivados
     }
     
-    reRender() {
+    async reRender() {
         const activeElementId = document.activeElement.id;
 
         this.element = this.render();
@@ -117,7 +117,7 @@ export default class Component {
         } else {
             this.to.innerHTML = this.element;
         }
-        this.mount();
+        await this.mount();
 
         const activeElement = document.getElementById(activeElementId);
         if (activeElement && (activeElement.type === 'email' || activeElement.type === 'password' || activeElement.type === 'text')) {

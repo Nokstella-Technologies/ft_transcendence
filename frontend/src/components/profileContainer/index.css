@@ -100,3 +100,13 @@
       justify-content: space-between;
       padding: 2rem;
     }
+
+.victory {
+    background-color: #008b3590;
+    border: #00ffff 1px solid;
+}
+
+.losses {
+    background-color: #ff0000;
+    border: #00ffff 1px solid;
+}

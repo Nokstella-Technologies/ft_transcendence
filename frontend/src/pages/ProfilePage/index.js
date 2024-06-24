@@ -34,7 +34,7 @@ class Profile extends Component {
     const topBar = new TopBar('#top_bar', false);
     topBar.reRender();
     const profile = new ProfileContainer('#content_profile', true, this.reRender.bind(this));
-    profile.reRender();
+    await profile.reRender();
   }
 }
 
