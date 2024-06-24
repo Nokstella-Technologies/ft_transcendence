@@ -4,6 +4,22 @@ from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from ..models import Game
 from ..services.game_producer import send_to_queue
+from ..utils.jwt import get_payload
+@csrf_exempt
+def find_by_user_ended(request):
+	if request.method == 'GET':
+		id = get_payload(request, 'user')
+		games_p1 = Game.objects.filter(player1_id=id, status="Finished")
+		games_p2 = Game.objects.filter(player2_id=id, status="Finished")
+		res = []
+		for gm in games_p1:
+			res.append(model_to_dict(gm))
+		for gm in games_p2:
+			res.append(model_to_dict(gm))
+		return JsonResponse(res, status=200, safe=False)
+	else:
+		return JsonResponse("Method not allowed.", status=405)
+
 
 @csrf_exempt
 def start_game(request):
