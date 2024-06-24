@@ -18,6 +18,5 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include('stats_service_app.urls')),
     path('', include('django_prometheus.urls'))
 ]
