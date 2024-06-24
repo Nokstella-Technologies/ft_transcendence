@@ -175,7 +175,7 @@ services:
       [
         "/bin/bash",
         "-c",
-        "/usr/local/bin/kibana-docker && /usr/local/bin/kibana-setup.sh"
+        "/usr/local/bin/kibana-setup.sh"
       ]
 
   prometheus:
