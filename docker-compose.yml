@@ -131,11 +131,10 @@ services:
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
-      - ELASTIC_PASSWORD=changeme
-    ports:
-      - "9200:9200"
+    expose:
+      - "9200"
     volumes:
-      - elastic_data:/usr/share/elasticsearch/data
+      - elastic-data:/usr/share/elasticsearch/data
       - ./elk_stack/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml 
     networks:
       - transcendence
@@ -146,8 +145,8 @@ services:
     volumes:
       - ./elk_stack/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./elk_stack/logs/nginx_logs:/var/log/nginx
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     depends_on:
       - elasticsearch
     networks:
@@ -156,14 +155,10 @@ services:
   kibana:
     container_name: kibana
     image: docker.elastic.co/kibana/kibana:7.10.0
-    ports:
-      - "5601:5601"
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=changeme
-      - SERVER_BASEPATH=/kibana
-      - SERVER_REWRITEBASEPATH=true
+    expose:
+      - "5601"
+    env_file:
+      - ./elk_stack/.env
     depends_on:
       - elasticsearch
     volumes:
@@ -194,13 +189,12 @@ services:
     container_name: grafana
     expose:
       - "3000"
-    environment:
-      - GF_SERVER_ROOT_URL=http://grafana:3000/grafana
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    env_file:
+      - ./grafana/.env
     networks:
       - transcendence
     volumes:
-      - grafana-storage:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
       - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards
       - ./grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
@@ -226,8 +220,8 @@ services:
 volumes:
   postgres-data: {}
   prometheus-data: {}
-  grafana-storage: {}
-  elastic_data: {}
+  grafana-data: {}
+  elastic-data: {}
 
 networks:
   transcendence:

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-u+3e8xi%82_=5y&@-=xu4z8e5r!cj95zmy_unm+5bq$%5__q-x
 SECURE_SSL_REDIRECT = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = [
     'localhost',

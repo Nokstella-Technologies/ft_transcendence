@@ -91,15 +91,15 @@
     }
 }
 
-    .qr-code {
-        width: 90%;
-        height: 90%;
-      display: flex;
-      border-radius: 1rem;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 2rem;
-    }
+.qr-code {
+    width: 90%;
+    height: 90%;
+    display: flex;
+    border-radius: 1rem;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem;
+}
 
 .victory {
     background-color: #008b3590;
@@ -107,6 +107,6 @@
 }
 
 .losses {
-    background-color: #ff0000;
+    background-color: #a400009f;
     border: #00ffff 1px solid;
 }
