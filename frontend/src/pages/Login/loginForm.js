@@ -4,8 +4,9 @@ import authProvider from '../../provider/authProvider.js';
 import tournamentProvider from '../../provider/tournamentProvider.js';
 
 class LoginForm extends Component {
-    constructor(to, isTournament = undefined) {
+    constructor(to, isTournament = undefined, isPvp = undefined) {
         super(to);
+        this.isPvp = isPvp;
         this.isTournament = isTournament;
         const urlParams = new URLSearchParams(window.location.search);
         this.code = urlParams.get("code");
@@ -48,7 +49,7 @@ class LoginForm extends Component {
         const errorMessage = document.getElementById('error-message');
         if (this.code !== null) {
             try {
-                const res = await authProvider.login42(this.code, this.isTournament)
+                const res = await authProvider.login42(this.code, this.isTournament, this.isPvp)
                 this.code = null;
                 const url = new URL(window.location);
                 url.searchParams.delete("code");
@@ -134,6 +135,9 @@ class LoginForm extends Component {
             var redirect = "https://localhost/"
             if (this.isTournament !== undefined) {
                 redirect = "https://localhost/tournament"
+            } 
+            if (this.isPvp !== undefined) {
+                redirect = "https://localhost/pvp"
             }
             const authUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirect)}&response_type=code`;
             window.location.href = authUrl;

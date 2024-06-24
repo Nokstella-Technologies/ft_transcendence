@@ -137,13 +137,12 @@ def start_consumer():
             print("[X] Awating RCP request...")
             channel.start_consuming()
         except pika.exceptions.ConnectionClosedByBroker as e:
-            print("Lost connection, retrying...", str(e))
+            
             time.sleep(20)
         except pika.exceptions.AMQPConnectionError as e:
-            print("AMQP Connection Error, retrying...", str(e))
+            
             time.sleep(20)
         except Exception as e:
-            print("Unexpected error, retrying...", str(e))
             time.sleep(20)
 
 if __name__ == '__main__':

@@ -23,7 +23,7 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Expor a porta que o Nginx está rodando (80 e 443)
-EXPOSE 80 443
+EXPOSE 443
 
 # Comando para rodar o Nginx e obter o certificado
 ENTRYPOINT ["/docker-entrypoint.sh"]
