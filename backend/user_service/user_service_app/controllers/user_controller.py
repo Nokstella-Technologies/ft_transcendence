@@ -78,7 +78,6 @@ class UserController:
         if request.method == 'PUT':
             data = json.loads(request.body.decode('utf-8'))
             user_id = get_payload(request, 'user')
-
             return UserService().update_user(user_id, data)
         else:
             return JsonResponse({'message': 'Method not allowed'}, status=405)

@@ -79,26 +79,19 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    max-height: 320px;
-    margin: 10px auto;
-    width: 320px;
-}
-
-@media screen and (max-width: 50em) {
-    .qr-code {
-        width: 100%;
-        margin: 8rem 0;
-    }
+    max-height: 300px;
+    margin: 15px auto;
+    width: 300px;
 }
 
 .qr-code {
     width: 90%;
     height: 90%;
     display: flex;
-    border-radius: 1rem;
+    border: white 3px solid;
+    
     flex-direction: column;
     justify-content: space-between;
-    padding: 2rem;
 }
 
 .victory {

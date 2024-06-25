@@ -52,6 +52,7 @@ class UserService:
             user.username = user_data.get('username', user.username)
             password = user_data.get('password') 
             newPass = user_data.get('new_password')
+            print(check_password(password, user.password), password, newPass)
             if password != None and newPass != None and check_password(password, user.password):
                 user.password = make_password(newPass)
             user.save()

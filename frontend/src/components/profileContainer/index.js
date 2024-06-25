@@ -107,7 +107,7 @@ export default class ProfileContainer extends Component {
             document.querySelector('.profile-update-form').addEventListener('submit', async (event) => {
                 event.preventDefault();
                 try {
-                    data = {}
+                    const data = {}
                     const username = document.querySelector('#username').value;
                     const password = document.querySelector('#password').value;
                     const newPassword = document.querySelector('#newPassword').value;
@@ -115,22 +115,22 @@ export default class ProfileContainer extends Component {
                     if (username === "" && password === "" && newPassword === "") {
                         throw new Error("Preencha pelo menos um campo");
                     }
-                    if (validateUsername(username)) {
+                    if (username != "" && !validateUsername(username)) {
                         throw new Error("O nome de usuário deve ter mais de 3 caracteres");
-                    } else {
+                    } else if (username !== "") {
                         data.username = username;
                     }
                     if (newPassword !== "" && newPassword !== confiNewPassword) {
-                        if (password !== "") {
+                        if (password === "") {
                             throw new Error("Prencha a senha atual");
                         }
                         throw new Error("As senhas não coincidem");
                     }
-                    if (newPassword !== "" && validatePassword(newPassword)) {
+                    if (newPassword !== "" && !validatePassword(newPassword)) {
                         throw new Error("A senha deve ter pelo menos 6 caracteres, incluindo números e letras");
                     } else {
                         data.password = password;
-                        data.newPassword = newPassword;
+                        data.new_password = newPassword;
                     }
                     await userProvider.updateUser(token, data);
                     this.setShowEdit(false);
@@ -205,11 +205,12 @@ export default class ProfileContainer extends Component {
                         text: user_input,
                         width: 300, //128
                         height: 300,
-                        colorDark: "#0f0f0f",
+                        colorDark: "#000",
                         colorLight: "#00e5ff",
                         correctLevel: QRCode.CorrectLevel.H
                     });
                 }
+
                 try {
                     const res = await userProvider.enable2FA(token);
                     generate(res.otp_uri);

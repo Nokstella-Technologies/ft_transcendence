@@ -117,14 +117,14 @@ class FriendController:
                 users = User.objects.filter(username__icontains=query)
                 users_data = []
                 for user in users:
-                    if user.user_id == user_id:
+                    if str(user.user_id) == user_id:
                         continue
                     if UserFriends.objects.filter(user=user, friend_id=user_id).exists():
                         continue
                     if UserFriends.objects.filter(friend=user, user_id=user_id).exists():
                         continue
                     user_dict = model_to_dict(user, exclude={"otp_secret", "password"})
-                    user_dict['user_id'] = user.user_id
+                    user_dict['user_id'] = str(user.user_id)
                     users_data.append(user_dict)
                 return JsonResponse(users_data, safe=False, status=200)
             except Exception as e:
