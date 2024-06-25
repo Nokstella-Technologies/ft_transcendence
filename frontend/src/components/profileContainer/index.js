@@ -5,6 +5,7 @@ import { validatePassword, validateUsername } from "../../utils/Validation.js";
 import Container from "../containers/index.js";
 import gameProvider from "../../provider/gameProvider.js";
 import Popup from "../popup/popup.js";
+import {formatDate} from "../../utils/formatTime.js";
 
 
 export default class ProfileContainer extends Component {
@@ -239,23 +240,22 @@ export default class ProfileContainer extends Component {
             } 
             const customContent = `
                     <div class="d-flex flex-column">
-                        <div class="mt-2" id="suggested_friends" style="max-height: 200px; overflow-y: auto;">
-                         
-                            <div class="modal-body">
-                                <ul class="list-group">
-                                      ${this.history.slice(0, 4).map((game, idx )=> `    
-                                        <li class="list-group-item ${game.score_player1 > game.score_player2 && game.player1_id === this.user.user_id ? "victory" : "losses" }">
-                                            <p>${game.player1.username} vs ${game.player2.username}</p>
-                                            <p> ${game.score_player1} - ${game.score_player2} </p>
-                                        </li>
-                                        `).join('')}
-                                 
-                               
-                                </ul>
-                            </div>
-                       
-                    </div>
-                </div>
+    <div class="mt-2" id="suggested_friends" style="max-height: 200px; overflow-y: auto;">
+        <div class="modal-body">
+            <ul class="list-group">
+                ${this.history.sort((a, b) => new Date(b.end_time) - new Date(a.end_time)).slice(0, 4).map((game, idx) => `
+                    <li class="list-group-item ${game.score_player1 > game.score_player2 && game.player1_id === this.user.user_id ? "victory" : "losses"}">
+                        <div class="game-details">
+                            <p class="players">${game.player1.username} vs ${game.player2.username}</p>
+                            <span class="date">${formatDate(game.end_time)}</span>
+                            <p class="score">${game.score_player1} - ${game.score_player2}</p>
+                        </div>
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    </div>
+</div>
             `;
             const popUp = new Popup("#pop_profile", "Historico de Partidas", customContent, this.showHistory(), this.setShowHistory);
             popUp.reRender();

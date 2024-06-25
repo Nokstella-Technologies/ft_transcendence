@@ -110,3 +110,37 @@
     background-color: #a400009f;
     border: #00ffff 1px solid;
 }
+.list-group-item {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.game-details {
+    width: 100%;
+    text-align: center;
+}
+
+.players {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.date {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.score {
+    font-size: 16px;
+    margin-bottom: 0px;
+}
