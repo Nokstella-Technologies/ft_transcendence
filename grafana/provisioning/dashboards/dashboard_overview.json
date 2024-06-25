@@ -16,7 +16,6 @@
 	  ]
 	},
 	"editable": true,
-	"fiscalYearStartMonth": 0,
 	"graphTooltip": 0,
 	"id": 3,
 	"links": [],
@@ -292,7 +291,7 @@
 			"refId": "A"
 		  }
 		],
-		"title": " HTTP Request Volume by Service",
+		"title": "HTTP Request Volume by Service",
 		"type": "timeseries"
 	  },
 	  {
@@ -389,7 +388,41 @@
 		  }
 		],
 		"title": "HTTP Request Latency (P95) by Service",
-		"type": "timeseries"
+		"type": "timeseries",
+		"alert": {
+		  "conditions": [
+			{
+			  "evaluator": {
+				"params": [
+				  499
+				],
+				"type": "gt"
+			  },
+			  "operator": {
+				"type": "and"
+			  },
+			  "query": {
+				"params": [
+				  "A",
+				  "5m",
+				  "now"
+				]
+			  },
+			  "reducer": {
+				"params": [],
+				"type": "last"
+			  },
+			  "type": "query"
+			}
+		  ],
+		  "executionErrorState": "alerting",
+		  "for": "5m",
+		  "frequency": "1m",
+		  "handler": 1,
+		  "name": "High HTTP Request Latency (P95)",
+		  "noDataState": "no_data",
+		  "notifications": []
+		}
 	  },
 	  {
 		"datasource": {
