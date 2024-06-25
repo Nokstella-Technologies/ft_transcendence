@@ -5,6 +5,7 @@ import { validatePassword, validateUsername } from "../../utils/Validation.js";
 import Container from "../containers/index.js";
 import gameProvider from "../../provider/gameProvider.js";
 import Popup from "../popup/popup.js";
+import {formatDate} from "../../utils/formatTime.js";
 
 
 export default class ProfileContainer extends Component {
@@ -106,7 +107,7 @@ export default class ProfileContainer extends Component {
             document.querySelector('.profile-update-form').addEventListener('submit', async (event) => {
                 event.preventDefault();
                 try {
-                    data = {}
+                    const data = {}
                     const username = document.querySelector('#username').value;
                     const password = document.querySelector('#password').value;
                     const newPassword = document.querySelector('#newPassword').value;
@@ -114,22 +115,22 @@ export default class ProfileContainer extends Component {
                     if (username === "" && password === "" && newPassword === "") {
                         throw new Error("Preencha pelo menos um campo");
                     }
-                    if (validateUsername(username)) {
+                    if (username != "" && !validateUsername(username)) {
                         throw new Error("O nome de usuário deve ter mais de 3 caracteres");
-                    } else {
+                    } else if (username !== "") {
                         data.username = username;
                     }
                     if (newPassword !== "" && newPassword !== confiNewPassword) {
-                        if (password !== "") {
+                        if (password === "") {
                             throw new Error("Prencha a senha atual");
                         }
                         throw new Error("As senhas não coincidem");
                     }
-                    if (newPassword !== "" && validatePassword(newPassword)) {
+                    if (newPassword !== "" && !validatePassword(newPassword)) {
                         throw new Error("A senha deve ter pelo menos 6 caracteres, incluindo números e letras");
                     } else {
                         data.password = password;
-                        data.newPassword = newPassword;
+                        data.new_password = newPassword;
                     }
                     await userProvider.updateUser(token, data);
                     this.setShowEdit(false);
@@ -204,11 +205,12 @@ export default class ProfileContainer extends Component {
                         text: user_input,
                         width: 300, //128
                         height: 300,
-                        colorDark: "#0f0f0f",
+                        colorDark: "#000",
                         colorLight: "#00e5ff",
                         correctLevel: QRCode.CorrectLevel.H
                     });
                 }
+
                 try {
                     const res = await userProvider.enable2FA(token);
                     generate(res.otp_uri);
@@ -239,21 +241,20 @@ export default class ProfileContainer extends Component {
             } 
             const customContent = `
                     <div class="d-flex flex-column">
-                        <div class="mt-2" id="suggested_friends" style="max-height: 200px; overflow-y: auto;">
-                         
-                            <div class="modal-body">
-                                <ul class="list-group">
-                                      ${this.history.slice(0, 4).map((game, idx )=> `    
-                                        <li class="list-group-item ${game.score_player1 > game.score_player2 && game.player1_id === this.user.user_id ? "victory" : "losses" }">
-                                            <p>${game.player1.username} vs ${game.player2.username}</p>
-                                            <p> ${game.score_player1} - ${game.score_player2} </p>
-                                        </li>
-                                        `).join('')}
-                                 
-                               
-                                </ul>
-                            </div>
-                       
+                    <div class="mt-2" id="suggested_friends" style="max-height: 200px; overflow-y: auto;">
+                        <div class="modal-body">
+                            <ul class="list-group">
+                                ${this.history.sort((a, b) => new Date(b.end_time) - new Date(a.end_time)).slice(0, 4).map((game, idx) => `
+                                    <li class="list-group-item ${game.score_player1 > game.score_player2 && game.player1_id === this.user.user_id ? "victory" : "losses"}">
+                                        <div class="game-details">
+                                            <p class="players">${game.player1.username} vs ${game.player2.username}</p>
+                                            <span class="date">${formatDate(game.end_time)}</span>
+                                            <p class="score">${game.score_player1} - ${game.score_player2}</p>
+                                        </div>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             `;

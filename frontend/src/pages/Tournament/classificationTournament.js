@@ -53,6 +53,7 @@ export default class ClassificationTournament extends Component {
       }catch (err) {
         console.log(err)
       }
+      this.frame = 0;
       document.getElementById('next-match-btn').addEventListener('click', async () => {
           const {token} = authProvider.get();
           document.getElementById('next-match-btn').disabled = true;
@@ -60,7 +61,8 @@ export default class ClassificationTournament extends Component {
             const nextMatch = await tournamentProvider.getNextMatch(token)
             if (nextMatch) {
               if (nextMatch.status === 'finished') {
-                  return this.re()
+                this.reRender()
+                return this.re()
               }
               const {player1, player2} = tournamentProvider.getPlayers(nextMatch);
               await gameProvider.setGame(token, nextMatch.game.game_id, player1, player2)

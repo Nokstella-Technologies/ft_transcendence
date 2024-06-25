@@ -75,7 +75,8 @@ class UserProviders {
             if (res.status === 200) {
                 const data = await res.json();
                 this.apperance = data;
-                this.user.appearance = data;
+                this.user.appearance = [data];
+                sessionStorage.setItem("user", JSON.stringify(this.user));
                 return data;
             } else {
                 throw new Error("Erro ao tentar atualizar a aparencia");

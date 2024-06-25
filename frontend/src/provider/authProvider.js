@@ -74,7 +74,14 @@ class AuthProvider {
             }
     }
 
-    async login42(code, isTour = undefined) {
+    async login42(code, isTour = undefined, isPvp = undefined) {
+        let redict = ""
+        if (isTour) {
+            redict = "tournament"
+        }
+        if (isPvp) {
+            redict = "pvp"
+        }
         const res = await fetch(window.env["API_URL"] + 'public/auth/oauth2/authorize/', {
             method: 'POST',
             headers: {
@@ -82,7 +89,7 @@ class AuthProvider {
             },
             body: JSON.stringify({
                 code: code,
-                redirect_uri: isTour === undefined ? window.env["REDIRECT_URL"] : window.env["REDIRECT_URL_TOURNAMENT"]
+                redirect_uri: window.env["REDIRECT_URL"] + redict
             })
         })
         if (res.status === 200) {

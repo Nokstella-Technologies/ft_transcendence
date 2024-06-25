@@ -113,7 +113,7 @@ export default class PvPage extends Component {
                 this.setShowLogin(false);
             }
         }
-        const login = new LoginForm("#login_form", setNewUser) 
+        const login = new LoginForm("#login_form", setNewUser, true) 
         login.reRender();
       }
     }

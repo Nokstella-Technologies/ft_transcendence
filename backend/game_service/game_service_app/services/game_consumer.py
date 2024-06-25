@@ -30,31 +30,25 @@ def start_game_local(data, status='active'):
 def update_game(data):
     score_player1 = data.get('score_player1')
     score_player2 = data.get('score_player2')
-    end = data.get('end')
+    end = data.get('end', False)
     id = data.get('id')
-    game = Game.objects.get(game_id=id)
+    game = Game.objects.filter(game_id=id).first()
     is_end_now = False
-    winner = None
     if (game is None):
         return {'status': 'error', 'message': 'Game not found'}
     if game.status == 'active':
+        print("game is active")
         game.score_player1 = score_player1
         game.score_player2 = score_player2
-        if end and game.end_time == None:
+        if end == True and game.end_time == None:
             game.end_time = timezone.now()
             is_end_now = True
             game.status = 'Finished'
-        if end:
-            if score_player1 > score_player2:
-                winner = game.player1_id
-            elif score_player1 < score_player2:
-                winner = game.player2_id
-            else:
-                winner = "Tie"
     game.save()
     response = model_to_dict(game)
     response['end_time'] = str(game.end_time)
-    response['winner'] = str(winner)
+    response['winner'] = str(data.get('winner'))
+    print("response: ", data.get('winner'))
     response['game_id'] = str(game.game_id)
     response['player1_id'] = str(game.player1_id)
     response['player2_id'] = str(game.player2_id)
@@ -68,7 +62,9 @@ def on_request(ch, method, props, body):
     if action == 'start_game':
         response = start_game_local(data)
     elif action == 'update_game':
+        print("test")
         response, ended = update_game(data)
+        print("test2")
         if (response.get('game').get('status') == 'Finished' and data.get('end') == True):
             print(f"Game has ended [posting to stats]")
             response['action'] = 'end_game'
@@ -137,13 +133,12 @@ def start_consumer():
             print("[X] Awating RCP request...")
             channel.start_consuming()
         except pika.exceptions.ConnectionClosedByBroker as e:
-            print("Lost connection, retrying...", str(e))
+            
             time.sleep(20)
         except pika.exceptions.AMQPConnectionError as e:
-            print("AMQP Connection Error, retrying...", str(e))
+            
             time.sleep(20)
         except Exception as e:
-            print("Unexpected error, retrying...", str(e))
             time.sleep(20)
 
 if __name__ == '__main__':

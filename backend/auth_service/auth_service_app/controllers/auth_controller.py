@@ -81,6 +81,8 @@ def verify_2fa(request):
         return JsonResponse({'error': 'Token is required'}, status=404)
     try:
         res = verify_2fa_secret(token, payload['user'], 'verify_2fa_secret')
+        if (res.get('valid') == False):
+            return JsonResponse({'error': 'Timezone Error'}, status=409)
         return JsonResponse({'user': res}, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)

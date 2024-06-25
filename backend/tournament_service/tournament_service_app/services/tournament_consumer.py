@@ -42,17 +42,17 @@ def start_game(data):
 
 def end_game(data):
     game = data.get('game')
-    print("game: ", data)
     tournGame = TournamentGame.objects.filter(game_id=game['game_id']).first()
     if tournGame is None or tournGame.status != 'active':
         return {'status': 'error', 'message': 'Game not found or not active'}
-    p1 =tournGame.player1_id
-    p2 =tournGame.player2_id
-    winner = game['winner']
-    if (winner == 'Tie'):
-        p1.score += 1
-        p2.score += 1
-    elif (winner == p1.user_id):
+    p1 = tournGame.player1_id
+    p2 = tournGame.player2_id
+    winner = game.get('winner')
+    print("winner: ", winner)
+    print("p1: ", p1.user_id, "user_id: ", p1.id)
+    print("p2: ", p2.user_id, "user_id: ", p2.id)
+    print(winner == str(p1.user_id))
+    if (winner == str(p1.user_id)):
         p1.wins += 1
         p2.losses += 1
         p1.score += 3
@@ -65,18 +65,20 @@ def end_game(data):
     p1.save()
     p2.save()
 
+def on_request(ch, method, props, body):
+    data = json.loads(body)
+    print(f"[Received message from START_GAME][action: {data.get('action')}]")
+    if data.get('action') == 'create_game':
+        print("creating game in tournament:", data.get('tournament_id'))
+        res = create_game_local(data, data.get('tournament_id'))
+    elif data.get('action') == 'start_game':
+        res = start_game(data)
+    elif data.get('action') == 'end_game':
+        print("ending game")
+        res = end_game(data)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
 def start_consumer():
-    def on_request(ch, method, props, body):
-        data = json.loads(body)
-        if data.get('action') == 'create_game':
-            print("creating game in tournament:", data.get('tournament_id'))
-            res = create_game_local(data, data.get('tournament_id'))
-            print("response: ", res)
-        elif data.get('action') == 'start_game':
-            res = start_game(data)
-        elif data.get('action') == 'end_game':
-            res = end_game(data)
-        ch.basic_ack(delivery_tag=method.delivery_tag)
     while True:
         try:
             _, channel = create_connection()
@@ -88,13 +90,12 @@ def start_consumer():
             print("[X] Awating RCP request...")
             channel.start_consuming()
         except pika.exceptions.ConnectionClosedByBroker as e:
-            print("Lost connection, retrying...", str(e))
+            
             time.sleep(20)
         except pika.exceptions.AMQPConnectionError as e:
-            print("AMQP Connection Error, retrying...", str(e))
+            
             time.sleep(20)
         except Exception as e:
-            print("Unexpected error, retrying...", str(e))
             time.sleep(20)
 
 if __name__ == '__main__':

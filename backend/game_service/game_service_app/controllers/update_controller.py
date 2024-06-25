@@ -13,11 +13,13 @@ def update_game(request, id):
 	end = data.get('end')
 	if not "score_player1" in data or not "score_player2" in data:
 		return JsonResponse({"Error": "Score games are required."}, status=400)
+	print("data: ", data.get('winner'))
 	message={
 		"action": "update_game",
 		"score_player1": score_player1,
 		"score_player2": score_player2,
 		"id": str(id),
+		"winner": str(data.get('winner')),
 		"end": end
 	}
 	response = send_to_queue("START_GAME", message)

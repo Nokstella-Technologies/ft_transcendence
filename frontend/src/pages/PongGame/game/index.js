@@ -5,6 +5,7 @@ import IA from '../IA/index.js';
 import { newPowerUp } from '../powerUp/index.js';
 import { randomBetween } from "../../../utils/random.js";
 import gameProvider from '../../../provider/gameProvider.js';
+import userProvider from '../../../provider/userProvider.js';
 
 export const vr = {  
     BALL_RADIUS: 10,
@@ -34,7 +35,10 @@ class Game extends Component {
         this.score = score;
         this.gameOver = gameOver;
         this.apperance = apperance;
-        this.destroy()
+        if (this.apperance === undefined || this) {
+            this.apperance = userProvider.get().apperance;
+        }
+        this.destroy();
         return this.reRender()
     }
 

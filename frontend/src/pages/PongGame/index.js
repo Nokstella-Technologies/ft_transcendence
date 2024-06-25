@@ -110,7 +110,10 @@ import userProvider from "../../provider/userProvider.js";
             if (!this.gameOver()) {
                 const {side} = gameProvider.get();
                 const {user} = userProvider.get();
-                const apperance = game.type === "ai" ? user.appearance[0] : player1.appearance[0];
+                let apperance = game.type === "ai" ? user.appearance[0] : player1.appearance[0];
+                if (apperance === undefined ){
+                    apperance = user.appearance[0];
+                }
                 if (this.game === undefined) {
                     this.game = new Game('#game-container');
                 }
