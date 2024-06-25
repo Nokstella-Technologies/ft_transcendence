@@ -21,7 +21,8 @@ STATICFILES_DIRS = os.path.join(BASE_DIR, "imgs"), # your static/ files folder
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u+3e8xi%82_=5y&@-=xu4z8e5r!cj95zmy_unm+5bq$%5__q-x'
+SECRET_KEY = os.getenv('SECRET_KEY', "err")
+
 SECURE_SSL_REDIRECT = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
