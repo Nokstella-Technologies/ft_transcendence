@@ -30,6 +30,8 @@ def start_game(request):
 		type = data['type']
 		if not player1_id or not player2_id or not type:
 			return JsonResponse({"Error": "Both players are required."}, status=400)
+		if player1_id == player2_id:
+			return JsonResponse({"Error": "Players must be different."}, status=400)
 		message={
 			"action": "start_game",
 			"player1_id": player1_id,

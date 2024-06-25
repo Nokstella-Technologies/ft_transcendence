@@ -34,7 +34,7 @@ class MainVsAI extends Component{
                                     <img src="${this.user.profile_picture}" alt="Player Icon" class="player-picture">
                                     <p>${this.user.username}<br>
                                         (Você)</p>
-                                    <button class="btn btn-primary btn-block btn-trocar-lado" style="background-color: #00e5ff; border: none;">Trocar Lado</button>
+                    
                                     ` :
                                     `
                                     <div class="custom-icon-info">
@@ -49,9 +49,6 @@ class MainVsAI extends Component{
     
     
     mount(){
-        document.querySelector(".btn-trocar-lado").addEventListener("click", () => {
-            // Lógica de troca de lado estará no componente pai (VsAI)
-        });
         const infoIconId = this.isplayer ? "#info-icon-player" : "#info-icon-ai";
         document.querySelector(infoIconId).addEventListener("click", () => {
             this.showInstructions();
