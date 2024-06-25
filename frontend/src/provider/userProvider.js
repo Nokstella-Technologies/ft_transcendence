@@ -200,6 +200,21 @@ class UserProviders {
         }
     }
 
+    async findUser(token, id) {
+        const data = await fetch(window.env["API_URL"] + `protected/user/findById/${id}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        if (data.status === 200) {
+            return await data.json();
+        } else {
+            throw new Error("Erro ao buscar jogador");
+        }
+    }
+
     async confirm2FA(token, code) {
         const res = await fetch(window.env["API_URL"] + `protected/auth/verify_2fa/`, {
                 method: 'POST',
