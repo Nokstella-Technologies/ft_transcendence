@@ -41,7 +41,7 @@
                     <i class="fas fa-user-friends friends-icon dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" id="friend_list">
                             ${this.friends().map(friend => friend.status === "accepted" ? `
-                            <div class="dropdown-item d-flex justify-content-between align-items-center player" id="${friend.id}">
+                            <div class="dropdown-item d-flex justify-content-between align-items-center player" id="${friend.user_id == this.user.user_id ? friend.friend_id : friend.user_id}">
                                 <span class="friend-username ml-auto">${friend.friend.username}</span>
                                 <span class="status-indicator ${friend.friend.status === 'online' ? 'status-online' : 'status-offline'}"></span>
                                 <button class="btn btn-sm btn-light delete-friend-btn ml-2" data-id="${friend.id}">
@@ -77,7 +77,7 @@
                 <input type="text" class="form-control"  id="friend_username" placeholder="Nome de Usuário" value="${value}">
                 <div class="mt-2" id="suggested_friends" style="max-height: 200px; overflow-y: auto;">
                     ${this.findFriend.slice(0, 4).map(friend => `
-                        <div class="d-flex justify-content-between align-items-center border p-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-center border p-2 mb-2" >
                             <span>${friend.username}</span>
                             <button class="btn btn-success btn-sm add-friend-btn" data-id="${friend.user_id}">
                                 <i class="fas fa-user-plus"></i>
@@ -166,6 +166,7 @@
             document.querySelectorAll(".player").forEach(player => {
                 player.addEventListener('click', async (event) => {
                     this.setShowProfile(true);
+                    this.friend_show_id = event.currentTarget.id
                 })});
             document.querySelector('.popup_friend_add_button').addEventListener('click', () => {
                 this.setShowPopUp(true);
@@ -191,7 +192,7 @@
                         </div>
                     </div>
                 `
-                    const popUp = new Popup('.popup_friend', "Perfil", customContent, this.showProfile(), this.setShowProfile);
+                    const popUp = new Popup('.popup_friend', friend.username, customContent, this.showProfile(), this.setShowProfile);
                     popUp.reRender();
                 } catch (err) {
                     console.log(err);

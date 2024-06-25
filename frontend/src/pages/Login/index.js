@@ -4,6 +4,7 @@ import SoundControl from '../../components/soundControl/index.js';
 import BackgroundAnimation from '../../components/backgroundAnimation/backgroundAnimation.js';
 import Container from '../../components/containers/index.js';
 import LoginForm from './loginForm.js';
+import tournamentProvider from '../../provider/tournamentProvider.js';
 
 class Login extends Component {
     constructor(to) {
@@ -32,6 +33,7 @@ class Login extends Component {
   }
 
   mount() {
+      tournamentProvider.reset();
       
       const soundControl = new SoundControl('#sound-control-container', 'assets/sounds/music.m4a');
       soundControl.reRender();
