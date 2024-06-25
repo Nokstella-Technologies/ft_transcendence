@@ -1,5 +1,5 @@
-    import Component from "../../../react/Component.js";
-    import SoundControl from "../../components/soundControl/index.js";
+import Component from "../../../react/Component.js";
+import SoundControl from "../../components/soundControl/index.js";
 import authProvider from "../../provider/authProvider.js";
 import gameProvider from "../../provider/gameProvider.js";
 import userProvider from "../../provider/userProvider.js";

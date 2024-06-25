@@ -205,6 +205,7 @@ services:
       - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards
       - ./grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./grafana/provisioning/alerting/alerting.yml:/etc/grafana/provisioning/alerting/alerting.yml
 
   rabbitmq:
     build:

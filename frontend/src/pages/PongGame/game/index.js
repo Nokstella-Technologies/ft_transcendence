@@ -31,6 +31,7 @@ class Game extends Component {
     }
 
     async newRender(type, score, gameOver, apperance) {
+        this.destroy();
         this.type = type;
         this.score = score;
         this.gameOver = gameOver;
@@ -38,7 +39,6 @@ class Game extends Component {
         if (this.apperance === undefined || this) {
             this.apperance = userProvider.get().apperance;
         }
-        this.destroy();
         return this.reRender()
     }
 
