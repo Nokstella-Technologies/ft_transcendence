@@ -98,8 +98,11 @@ class LoginForm extends Component {
             } )
 
         }
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
+        const login = document.getElementById('login-form')
+        if (login === undefined || login === null) {
+            return;
+        }
+        login.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (this.email() === '' || this.password() === '') {
                 this.errorMessage = 'Por favor, preencha todos os campos.';
@@ -119,7 +122,7 @@ class LoginForm extends Component {
             } catch(err) {
                 errorMessage.textContent = 'Usuário ou senha inválidos';
             }       
-            });
+        });
 
         emailInput.addEventListener('input', (e) => {
             this.setEmail(e.target.value);
