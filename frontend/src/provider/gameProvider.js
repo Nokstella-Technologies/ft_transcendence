@@ -83,9 +83,9 @@ class GameProvider {
         if (this.game.score_player1 === 5 || this.game.score_player2 === 5) {
             data.end = true;
             this.game.status = "ended";
-            data.winner = this.game.score_player1 === 5 ? this.game.player1_id : this.game.score_player2;
+            data.winner = this.game.score_player1 === 5 ? this.player1.user_id : this.player2.user_id;
         }
-        const score = await fetch(window.env["API_URL"] + `protected/game/update_game/${this.game.game_id}/`, {
+        const score = fetch(window.env["API_URL"] + `protected/game/update_game/${this.game.game_id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -100,8 +100,7 @@ class GameProvider {
             }
             sessionStorage.setItem("game", JSON.stringify(res.game));
             return res;
-        } else 
-            throw new Error("Erro ao setar score");
+        }
     }
     reset() {
         this.game = undefined;

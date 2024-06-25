@@ -28,7 +28,6 @@ def start_game_local(data, status='active'):
     return { 'game': response }
 
 def update_game(data):
-    print(data)
     score_player1 = data.get('score_player1')
     score_player2 = data.get('score_player2')
     end = data.get('end', False)
@@ -48,7 +47,8 @@ def update_game(data):
     game.save()
     response = model_to_dict(game)
     response['end_time'] = str(game.end_time)
-    response['winner'] = str(game.get('winner'), "")
+    response['winner'] = str(data.get('winner'))
+    print("response: ", data.get('winner'))
     response['game_id'] = str(game.game_id)
     response['player1_id'] = str(game.player1_id)
     response['player2_id'] = str(game.player2_id)
@@ -62,8 +62,9 @@ def on_request(ch, method, props, body):
     if action == 'start_game':
         response = start_game_local(data)
     elif action == 'update_game':
+        print("test")
         response, ended = update_game(data)
-        print(response, "final")
+        print("test2")
         if (response.get('game').get('status') == 'Finished' and data.get('end') == True):
             print(f"Game has ended [posting to stats]")
             response['action'] = 'end_game'
