@@ -10,6 +10,7 @@ from django.core.files.base import ContentFile
 import os
 import traceback
 import uuid
+import re
 class UserController:
     @staticmethod
     @csrf_exempt
@@ -21,6 +22,10 @@ class UserController:
                 return JsonResponse({'message': 'No file found'}, status=404)
             profile_picture = request.FILES.get('profile_picture')
             name = str(uuid.uuid4()) + "_" + profile_picture.name
+
+            control_and_whitespace_chars = re.compile(r'[\x00-\x1F\x7F\s]')
+            name = control_and_whitespace_chars.sub('', name)
+
             file_name = os.path.join("imgs",  name)
             file_path = default_storage.save(file_name, ContentFile(profile_picture.read()))
             user_id = get_payload(request, 'user')
