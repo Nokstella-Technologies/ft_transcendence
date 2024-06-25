@@ -34,13 +34,14 @@ class Game extends Component {
         this.score = score;
         this.gameOver = gameOver;
         this.apperance = apperance;
-        if (this.apperance === undefined || this.apperance === null) {
+        if (this.apperance === undefined || this) {
             this.apperance = {
                 ball_color: "#ffffff",
                 paddle_color: "#ffffff",
                 background_color: "#000000"
             }
         }
+        this.destroy();
         return this.reRender()
     }
 

@@ -28,33 +28,27 @@ def start_game_local(data, status='active'):
     return { 'game': response }
 
 def update_game(data):
+    print(data)
     score_player1 = data.get('score_player1')
     score_player2 = data.get('score_player2')
-    end = data.get('end')
+    end = data.get('end', False)
     id = data.get('id')
-    game = Game.objects.get(game_id=id)
+    game = Game.objects.filter(game_id=id).first()
     is_end_now = False
-    winner = None
     if (game is None):
         return {'status': 'error', 'message': 'Game not found'}
     if game.status == 'active':
+        print("game is active")
         game.score_player1 = score_player1
         game.score_player2 = score_player2
-        if end and game.end_time == None:
+        if end == True and game.end_time == None:
             game.end_time = timezone.now()
             is_end_now = True
             game.status = 'Finished'
-        if end:
-            if score_player1 > score_player2:
-                winner = game.player1_id
-            elif score_player1 < score_player2:
-                winner = game.player2_id
-            else:
-                winner = "Tie"
     game.save()
     response = model_to_dict(game)
     response['end_time'] = str(game.end_time)
-    response['winner'] = str(winner)
+    response['winner'] = str(game.get('winner'), "")
     response['game_id'] = str(game.game_id)
     response['player1_id'] = str(game.player1_id)
     response['player2_id'] = str(game.player2_id)
@@ -69,6 +63,7 @@ def on_request(ch, method, props, body):
         response = start_game_local(data)
     elif action == 'update_game':
         response, ended = update_game(data)
+        print(response, "final")
         if (response.get('game').get('status') == 'Finished' and data.get('end') == True):
             print(f"Game has ended [posting to stats]")
             response['action'] = 'end_game'

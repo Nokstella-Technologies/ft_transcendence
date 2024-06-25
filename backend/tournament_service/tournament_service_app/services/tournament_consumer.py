@@ -48,11 +48,9 @@ def end_game(data):
         return {'status': 'error', 'message': 'Game not found or not active'}
     p1 =tournGame.player1_id
     p2 =tournGame.player2_id
-    winner = game['winner']
-    if (winner == 'Tie'):
-        p1.score += 1
-        p2.score += 1
-    elif (winner == p1.user_id):
+    winner = game.get('winner')
+    print("winner: ", game)
+    if (winner == p1.user_id):
         p1.wins += 1
         p2.losses += 1
         p1.score += 3
@@ -65,18 +63,19 @@ def end_game(data):
     p1.save()
     p2.save()
 
+def on_request(ch, method, props, body):
+    data = json.loads(body)
+    print(f"[Received message from START_GAME][action: {data.get('action')}]")
+    if data.get('action') == 'create_game':
+        print("creating game in tournament:", data.get('tournament_id'))
+        res = create_game_local(data, data.get('tournament_id'))
+        print("response: ", res)
+    elif data.get('action') == 'start_game':
+        res = start_game(data)
+    elif data.get('action') == 'end_game':
+        res = end_game(data)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 def start_consumer():
-    def on_request(ch, method, props, body):
-        data = json.loads(body)
-        if data.get('action') == 'create_game':
-            print("creating game in tournament:", data.get('tournament_id'))
-            res = create_game_local(data, data.get('tournament_id'))
-            print("response: ", res)
-        elif data.get('action') == 'start_game':
-            res = start_game(data)
-        elif data.get('action') == 'end_game':
-            res = end_game(data)
-        ch.basic_ack(delivery_tag=method.delivery_tag)
     while True:
         try:
             _, channel = create_connection()

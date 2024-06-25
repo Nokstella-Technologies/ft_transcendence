@@ -18,6 +18,7 @@ def update_game(request, id):
 		"score_player1": score_player1,
 		"score_player2": score_player2,
 		"id": str(id),
+		"winner": str(data.get('winner')),
 		"end": end
 	}
 	response = send_to_queue("START_GAME", message)
