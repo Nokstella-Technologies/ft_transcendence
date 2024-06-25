@@ -11,8 +11,10 @@
 }
 
 .player-picture {
-  width: 30%;
-  height: 30%;
+  width: 50%;
+  
+  max-width: 200px;
+  
   border-radius: 50%;
   border: #00e5ff;
 }

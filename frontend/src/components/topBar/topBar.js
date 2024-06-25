@@ -9,6 +9,10 @@
             super(to);
             const [friends, setFriends] = this.useState([])
             const [showPopUp, setShowPopUp] = this.useState(false);
+            const [showProfile, setShowProfile] = this.useState(false);
+            this.showProfile = showProfile;
+            this.setShowProfile = setShowProfile;
+            this.friend_show_id = "";
             this.findFriend = [];
             this.showPopUp = showPopUp;
             this.setShowPopUp = setShowPopUp;
@@ -37,7 +41,7 @@
                     <i class="fas fa-user-friends friends-icon dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" id="friend_list">
                             ${this.friends().map(friend => friend.status === "accepted" ? `
-                            <div class="dropdown-item d-flex justify-content-between align-items-center player" id="${friend.id}">
+                            <div class="dropdown-item d-flex justify-content-between align-items-center player" id="${friend.user_id == this.user.user_id ? friend.friend_id : friend.user_id}">
                                 <span class="friend-username ml-auto">${friend.friend.username}</span>
                                 <span class="status-indicator ${friend.friend.status === 'online' ? 'status-online' : 'status-offline'}"></span>
                                 <button class="btn btn-sm btn-light delete-friend-btn ml-2" data-id="${friend.id}">
@@ -73,7 +77,7 @@
                 <input type="text" class="form-control"  id="friend_username" placeholder="Nome de Usuário" value="${value}">
                 <div class="mt-2" id="suggested_friends" style="max-height: 200px; overflow-y: auto;">
                     ${this.findFriend.slice(0, 4).map(friend => `
-                        <div class="d-flex justify-content-between align-items-center border p-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-center border p-2 mb-2" >
                             <span>${friend.username}</span>
                             <button class="btn btn-success btn-sm add-friend-btn" data-id="${friend.user_id}">
                                 <i class="fas fa-user-plus"></i>
@@ -86,8 +90,8 @@
             </div>
             `
             const popUp = new Popup('.popup_friend', 'Adicione um Amigo', customContent, this.showPopUp(), this.setShowPopUp);
-            popUp.reRender();
             if (this.showPopUp()) {
+            popUp.reRender();
 
             document.querySelectorAll('.add-friend-btn').forEach(
                 button => button.addEventListener('click', async (event) => {
@@ -139,6 +143,7 @@
                     const id = event.currentTarget.getAttribute('data-id');
                     try {
                         await userProvider.rejectFriend(token, id);
+                        this.friend_show_id = id
                     } catch (err) {
                         console.log(err);
                     }
@@ -160,13 +165,42 @@
 
             document.querySelectorAll(".player").forEach(player => {
                 player.addEventListener('click', async (event) => {
-                    navigateTo(`/profile?user=${event.currentTarget.id}`)
+                    this.setShowProfile(true);
+                    this.friend_show_id = event.currentTarget.id
                 })});
             document.querySelector('.popup_friend_add_button').addEventListener('click', () => {
                 this.setShowPopUp(true);
             }); 
-            this.PopupRender(token, "")
+            if (this.showProfile()) {
+                try {
+                    const friend = await userProvider.findUser(token, this.friend_show_id);
+                    const friend_stats = friend.stats[0]
+                    const customContent = `
+                    <div class="container c-flex">
+                        <div class="profile-picture-container" >
+                            <img src="${friend.profile_picture}" alt="${friend.username}" class="rounded-circle img-fluid profile-picture"/>
+                            <div class="profile-overlay">
+                                <i class="fa fa-pencil-alt"></i>
+                            </div>
+                        </div>
+                        <div class="text-left stats-fields">
+                            <h5>Estatísticas</h5>
+                            <p>Partidas Jogadas: ${friend_stats.games_played}</p>
+                            <p>Vitórias: ${friend_stats.games_won}</p>
+                            <p>Derrotas: ${friend_stats.games_lost}</p>
+                            <p>Torneios: ${friend_stats.tournament_won} - ${friend_stats.tournament_played}</p>
+                        </div>
+                    </div>
+                `
+                    const popUp = new Popup('.popup_friend', friend.username, customContent, this.showProfile(), this.setShowProfile);
+                    popUp.reRender();
+                } catch (err) {
+                    console.log(err);
+                    this.setShowProfile(false);
+                }
+            }
+            this.PopupRender(token, "");
         }
     };
 
-    export default TopBar;
+export default TopBar;
