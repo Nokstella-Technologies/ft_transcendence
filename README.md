@@ -38,25 +38,25 @@
 
 This is the last project of first formation of 42Sp.
 In this project We need as a team create a Ping Pong Game with Many features that we can choose some options in our project this ones is the choosen ones:
-◦ Major module: Use a framework to build the backend.
-◦ Minor module: Use a framework or a toolkit to build the frontend.
-◦ Minor module: Use a database for the backend
-◦ Major module: Standard user management, authentication, users across
+* Major module: Use a framework to build the backend.
+* Minor module: Use a framework or a toolkit to build the frontend.
+* Minor module: Use a database for the backend
+* Major module: Standard user management, authentication, users across
 tournaments.
-◦ Major module: Implementing a remote authentication
+* Major module: Implementing a remote authentication
 AI-Algo
-◦ Major module: Introduce an AI opponent.
-◦ Minor module: User and game stats dashboards
+* Major module: Introduce an AI opponent.
+* Minor module: User and game stats dashboards
  Cybersecurity
-◦ Major module: Implement WAF/ModSecurity with a hardened configura-
+* Major module: Implement WAF/ModSecurity with a hardened configura-
 tion and HashiCorp Vault for secrets management.
-◦ Minor module: GDPR compliance options with user anonymization, local
+* Minor module: GDPR compliance options with user anonymization, local
 data management, and Account Deletion.
-◦ Major module: Implement Two-Factor Authentication (2FA) and JWT
+* Major module: Implement Two-Factor Authentication (2FA) and JWT
  Devops
-◦ Major module: Infrastructure setup for log management.
-◦ Minor module: Monitoring system.
-◦ Major module: Designing the backend as microservices.
+* Major module: Infrastructure setup for log management.
+* Minor module: Monitoring system.
+* Major module: Designing the backend as microservices.
 
 
 ## Idea
